@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+venv311/
+*.egg-info/
+.pytest_cache/
+.ipynb_checkpoints/
+
+# Node
+node_modules/
+dist/
+.vite/
+*.tsbuildinfo
+
+# Data & model artifacts (regenerate via `make data`)
+datasets/cache/**
+!datasets/cache/.gitkeep
+**/artifacts/*.pkl
+**/artifacts/*.joblib
+**/artifacts/*.pt
+**/artifacts/*.onnx
+*.parquet
+*.csv.gz
+mlruns/
+catboost_info/
+
+# Keep metrics + reports (small, and they back the README claims)
+!**/artifacts/metrics.json
+!**/artifacts/*.md
+
+# OS / editor
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/
