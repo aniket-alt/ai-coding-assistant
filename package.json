@@ -1,0 +1,15 @@
+{
+  "name": "ds-fullstack-ai",
+  "private": true,
+  "version": "1.0.0",
+  "description": "16 full-stack data science applications built with an AI coding assistant",
+  "workspaces": [
+    "platform/web",
+    "*/client"
+  ],
+  "scripts": {
+    "audit:all": "python scripts/run_audit.py",
+    "shots": "node scripts/capture_screenshots.mjs"
+  },
+  "license": "MIT"
+}
