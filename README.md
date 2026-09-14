@@ -53,7 +53,7 @@ Ports are assigned so every project can run simultaneously.
 | 12 | Time Series Forecasting | Multi-horizon fans, ACF/PACF | Energy demand | 8012 | 5112 | ⬜ |
 | 13 | CRISP-DM Audit Platform | Governance, explainability | NYC TLC | 8013 | 5113 | ⬜ |
 | 14 | Multimodal AutoML | Vision–language–tabular fusion | multiple | 8014 | 5114 | ⬜ |
-| 15 | **SPY Forecasting** | Probabilistic finance, walk-forward backtest | Yahoo Finance | 8015 | 5115 | ⬜ |
+| 15 | [**SPY Forecasting**](./15_spy_forecasting) | Probabilistic returns, walk-forward, purged | SPY/VIX/TNX daily, 2015–2026 | 8015 | 5115 | ✅ |
 
 ✅ complete · 🚧 in progress · ⬜ not started
 

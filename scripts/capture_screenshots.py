@@ -39,11 +39,20 @@ TOURS: dict[str, list[tuple[str, str, str]]] = {
         ("models", "04_detector_tournament", "Detector tournament"),
         ("audit", "05_leakage_audit", "Assertions executed during training"),
     ],
+    "15_spy_forecasting": [
+        ("forecast", "01_forecast_fan", "Median forecast"),
+        ("backtest", "02_backtest", "Buy-and-hold Sharpe"),
+        ("calibration", "03_calibration", "Are the intervals honest?"),
+        ("crispdm", "04_crispdm_walkthrough", "Phase gate"),
+        ("models", "05_model_tournament", "Model tournament"),
+        ("audit", "06_leakage_audit", "Assertions executed during training"),
+    ],
 }
 
 PORTS = {
     "01_nyc_taxi_prediction": (8001, 5101),
     "06_anomaly_detection": (8006, 5106),
+    "15_spy_forecasting": (8015, 5115),
 }
 
 
@@ -169,16 +178,24 @@ def _kill_tree(proc: subprocess.Popen) -> None:
 
 
 def _tab_label(project: str, tab_id: str) -> str:
+    """Visible tab text, per project -- tab ids are shared, labels are not."""
     labels = {
-        "estimator": "Trip estimator",
-        "crispdm": "CRISP-DM",
-        "models": "Model tournament" if project == "01_nyc_taxi_prediction"
-                  else "Detector tournament",
-        "audit": "Audit",
-        "scorer": "Transaction scorer",
-        "budget": "Review budget",
+        "01_nyc_taxi_prediction": {
+            "estimator": "Trip estimator", "crispdm": "CRISP-DM",
+            "models": "Model tournament", "audit": "Audit",
+        },
+        "06_anomaly_detection": {
+            "scorer": "Transaction scorer", "budget": "Review budget",
+            "crispdm": "CRISP-DM", "models": "Detector tournament",
+            "audit": "Audit",
+        },
+        "15_spy_forecasting": {
+            "forecast": "Forecast", "backtest": "Backtest",
+            "calibration": "Calibration", "crispdm": "CRISP-DM",
+            "models": "Model tournament", "audit": "Audit",
+        },
     }
-    return labels[tab_id]
+    return labels[project][tab_id]
 
 
 if __name__ == "__main__":

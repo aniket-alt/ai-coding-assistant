@@ -240,7 +240,16 @@ def assert_no_target_leak(X, y, *, threshold: float = 0.995) -> list[str]:
     import pandas as pd
 
     Xd = X if isinstance(X, pd.DataFrame) else pd.DataFrame(X)
+    # Compare positionally. Pandas aligns Series on their index, so a frame
+    # with a DatetimeIndex silently produced NaN against a RangeIndex target
+    # -- every correlation unmeasurable, and the check passing for the wrong
+    # reason. Dropping both indices makes the comparison positional.
+    Xd = Xd.reset_index(drop=True)
     ys = pd.Series(np.asarray(y).ravel())
+    if len(Xd) != len(ys):
+        raise ValueError(
+            f"X has {len(Xd)} rows but y has {len(ys)}; cannot check for leakage."
+        )
     if ys.nunique() < 2:
         return []
 

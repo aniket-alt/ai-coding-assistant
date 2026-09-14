@@ -1,0 +1,15 @@
+{
+  "slug": "yahoo-spy-daily",
+  "name": "SPY Daily Bars with VIX and 10-Year Yield",
+  "source_url": "https://finance.yahoo.com/quote/SPY/history",
+  "license": "Yahoo Finance terms of use \u2014 personal and research use",
+  "citation": "Yahoo Finance (2026). Historical daily price data for SPY, ^VIX and ^TNX, 2015-01-01 to 2026-09-01. Retrieved via the yfinance library.",
+  "retrieved_at": "2026-09-14T06:44:22Z",
+  "sha256": "1e37e3dd2c6da9f77b12695e298b45196868bb004833daa20cbf95679d3309ab",
+  "n_rows": 2931,
+  "n_cols": 7,
+  "bytes_on_disk": 153955,
+  "synthetic": false,
+  "notes": "Split- and dividend-adjusted daily closes. SPY is the S&P 500 ETF; ^VIX is implied volatility; ^TNX is the 10-year Treasury yield.",
+  "extra": {}
+}
