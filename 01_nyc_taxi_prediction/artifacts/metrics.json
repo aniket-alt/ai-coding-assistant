@@ -1,0 +1,195 @@
+{
+  "project_slug": "01_nyc_taxi_prediction",
+  "project_title": "NYC Taxi Trip Duration Prediction",
+  "task": "regression",
+  "primary_metric": "rmse",
+  "higher_is_better": false,
+  "provenance": {
+    "slug": "nyc-tlc-yellow-2024-01",
+    "name": "NYC TLC Yellow Taxi Trip Records \u2014 January 2024",
+    "source_url": "https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2024-01.parquet",
+    "license": "NYC Taxi & Limousine Commission open data (public domain)",
+    "citation": "NYC Taxi & Limousine Commission (2024). TLC Trip Record Data. https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page",
+    "retrieved_at": "2026-09-14T03:57:43Z",
+    "sha256": "c4d59da7bbc8abaeeeb1727947ee93d9891a71acb42854bd80db1571b2030510",
+    "n_rows": 600000,
+    "n_cols": 21,
+    "bytes_on_disk": 49961641,
+    "synthetic": false,
+    "notes": "Every completed yellow-cab trip recorded in New York City in January 2024.",
+    "extra": {}
+  },
+  "split": {
+    "strategy": "chronological with 1-day embargo",
+    "n_train": 456487,
+    "n_test": 121130,
+    "n_val": 0,
+    "train_end": "2024-01-24 23:59:55",
+    "test_start": "2024-01-26 00:00:01",
+    "embargo": "1 days 00:00:06",
+    "notes": "January 2024; train days 1-24, embargo day 25, test days 26-31."
+  },
+  "models": [
+    {
+      "name": "Global median",
+      "family": "baseline",
+      "metrics": {
+        "rmse": 11.771882257497523,
+        "mae": 7.530006329288093,
+        "r2": -0.07830830979535874,
+        "mape": 65.18246487960899,
+        "within_5min": 48.929249566581355
+      },
+      "params": {},
+      "fit_seconds": 0.02,
+      "predict_ms_per_1k": 0.0,
+      "notes": "Predicts one number for every trip."
+    },
+    {
+      "name": "Zone-pair lookup",
+      "family": "baseline",
+      "metrics": {
+        "rmse": 7.5106596364342515,
+        "mae": 4.345463722251492,
+        "r2": 0.5610578410194333,
+        "mape": 36.18350954343034,
+        "within_5min": 74.38537108891273
+      },
+      "params": {},
+      "fit_seconds": 0.0,
+      "predict_ms_per_1k": 0.0,
+      "notes": "Historical mean duration for the route; no learning beyond the table."
+    },
+    {
+      "name": "Ridge regression",
+      "family": "linear",
+      "metrics": {
+        "rmse": 6.391757696431703,
+        "mae": 4.085610248148702,
+        "r2": 0.6820991135774808,
+        "mape": 39.06699632376177,
+        "within_5min": 73.30306282506398
+      },
+      "params": {},
+      "fit_seconds": 0.18,
+      "predict_ms_per_1k": 0.0,
+      "notes": "Scaler fitted inside the pipeline, on training folds only."
+    },
+    {
+      "name": "HistGradientBoosting",
+      "family": "gbdt",
+      "metrics": {
+        "rmse": 5.542323534084085,
+        "mae": 3.449767782747362,
+        "r2": 0.7609796482538457,
+        "mape": 30.971908211189124,
+        "within_5min": 80.14777511764221
+      },
+      "params": {},
+      "fit_seconds": 2.71,
+      "predict_ms_per_1k": 0.0,
+      "notes": ""
+    },
+    {
+      "name": "LightGBM",
+      "family": "gbdt",
+      "metrics": {
+        "rmse": 5.345253278480516,
+        "mae": 3.3287231101288683,
+        "r2": 0.7776753025922367,
+        "mape": 29.999752175420042,
+        "within_5min": 81.37703293981673
+      },
+      "params": {},
+      "fit_seconds": 5.24,
+      "predict_ms_per_1k": 0.0,
+      "notes": "Native categorical handling for the 263 taxi zones."
+    },
+    {
+      "name": "XGBoost",
+      "family": "gbdt",
+      "metrics": {
+        "rmse": 5.348706700073795,
+        "mae": 3.3403255371590914,
+        "r2": 0.7773879340086234,
+        "mape": 30.04813001648637,
+        "within_5min": 81.17229422934038
+      },
+      "params": {},
+      "fit_seconds": 6.41,
+      "predict_ms_per_1k": 0.0,
+      "notes": "Histogram tree method with categorical support."
+    },
+    {
+      "name": "Random forest",
+      "family": "bagging",
+      "metrics": {
+        "rmse": 5.689327588226458,
+        "mae": 3.4668848969235997,
+        "r2": 0.7481319878144277,
+        "mape": 31.09878205127881,
+        "within_5min": 80.39544291257327
+      },
+      "params": {},
+      "fit_seconds": 17.02,
+      "predict_ms_per_1k": 0.0,
+      "notes": ""
+    }
+  ],
+  "baseline": {
+    "rmse": 11.771882257497523,
+    "mae": 7.530006329288093,
+    "r2": -0.07830830979535874,
+    "mape": 65.18246487960899,
+    "within_5min": 48.929249566581355
+  },
+  "audit": {
+    "critical": 0,
+    "warnings": 0,
+    "total": 0,
+    "runtime_assertions": [
+      "assert_temporal_split(embargo=12h)",
+      "assert_disjoint(train, test)",
+      "assert_no_target_leak(X, y)"
+    ],
+    "temporal_gap": {
+      "train_end": "2024-01-24 23:59:55",
+      "test_start": "2024-01-26 00:00:01",
+      "gap": "1 days 00:00:06"
+    }
+  },
+  "env": {
+    "python": "3.11.6",
+    "platform": "Windows 10",
+    "machine": "AMD64",
+    "numpy": "2.4.6",
+    "pandas": "3.0.5",
+    "sklearn": "1.9.1",
+    "git_commit": "9444331"
+  },
+  "created_at": "2026-09-14T03:57:47Z",
+  "duration_seconds": 35.8,
+  "extra": {
+    "vs_median_pct": 54.59,
+    "vs_lookup_pct": 28.83,
+    "feature_count": 25,
+    "excluded_post_trip_columns": [
+      "tpep_dropoff_datetime",
+      "trip_distance",
+      "fare_amount",
+      "extra",
+      "mta_tax",
+      "tip_amount",
+      "tolls_amount",
+      "improvement_surcharge",
+      "total_amount",
+      "congestion_surcharge",
+      "Airport_fee",
+      "payment_type",
+      "store_and_fwd_flag"
+    ]
+  },
+  "best_model": "LightGBM",
+  "best_score": 5.345253278480516,
+  "lift_over_baseline": 0.5459304500708781
+}
