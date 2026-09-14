@@ -4,12 +4,16 @@
   "source_url": "https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2024-01.parquet",
   "license": "NYC Taxi & Limousine Commission open data (public domain)",
   "citation": "NYC Taxi & Limousine Commission (2024). TLC Trip Record Data. https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page",
-  "retrieved_at": "2026-09-14T03:57:43Z",
+  "retrieved_at": "2026-09-14T05:08:47Z",
   "sha256": "c4d59da7bbc8abaeeeb1727947ee93d9891a71acb42854bd80db1571b2030510",
-  "n_rows": 600000,
-  "n_cols": 21,
+  "n_rows": 2964624,
+  "n_cols": 19,
   "bytes_on_disk": 49961641,
   "synthetic": false,
   "notes": "Every completed yellow-cab trip recorded in New York City in January 2024.",
-  "extra": {}
+  "extra": {
+    "rows_after_cleaning": 2799247,
+    "rows_modelled": 600000,
+    "sampling": "systematic, preserving chronology"
+  }
 }

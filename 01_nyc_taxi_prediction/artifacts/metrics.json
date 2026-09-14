@@ -10,14 +10,18 @@
     "source_url": "https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2024-01.parquet",
     "license": "NYC Taxi & Limousine Commission open data (public domain)",
     "citation": "NYC Taxi & Limousine Commission (2024). TLC Trip Record Data. https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page",
-    "retrieved_at": "2026-09-14T03:57:43Z",
+    "retrieved_at": "2026-09-14T05:08:47Z",
     "sha256": "c4d59da7bbc8abaeeeb1727947ee93d9891a71acb42854bd80db1571b2030510",
-    "n_rows": 600000,
-    "n_cols": 21,
+    "n_rows": 2964624,
+    "n_cols": 19,
     "bytes_on_disk": 49961641,
     "synthetic": false,
     "notes": "Every completed yellow-cab trip recorded in New York City in January 2024.",
-    "extra": {}
+    "extra": {
+      "rows_after_cleaning": 2799247,
+      "rows_modelled": 600000,
+      "sampling": "systematic, preserving chronology"
+    }
   },
   "split": {
     "strategy": "chronological with 1-day embargo",
@@ -41,7 +45,7 @@
         "within_5min": 48.929249566581355
       },
       "params": {},
-      "fit_seconds": 0.02,
+      "fit_seconds": 0.03,
       "predict_ms_per_1k": 0.0,
       "notes": "Predicts one number for every trip."
     },
@@ -71,7 +75,7 @@
         "within_5min": 73.30306282506398
       },
       "params": {},
-      "fit_seconds": 0.18,
+      "fit_seconds": 0.43,
       "predict_ms_per_1k": 0.0,
       "notes": "Scaler fitted inside the pipeline, on training folds only."
     },
@@ -86,7 +90,7 @@
         "within_5min": 80.14777511764221
       },
       "params": {},
-      "fit_seconds": 2.71,
+      "fit_seconds": 5.9,
       "predict_ms_per_1k": 0.0,
       "notes": ""
     },
@@ -101,7 +105,7 @@
         "within_5min": 81.37703293981673
       },
       "params": {},
-      "fit_seconds": 5.24,
+      "fit_seconds": 12.44,
       "predict_ms_per_1k": 0.0,
       "notes": "Native categorical handling for the 263 taxi zones."
     },
@@ -116,7 +120,7 @@
         "within_5min": 81.17229422934038
       },
       "params": {},
-      "fit_seconds": 6.41,
+      "fit_seconds": 8.95,
       "predict_ms_per_1k": 0.0,
       "notes": "Histogram tree method with categorical support."
     },
@@ -131,7 +135,7 @@
         "within_5min": 80.39544291257327
       },
       "params": {},
-      "fit_seconds": 17.02,
+      "fit_seconds": 23.0,
       "predict_ms_per_1k": 0.0,
       "notes": ""
     }
@@ -148,10 +152,46 @@
     "warnings": 0,
     "total": 0,
     "runtime_assertions": [
-      "assert_temporal_split(embargo=12h)",
-      "assert_disjoint(train, test)",
-      "assert_no_target_leak(X, y)"
+      {
+        "name": "assert_temporal_split",
+        "passed": true,
+        "detail": "Last training timestamp 2024-01-24 23:59:55 precedes first test timestamp 2024-01-26 00:00:01 by 1 days 00:00:06; embargo of 12h required.",
+        "params": {
+          "train_end": "2024-01-24 23:59:55",
+          "test_start": "2024-01-26 00:00:01",
+          "gap": "1 days 00:00:06",
+          "embargo_required": "12h",
+          "chronologically_ordered": true
+        },
+        "at": "2026-09-14T05:08:52Z"
+      },
+      {
+        "name": "assert_disjoint",
+        "passed": true,
+        "detail": "456,487 training and 121,130 test row indices compared; 0 appear in both.",
+        "params": {
+          "n_train": 456487,
+          "n_test": 121130,
+          "n_overlap": 0
+        },
+        "at": "2026-09-14T05:08:52Z"
+      },
+      {
+        "name": "assert_no_target_leak",
+        "passed": true,
+        "detail": "22 numeric features correlated against the target; strongest was zp_median_distance at |r|=0.7821 (threshold 0.995).",
+        "params": {
+          "features_checked": 22,
+          "max_abs_correlation": 0.782102,
+          "max_correlation_feature": "zp_median_distance",
+          "threshold": 0.995,
+          "leaked_features": []
+        },
+        "at": "2026-09-14T05:08:53Z"
+      }
     ],
+    "assertions_passed": 3,
+    "assertions_run": 3,
     "temporal_gap": {
       "train_end": "2024-01-24 23:59:55",
       "test_start": "2024-01-26 00:00:01",
@@ -165,10 +205,10 @@
     "numpy": "2.4.6",
     "pandas": "3.0.5",
     "sklearn": "1.9.1",
-    "git_commit": "9444331"
+    "git_commit": "2a67f88"
   },
-  "created_at": "2026-09-14T03:57:47Z",
-  "duration_seconds": 35.8,
+  "created_at": "2026-09-14T05:08:53Z",
+  "duration_seconds": 56.8,
   "extra": {
     "vs_median_pct": 54.59,
     "vs_lookup_pct": 28.83,

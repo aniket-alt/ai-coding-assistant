@@ -17,7 +17,8 @@ from __future__ import annotations
 
 import ast
 import json
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass, asdict, field
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable, Sequence
 
@@ -58,6 +59,51 @@ class Finding:
 
 class LeakageError(AssertionError):
     """Raised by the runtime assertions when real leakage is detected."""
+
+
+# --------------------------------------------------------------------------
+# Assertion ledger
+# --------------------------------------------------------------------------
+#
+# The audit panel must show checks that *executed*, not a hand-written list of
+# checks someone intended to run. Every assert_* function below writes its own
+# entry here, carrying the values it actually measured. If a call is deleted
+# from a training script, its evidence disappears with it -- which is the whole
+# point. A hardcoded list would survive the deletion and certify nothing.
+
+@dataclass
+class AssertionRecord:
+    name: str
+    passed: bool
+    detail: str
+    params: dict[str, Any] = field(default_factory=dict)
+    at: str = ""
+
+    def to_dict(self) -> dict[str, Any]:
+        return asdict(self)
+
+
+_LEDGER: list[AssertionRecord] = []
+
+
+def reset_ledger() -> None:
+    """Clear recorded assertions. Call once at the start of a training run."""
+    _LEDGER.clear()
+
+
+def ledger() -> list[dict[str, Any]]:
+    """The assertions that actually executed, in order, with their measurements."""
+    return [r.to_dict() for r in _LEDGER]
+
+
+def _record(name: str, passed: bool, detail: str, **params: Any) -> None:
+    _LEDGER.append(AssertionRecord(
+        name=name,
+        passed=passed,
+        detail=detail,
+        params=params,
+        at=datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+    ))
 
 
 # --------------------------------------------------------------------------
@@ -199,13 +245,35 @@ def assert_no_target_leak(X, y, *, threshold: float = 0.995) -> list[str]:
         return []
 
     leaked: list[str] = []
+    checked = 0
+    worst_col, worst_r = "", 0.0
     for col in Xd.columns:
         s = pd.to_numeric(Xd[col], errors="coerce")
         if s.notna().sum() < 2 or s.nunique() < 2:
             continue
+        checked += 1
         r = abs(s.corr(ys))
-        if pd.notna(r) and r >= threshold:
-            leaked.append(f"{col} (|r|={r:.4f})")
+        if pd.notna(r):
+            if r > worst_r:
+                worst_col, worst_r = str(col), float(r)
+            if r >= threshold:
+                leaked.append(f"{col} (|r|={r:.4f})")
+
+    _record(
+        "assert_no_target_leak",
+        passed=not leaked,
+        detail=(
+            f"{checked} numeric features correlated against the target; "
+            f"strongest was {worst_col} at |r|={worst_r:.4f} "
+            f"(threshold {threshold})."
+        ),
+        features_checked=checked,
+        max_abs_correlation=round(worst_r, 6),
+        max_correlation_feature=worst_col,
+        threshold=threshold,
+        leaked_features=leaked,
+    )
+
     if leaked:
         raise LeakageError(
             "Target leakage: feature(s) near-perfectly correlated with y: "
@@ -216,7 +284,22 @@ def assert_no_target_leak(X, y, *, threshold: float = 0.995) -> list[str]:
 
 def assert_disjoint(train_idx: Sequence, test_idx: Sequence) -> None:
     """No row may appear in both splits."""
-    overlap = set(map(int, train_idx)) & set(map(int, test_idx))
+    tr = set(map(int, train_idx))
+    te = set(map(int, test_idx))
+    overlap = tr & te
+
+    _record(
+        "assert_disjoint",
+        passed=not overlap,
+        detail=(
+            f"{len(tr):,} training and {len(te):,} test row indices compared; "
+            f"{len(overlap):,} appear in both."
+        ),
+        n_train=len(tr),
+        n_test=len(te),
+        n_overlap=len(overlap),
+    )
+
     if overlap:
         raise LeakageError(
             f"Train/test overlap: {len(overlap):,} shared rows "
@@ -233,13 +316,31 @@ def assert_temporal_split(train_times, test_times, *, embargo: str | None = None
 
     tr = pd.to_datetime(pd.Series(list(train_times))).max()
     te = pd.to_datetime(pd.Series(list(test_times))).min()
-    if tr >= te:
+    gap = te - tr
+    ordered = tr < te
+    embargo_ok = embargo is None or gap >= pd.Timedelta(embargo)
+
+    _record(
+        "assert_temporal_split",
+        passed=bool(ordered and embargo_ok),
+        detail=(
+            f"Last training timestamp {tr} precedes first test timestamp {te} "
+            f"by {gap}"
+            + (f"; embargo of {embargo} required." if embargo else "; no embargo required.")
+        ),
+        train_end=str(tr),
+        test_start=str(te),
+        gap=str(gap),
+        embargo_required=embargo or "",
+        chronologically_ordered=bool(ordered),
+    )
+
+    if not ordered:
         raise LeakageError(
             f"Temporal lookahead: last training timestamp {tr} is not before "
             f"first test timestamp {te}."
         )
-    gap = te - tr
-    if embargo is not None and gap < pd.Timedelta(embargo):
+    if not embargo_ok:
         raise LeakageError(
             f"Embargo violated: gap between train and test is {gap}, "
             f"required >= {embargo}."

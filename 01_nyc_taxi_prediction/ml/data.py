@@ -200,6 +200,7 @@ def build_modelling_frame(sample: int | None = None, seed: int = 42) -> dict:
     # Chronological order matters: the split in train.py is by time, so the
     # frame is sorted here once and never shuffled.
     cleaned = cleaned.sort_values("tpep_pickup_datetime").reset_index(drop=True)
+    n_cleaned = len(cleaned)
 
     if sample and sample < len(cleaned):
         # Systematic sample preserves the time distribution; a random sample
@@ -210,14 +211,26 @@ def build_modelling_frame(sample: int | None = None, seed: int = 42) -> dict:
 
     zone_names = zones.set_index("LocationID")[["Borough", "Zone"]].to_dict("index")
 
+    # The receipt describes the dataset as downloaded -- its checksum, size and
+    # shape must agree with each other. Row counts for the cleaned and sampled
+    # frames are recorded alongside rather than overwriting the source shape,
+    # which would pair a 2.96M-row file's checksum with a 600k row count.
+    stamped = stamp_frame(prov, raw).stamped(extra={
+        "rows_after_cleaning": int(n_cleaned),
+        "rows_modelled": int(len(cleaned)),
+        "sampling": ("systematic, preserving chronology"
+                     if sample and sample < n_cleaned else "none"),
+    })
+
     return {
         "df": cleaned,
-        "provenance": stamp_frame(prov, cleaned),
+        "provenance": stamped,
         "zone_provenance": zone_prov,
         "zones": zones,
         "zone_names": zone_names,
         "cleaning_steps": steps,
         "n_raw": len(raw),
+        "n_cleaned": n_cleaned,
     }
 
 

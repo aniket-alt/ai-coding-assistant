@@ -70,6 +70,9 @@ def main() -> None:
     t_start = time.perf_counter()
     ARTIFACTS.mkdir(parents=True, exist_ok=True)
 
+    # The audit records assertions that executed, not ones we meant to run.
+    leakage.reset_ledger()
+
     # -- CRISP-DM 1: business understanding ---------------------------------
     report = CrispDmReport(
         project_slug="01_nyc_taxi_prediction",
@@ -320,15 +323,17 @@ def main() -> None:
     leakage.save_report(findings, ARTIFACTS / "audit.md", "NYC Taxi Trip Duration Prediction")
     crit = [f for f in findings if f.severity == "CRITICAL"]
 
+    # Pulled from the ledger, so each entry is evidence that the check ran and
+    # carries the values it measured. Deleting an assertion above removes its
+    # entry here rather than leaving a claim behind.
+    executed = leakage.ledger()
     run.audit = {
         "critical": len(crit),
         "warnings": len([f for f in findings if f.severity == "WARNING"]),
         "total": len(findings),
-        "runtime_assertions": [
-            "assert_temporal_split(embargo=12h)",
-            "assert_disjoint(train, test)",
-            "assert_no_target_leak(X, y)",
-        ],
+        "runtime_assertions": executed,
+        "assertions_passed": sum(1 for a in executed if a["passed"]),
+        "assertions_run": len(executed),
         "temporal_gap": gap,
     }
 
