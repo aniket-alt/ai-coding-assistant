@@ -39,7 +39,7 @@ Ports are assigned so every project can run simultaneously.
 | # | Project | Domain | Dataset | API | Web | Status |
 |---|---|---|---|:---:|:---:|:---:|
 | 00 | Task Workspace | Full-stack reactive UX, SSE telemetry | — | 8000 | 5100 | ⬜ |
-| 01 | **NYC Taxi Trip Prediction** | Spatial regression, CRISP-DM | NYC TLC (2.96M trips) | 8001 | 5101 | 🚧 |
+| 01 | [**NYC Taxi Trip Prediction**](./01_nyc_taxi_prediction) | Booking-time spatial regression | NYC TLC (2.96M trips) | 8001 | 5101 | ✅ |
 | 02 | Nano LLM Transformer | Autoregressive transformer, RoPE + SwiGLU | TinyStories | 8002 | 5102 | ⬜ |
 | 03 | Customer Segmentation | Clustering, topological partitioning | Online Retail II | 8003 | 5103 | ⬜ |
 | 04 | Market Basket Mining | Apriori, FP-Growth | Instacart | 8004 | 5104 | ⬜ |

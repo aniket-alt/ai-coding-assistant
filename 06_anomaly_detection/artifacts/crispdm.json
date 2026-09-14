@@ -1,0 +1,219 @@
+{
+  "project_slug": "06_anomaly_detection",
+  "project_title": "Credit Card Fraud Detection",
+  "business_question": "Out of hundreds of thousands of card transactions, which handful should a fraud analyst look at today?",
+  "phases": [
+    {
+      "name": "business_understanding",
+      "title": "1. Business Understanding",
+      "objective": "Rank transactions by suspicion so a limited analyst team spends its review budget on the transactions most likely to be fraud.",
+      "narrative": "Fraud detection is a ranking problem wearing a classification costume. Nobody blocks every transaction above a fixed probability; a team reviews as many alerts as it has hours for. So the operative question is not *is this fraud* but *is this among the most suspicious things I will see today*.\n\nThis dataset is 99.828% legitimate transactions.\n\nA model that predicts \"not fraud\" for every single transaction therefore scores\n99.828% accuracy -- higher than most of the models in the tournament below --\nwhile catching zero fraud and being worth precisely nothing. Accuracy on a\nproblem this imbalanced is not a weak metric; it is an actively misleading one,\nand it is the single most common way fraud results are overstated.\n\nThis project ranks on **average precision** (the area under the\nprecision-recall curve), which is sensitive to performance on the rare class\nand ignores the vast pile of easy negatives. The all-legitimate baseline is\nkept in the leaderboard specifically so its 99.8% accuracy and its ~0.002\naverage precision can sit on the same row.\n\nThe reported product metric is a review budget: an analyst team can only\nexamine so many flagged transactions a day, so what matters operationally is\nhow much fraud is caught inside that budget.\n",
+      "findings": [
+        {
+          "label": "Primary metric",
+          "value": "Average precision",
+          "detail": "area under precision-recall"
+        },
+        {
+          "label": "Product metric",
+          "value": "Fraud caught in 100 alerts",
+          "detail": ""
+        },
+        {
+          "label": "Rejected metric",
+          "value": "Accuracy",
+          "detail": "99.83% by predicting nothing"
+        }
+      ],
+      "figures": [],
+      "code_refs": [
+        "ml/data.py:THE_ACCURACY_TRAP",
+        "ml/train.py:evaluate"
+      ],
+      "gate_passed": true,
+      "gate_notes": "Ranking metric and review budget fixed before any model was fitted."
+    },
+    {
+      "name": "data_understanding",
+      "title": "2. Data Understanding",
+      "objective": "Understand the shape of the imbalance and where fraud actually sits.",
+      "narrative": "284,807 transactions over 48 hours, of which **492 are fraudulent** \u2014 a rate of 0.173%, or one in 578.\n\nThe intuitive assumption is that fraud means large transactions. It does not. Median fraudulent amount is **\u20ac9.25** against **\u20ac22.00** for legitimate transactions \u2014 fraud here skews *small*, consistent with card-testing, where a stolen number is validated with a trivial charge before being used in earnest. 27 fraudulent transactions are for exactly \u20ac0.\n\nTotal value at stake across the window is \u20ac60,128.\n\nFeatures V1\u2013V28 are principal components published in place of the original fields for cardholder confidentiality. Only elapsed time and amount survive in their native units \u2014 which means no domain feature engineering is possible here, and the modelling question is purely how well each algorithm separates the classes.",
+      "findings": [
+        {
+          "label": "Transactions",
+          "value": "284,807",
+          "detail": ""
+        },
+        {
+          "label": "Fraudulent",
+          "value": "492",
+          "detail": "0.173%"
+        },
+        {
+          "label": "Imbalance",
+          "value": "1 : 578",
+          "detail": ""
+        },
+        {
+          "label": "Median fraud amount",
+          "value": "\u20ac9.25",
+          "detail": "vs \u20ac22.00 legitimate"
+        },
+        {
+          "label": "Value at stake",
+          "value": "\u20ac60,128",
+          "detail": ""
+        }
+      ],
+      "figures": [],
+      "code_refs": [
+        "ml/data.py:summarise"
+      ],
+      "gate_passed": true,
+      "gate_notes": "Imbalance quantified; the accuracy trap documented before modelling."
+    },
+    {
+      "name": "data_preparation",
+      "title": "3. Data Preparation",
+      "objective": "Split by time, and scale without letting the test window inform the scaler.",
+      "narrative": "Fraud arrives in campaigns: a compromised batch of cards is exercised over hours. A random split would place the same campaign on both sides of the boundary and flatter every model. The split is therefore chronological \u2014 training on the first 34 hours, testing on the last, with the intervening hour embargoed.\n\nThat leaves **361 fraudulent transactions to learn from and 125 to be judged on**. The test window is genuinely unseen time.\n\nOnly `Time` and `Amount` are scaled, with a RobustScaler fitted inside the pipeline on training rows alone; V1\u2013V28 are already PCA components on a common scale. Because the scaler lives in the pipeline rather than being applied to the frame up front, it cannot see the test window.",
+      "findings": [
+        {
+          "label": "Train rows",
+          "value": "175,582",
+          "detail": ""
+        },
+        {
+          "label": "Test rows",
+          "value": "100,915",
+          "detail": ""
+        },
+        {
+          "label": "Fraud in train",
+          "value": "361",
+          "detail": ""
+        },
+        {
+          "label": "Fraud in test",
+          "value": "125",
+          "detail": ""
+        },
+        {
+          "label": "Embargo gap",
+          "value": "0 days 01:00:03",
+          "detail": ""
+        }
+      ],
+      "figures": [],
+      "code_refs": [
+        "ml/train.py:TRAIN_END_S",
+        "ml/train.py:make_pipeline"
+      ],
+      "gate_passed": true,
+      "gate_notes": "Temporal ordering, disjointness and target-correlation assertions all executed."
+    },
+    {
+      "name": "modeling",
+      "title": "4. Modeling",
+      "objective": "Compare unsupervised detectors against supervised classifiers on identical data.",
+      "narrative": "Two families compete here, and the comparison is not quite fair by design.\n\nThe **unsupervised** detectors \u2014 Isolation Forest, Elliptic Envelope, Local Outlier Factor \u2014 never see a label. They are asked only to find points that look unusual, and are then scored against labels they had no access to. That is the honest setting for a genuinely new fraud pattern nobody has labelled yet.\n\nThe **supervised** models do see the 361 labelled frauds in the training window. They should win, and the size of the gap is the value of having labels at all.\n\nBest unsupervised detector: **Isolation Forest** at 0.0326 average precision, against **Logistic regression** at 0.7547.\n\n### Two results worth not smoothing over\n\n**Class reweighting made the gradient booster much worse.** Setting `scale_pos_weight=485` \u2014 the textbook remedy for 1:578 imbalance, and what most tutorials reach for first \u2014 takes LightGBM's average precision from 0.68 to 0.03. The reweighting optimises for a balanced decision threshold, while average precision measures *ranking*; inflating 361 positives by a factor of several hundred lets the booster memorise them, and it pays for that with confident false positives at the very top of the ranking, which is the only part of the ranking anyone reads. Both variants are in the table above.\n\n**Local Outlier Factor scores below random** (ROC 0.17 \u2014 systematically inverted, not merely uninformative). LOF asks whether a point sits in a sparser neighbourhood than its neighbours do. In this PCA space the frauds resemble *each other*, forming their own dense pocket, so LOF reads them as comfortably normal. A density-based detector fails exactly when the anomalies are a cluster rather than scattered outliers, and this dataset is that case.",
+      "findings": [
+        {
+          "label": "Detectors",
+          "value": "8",
+          "detail": ""
+        },
+        {
+          "label": "Winner",
+          "value": "Logistic regression",
+          "detail": ""
+        },
+        {
+          "label": "Average precision",
+          "value": "0.7547",
+          "detail": ""
+        },
+        {
+          "label": "Caught in budget",
+          "value": "88/125",
+          "detail": ""
+        }
+      ],
+      "figures": [],
+      "code_refs": [
+        "ml/train.py:run_model"
+      ],
+      "gate_passed": true,
+      "gate_notes": "8 detectors evaluated; winner Logistic regression."
+    },
+    {
+      "name": "evaluation",
+      "title": "5. Evaluation",
+      "objective": "Decide whether the ranking is good enough to put in front of an analyst.",
+      "narrative": "**Logistic regression** reaches an average precision of 0.7547 on the unseen window, against 0.0012 for the do-nothing baseline.\n\nOperationally: reviewing the 100 most suspicious transactions catches **88 of 125 frauds** (70.4%), at a precision of 88.0% \u2014 meaning roughly 88 in every 100 alerts is genuine. Catching half of all fraud takes 64 alerts.\n\nNote the accuracy column in the leaderboard. Every model sits above 99.8%, including the one that catches nothing. It separates none of them, which is exactly why it is not the ranking metric.",
+      "findings": [
+        {
+          "label": "Average precision",
+          "value": "0.7547",
+          "detail": ""
+        },
+        {
+          "label": "ROC-AUC",
+          "value": "0.9776",
+          "detail": ""
+        },
+        {
+          "label": "Caught in 100 alerts",
+          "value": "88/125",
+          "detail": ""
+        },
+        {
+          "label": "Alerts for half",
+          "value": "64",
+          "detail": ""
+        },
+        {
+          "label": "Critical findings",
+          "value": "0",
+          "detail": ""
+        }
+      ],
+      "figures": [],
+      "code_refs": [
+        "ml/train.py:evaluate"
+      ],
+      "gate_passed": true,
+      "gate_notes": "No critical findings; measured on a future time window."
+    },
+    {
+      "name": "deployment",
+      "title": "6. Deployment",
+      "objective": "Serve a suspicion score, and let an operator see the cost of their threshold.",
+      "narrative": "`POST /api/score` accepts a transaction and returns its suspicion score plus where that score sits in the distribution of the unseen window \u2014 a score means little without knowing whether it is in the top ten or the top ten thousand.\n\n`GET /api/budget-curve` returns precision and recall at each review budget, so an operator can see directly what doubling the analyst team would buy.",
+      "findings": [
+        {
+          "label": "Served model",
+          "value": "Logistic regression",
+          "detail": ""
+        },
+        {
+          "label": "Serving port",
+          "value": "8,006",
+          "detail": ""
+        },
+        {
+          "label": "Endpoints",
+          "value": "11",
+          "detail": ""
+        }
+      ],
+      "figures": [],
+      "code_refs": [
+        "server/main.py",
+        "server/inference.py"
+      ],
+      "gate_passed": true,
+      "gate_notes": "Model and feature order persisted; budget curve precomputed from held-out scores."
+    }
+  ]
+}

@@ -32,6 +32,18 @@ TOURS: dict[str, list[tuple[str, str, str]]] = {
         ("models", "03_model_tournament", "Model tournament"),
         ("audit", "04_leakage_audit", "Assertions executed during training"),
     ],
+    "06_anomaly_detection": [
+        ("scorer", "01_transaction_scorer", "Suspicion score"),
+        ("budget", "02_review_budget", "Alerts reviewed per day"),
+        ("crispdm", "03_crispdm_walkthrough", "Phase gate"),
+        ("models", "04_detector_tournament", "Detector tournament"),
+        ("audit", "05_leakage_audit", "Assertions executed during training"),
+    ],
+}
+
+PORTS = {
+    "01_nyc_taxi_prediction": (8001, 5101),
+    "06_anomaly_detection": (8006, 5106),
 }
 
 
@@ -65,8 +77,9 @@ def main() -> int:
 
     meta = json.loads((proj / "artifacts" / "provenance.json").read_text(encoding="utf-8")) \
         if (proj / "artifacts" / "provenance.json").exists() else {}
-    api_port = args.api_port or 8001
-    web_port = args.web_port or 5101
+    default_api, default_web = PORTS.get(args.project, (8001, 5101))
+    api_port = args.api_port or default_api
+    web_port = args.web_port or default_web
 
     shots = proj / "screenshots"
     shots.mkdir(exist_ok=True)
@@ -159,8 +172,11 @@ def _tab_label(project: str, tab_id: str) -> str:
     labels = {
         "estimator": "Trip estimator",
         "crispdm": "CRISP-DM",
-        "models": "Model tournament",
+        "models": "Model tournament" if project == "01_nyc_taxi_prediction"
+                  else "Detector tournament",
         "audit": "Audit",
+        "scorer": "Transaction scorer",
+        "budget": "Review budget",
     }
     return labels[tab_id]
 

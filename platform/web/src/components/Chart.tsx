@@ -42,8 +42,14 @@ export interface ChartSeries {
 
 export interface ChartProps {
   kind: 'line' | 'bar' | 'area' | 'scatter';
-  /** Rows exactly as they arrived from the API. Never transformed here. */
-  data: Record<string, unknown>[];
+  /**
+   * Rows exactly as they arrived from the API. Never transformed here.
+   *
+   * Typed loosely on purpose: callers pass their own declared interfaces, and
+   * a plain `Record<string, unknown>[]` would reject every one of them for
+   * lacking an index signature.
+   */
+  data: Record<string, any>[];
   x: string;
   series: ChartSeries[];
   xLabel?: string;
@@ -141,11 +147,19 @@ export function Chart({
 
   const grid = <CartesianGrid stroke="var(--gridline)" strokeDasharray="0" vertical={false} />;
 
+  // Recharts needs the label as a descriptor, and room at the bottom for it.
+  const xAxisLabel = xLabel
+    ? { value: xLabel, position: 'insideBottom' as const, offset: -4,
+        fill: 'var(--text-muted)', fontSize: 11 }
+    : undefined;
+  const bottomMargin = xLabel ? 26 : 8;
+
   function body() {
     if (kind === 'bar') {
       return (
         <BarChart data={data} layout={horizontal ? 'vertical' : 'horizontal'}
-                  margin={{ top: 8, right: 24, bottom: 8, left: 8 }}>
+                  margin={{ top: 8, right: 24,
+                            bottom: horizontal ? 8 : bottomMargin, left: 8 }}>
           {grid}
           {horizontal ? (
             <>
@@ -155,7 +169,7 @@ export function Chart({
           ) : (
             <>
               <XAxis dataKey={x} {...axisProps}
-                     tickFormatter={xFormat as never} />
+                     tickFormatter={xFormat as never} label={xAxisLabel} />
               <YAxis {...axisProps} tickFormatter={yFormat as never} />
             </>
           )}
@@ -179,7 +193,7 @@ export function Chart({
 
     if (kind === 'area') {
       return (
-        <AreaChart data={data} margin={{ top: 8, right: 24, bottom: 8, left: 8 }}>
+        <AreaChart data={data} margin={{ top: 8, right: 24, bottom: bottomMargin, left: 8 }}>
           <defs>
             {series.map((s, i) => (
               <linearGradient key={s.key} id={`${titleId}-g${i}`} x1="0" y1="0" x2="0" y2="1">
@@ -189,7 +203,8 @@ export function Chart({
             ))}
           </defs>
           {grid}
-          <XAxis dataKey={x} {...axisProps} tickFormatter={xFormat as never} />
+          <XAxis dataKey={x} {...axisProps} tickFormatter={xFormat as never}
+                 label={xAxisLabel} />
           <YAxis {...axisProps} tickFormatter={yFormat as never} />
           {tooltip}
           {legend}
@@ -221,9 +236,10 @@ export function Chart({
     }
 
     return (
-      <LineChart data={data} margin={{ top: 8, right: 32, bottom: 8, left: 8 }}>
+      <LineChart data={data} margin={{ top: 8, right: 32, bottom: bottomMargin, left: 8 }}>
         {grid}
-        <XAxis dataKey={x} {...axisProps} tickFormatter={xFormat as never} />
+        <XAxis dataKey={x} {...axisProps} tickFormatter={xFormat as never}
+               label={xAxisLabel} />
         <YAxis {...axisProps} tickFormatter={yFormat as never} />
         {tooltip}
         {legend}

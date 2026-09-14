@@ -1,0 +1,660 @@
+{
+  "project_slug": "06_anomaly_detection",
+  "project_title": "Credit Card Fraud Detection",
+  "task": "anomaly detection",
+  "primary_metric": "avg_precision",
+  "higher_is_better": true,
+  "provenance": {
+    "slug": "ulb-creditcard-fraud",
+    "name": "Credit Card Fraud Detection (ULB)",
+    "source_url": "https://openml.org/data/v1/download/1673544/creditcard.arff",
+    "license": "Public (Open Database License) \u2014 OpenML dataset 1597",
+    "citation": "Dal Pozzolo, A., Caelen, O., Johnson, R. A., & Bontempi, G. (2015). Calibrating probability with undersampling for unbalanced classification. IEEE Symposium Series on Computational Intelligence. Universit\u00e9 Libre de Bruxelles, MLG.",
+    "retrieved_at": "2026-09-14T05:35:05Z",
+    "sha256": "fdaf12730dc1fc426f318b71349f24f5c5fd00aa1152940be7e7509ae3d89d2a",
+    "n_rows": 284807,
+    "n_cols": 31,
+    "bytes_on_disk": 150829308,
+    "synthetic": false,
+    "notes": "284,807 transactions by European cardholders over two days in September 2013; 492 fraudulent (0.172%). V1..V28 are PCA components published in place of the original features for confidentiality.",
+    "extra": {}
+  },
+  "split": {
+    "strategy": "chronological with 1-hour embargo",
+    "n_train": 175582,
+    "n_test": 100915,
+    "n_val": 0,
+    "train_end": "1970-01-02 09:59:57",
+    "test_start": "1970-01-02 11:00:00",
+    "embargo": "0 days 01:00:03",
+    "notes": "48-hour window; 361 fraud in train, 125 in test."
+  },
+  "models": [
+    {
+      "name": "Predict all legitimate",
+      "family": "baseline",
+      "metrics": {
+        "avg_precision": 0.0012386662042312838,
+        "roc_auc": 0.5,
+        "precision_at_budget": 0.0,
+        "recall_at_budget": 0.0,
+        "alerts_for_half": 51753.0,
+        "best_f1": 0.002474267616785432,
+        "accuracy": 0.9977704008323837
+      },
+      "params": {},
+      "fit_seconds": 0.0,
+      "predict_ms_per_1k": 0.0,
+      "notes": "Catches no fraud. Included so its accuracy can be read beside its average precision."
+    },
+    {
+      "name": "Rank by amount",
+      "family": "baseline",
+      "metrics": {
+        "avg_precision": 0.0016689188701630607,
+        "roc_auc": 0.4273035420180573,
+        "precision_at_budget": 0.0,
+        "recall_at_budget": 0.0,
+        "alerts_for_half": 72816.0,
+        "best_f1": 0.009140008309098462,
+        "accuracy": 0.9977704008323837
+      },
+      "params": {},
+      "fit_seconds": 0.0,
+      "predict_ms_per_1k": 0.0,
+      "notes": "Tests the assumption that fraud means large transactions."
+    },
+    {
+      "name": "Isolation Forest",
+      "family": "unsupervised",
+      "metrics": {
+        "avg_precision": 0.03258819138374834,
+        "roc_auc": 0.9398814961801766,
+        "precision_at_budget": 0.0,
+        "recall_at_budget": 0.0,
+        "alerts_for_half": 1252.0,
+        "best_f1": 0.09760956175298806,
+        "accuracy": 0.9977704008323837
+      },
+      "params": {},
+      "fit_seconds": 3.26,
+      "predict_ms_per_1k": 0.0,
+      "notes": "Fitted without labels; isolation depth as the anomaly score."
+    },
+    {
+      "name": "Elliptic Envelope",
+      "family": "unsupervised",
+      "metrics": {
+        "avg_precision": 0.01904072460090952,
+        "roc_auc": 0.9291670999107056,
+        "precision_at_budget": 0.01,
+        "recall_at_budget": 0.008,
+        "alerts_for_half": 2953.0,
+        "best_f1": 0.06686478454680535,
+        "accuracy": 0.9977902194916514
+      },
+      "params": {},
+      "fit_seconds": 48.26,
+      "predict_ms_per_1k": 0.0,
+      "notes": "Robust Mahalanobis distance from a fitted Gaussian envelope."
+    },
+    {
+      "name": "Local Outlier Factor",
+      "family": "unsupervised",
+      "metrics": {
+        "avg_precision": 0.0006840215972577191,
+        "roc_auc": 0.1712215100704435,
+        "precision_at_budget": 0.0,
+        "recall_at_budget": 0.0,
+        "alerts_for_half": 92840.0,
+        "best_f1": 0.0024743900628495076,
+        "accuracy": 0.9977704008323837
+      },
+      "params": {},
+      "fit_seconds": 4.13,
+      "predict_ms_per_1k": 0.0,
+      "notes": "Fitted on the first 50k training transactions for tractability."
+    },
+    {
+      "name": "Logistic regression",
+      "family": "supervised",
+      "metrics": {
+        "avg_precision": 0.7547158633255983,
+        "roc_auc": 0.9776080563547972,
+        "precision_at_budget": 0.88,
+        "recall_at_budget": 0.704,
+        "alerts_for_half": 64.0,
+        "best_f1": 0.7963800904977375,
+        "accuracy": 0.9995144428479413
+      },
+      "params": {},
+      "fit_seconds": 1.51,
+      "predict_ms_per_1k": 0.0,
+      "notes": "class_weight='balanced' to counter the 1:578 imbalance."
+    },
+    {
+      "name": "LightGBM",
+      "family": "supervised",
+      "metrics": {
+        "avg_precision": 0.6825624928786193,
+        "roc_auc": 0.9038664946919337,
+        "precision_at_budget": 0.81,
+        "recall_at_budget": 0.648,
+        "alerts_for_half": 66.0,
+        "best_f1": 0.726457399103139,
+        "accuracy": 0.9993757122330674
+      },
+      "params": {},
+      "fit_seconds": 3.29,
+      "predict_ms_per_1k": 0.0,
+      "notes": "No class reweighting, no subsampling -- both hurt with 361 positives."
+    },
+    {
+      "name": "LightGBM (class-reweighted)",
+      "family": "supervised",
+      "metrics": {
+        "avg_precision": 0.033716065401797356,
+        "roc_auc": 0.9112002778053379,
+        "precision_at_budget": 0.01,
+        "recall_at_budget": 0.008,
+        "alerts_for_half": 1634.0,
+        "best_f1": 0.07555238774055596,
+        "accuracy": 0.9977902194916514
+      },
+      "params": {},
+      "fit_seconds": 1.69,
+      "predict_ms_per_1k": 0.0,
+      "notes": "scale_pos_weight=485. The standard imbalance fix, which collapses ranking quality here."
+    }
+  ],
+  "baseline": {
+    "avg_precision": 0.0012386662042312838,
+    "roc_auc": 0.5,
+    "precision_at_budget": 0.0,
+    "recall_at_budget": 0.0,
+    "alerts_for_half": 51753.0,
+    "best_f1": 0.002474267616785432,
+    "accuracy": 0.9977704008323837
+  },
+  "audit": {
+    "critical": 0,
+    "warnings": 0,
+    "total": 0,
+    "runtime_assertions": [
+      {
+        "name": "assert_temporal_split",
+        "passed": true,
+        "detail": "Last training timestamp 1970-01-02 09:59:57 precedes first test timestamp 1970-01-02 11:00:00 by 0 days 01:00:03; embargo of 30min required.",
+        "params": {
+          "train_end": "1970-01-02 09:59:57",
+          "test_start": "1970-01-02 11:00:00",
+          "gap": "0 days 01:00:03",
+          "embargo_required": "30min",
+          "chronologically_ordered": true
+        },
+        "at": "2026-09-14T05:35:06Z"
+      },
+      {
+        "name": "assert_disjoint",
+        "passed": true,
+        "detail": "175,582 training and 100,915 test row indices compared; 0 appear in both.",
+        "params": {
+          "n_train": 175582,
+          "n_test": 100915,
+          "n_overlap": 0
+        },
+        "at": "2026-09-14T05:35:06Z"
+      },
+      {
+        "name": "assert_no_target_leak",
+        "passed": true,
+        "detail": "30 numeric features correlated against the target; strongest was V17 at |r|=0.4096 (threshold 0.995).",
+        "params": {
+          "features_checked": 30,
+          "max_abs_correlation": 0.409588,
+          "max_correlation_feature": "V17",
+          "threshold": 0.995,
+          "leaked_features": []
+        },
+        "at": "2026-09-14T05:35:06Z"
+      }
+    ],
+    "assertions_passed": 3,
+    "assertions_run": 3
+  },
+  "env": {
+    "python": "3.11.6",
+    "platform": "Windows 10",
+    "machine": "AMD64",
+    "numpy": "2.4.6",
+    "pandas": "3.0.5",
+    "sklearn": "1.9.1",
+    "git_commit": "ff9b407"
+  },
+  "created_at": "2026-09-14T05:35:06Z",
+  "duration_seconds": 64.5,
+  "extra": {
+    "budget_curve": [
+      {
+        "alerts": 10,
+        "caught": 9,
+        "precision_pct": 90.0,
+        "recall_pct": 7.2
+      },
+      {
+        "alerts": 25,
+        "caught": 24,
+        "precision_pct": 96.0,
+        "recall_pct": 19.2
+      },
+      {
+        "alerts": 50,
+        "caught": 49,
+        "precision_pct": 98.0,
+        "recall_pct": 39.2
+      },
+      {
+        "alerts": 100,
+        "caught": 88,
+        "precision_pct": 88.0,
+        "recall_pct": 70.4
+      },
+      {
+        "alerts": 200,
+        "caught": 99,
+        "precision_pct": 49.5,
+        "recall_pct": 79.2
+      },
+      {
+        "alerts": 300,
+        "caught": 103,
+        "precision_pct": 34.33,
+        "recall_pct": 82.4
+      },
+      {
+        "alerts": 500,
+        "caught": 106,
+        "precision_pct": 21.2,
+        "recall_pct": 84.8
+      },
+      {
+        "alerts": 750,
+        "caught": 107,
+        "precision_pct": 14.27,
+        "recall_pct": 85.6
+      },
+      {
+        "alerts": 1000,
+        "caught": 108,
+        "precision_pct": 10.8,
+        "recall_pct": 86.4
+      },
+      {
+        "alerts": 2000,
+        "caught": 109,
+        "precision_pct": 5.45,
+        "recall_pct": 87.2
+      },
+      {
+        "alerts": 5000,
+        "caught": 113,
+        "precision_pct": 2.26,
+        "recall_pct": 90.4
+      }
+    ],
+    "hourly_profile": [
+      {
+        "hour": 0,
+        "transactions": 3963,
+        "fraud": 2,
+        "fraud_rate_pct": 0.0505
+      },
+      {
+        "hour": 1,
+        "transactions": 2217,
+        "fraud": 2,
+        "fraud_rate_pct": 0.0902
+      },
+      {
+        "hour": 2,
+        "transactions": 1576,
+        "fraud": 21,
+        "fraud_rate_pct": 1.3325
+      },
+      {
+        "hour": 3,
+        "transactions": 1821,
+        "fraud": 13,
+        "fraud_rate_pct": 0.7139
+      },
+      {
+        "hour": 4,
+        "transactions": 1082,
+        "fraud": 6,
+        "fraud_rate_pct": 0.5545
+      },
+      {
+        "hour": 5,
+        "transactions": 1681,
+        "fraud": 11,
+        "fraud_rate_pct": 0.6544
+      },
+      {
+        "hour": 6,
+        "transactions": 1831,
+        "fraud": 3,
+        "fraud_rate_pct": 0.1638
+      },
+      {
+        "hour": 7,
+        "transactions": 3368,
+        "fraud": 23,
+        "fraud_rate_pct": 0.6829
+      },
+      {
+        "hour": 8,
+        "transactions": 5179,
+        "fraud": 5,
+        "fraud_rate_pct": 0.0965
+      },
+      {
+        "hour": 9,
+        "transactions": 7878,
+        "fraud": 15,
+        "fraud_rate_pct": 0.1904
+      },
+      {
+        "hour": 10,
+        "transactions": 8288,
+        "fraud": 2,
+        "fraud_rate_pct": 0.0241
+      },
+      {
+        "hour": 11,
+        "transactions": 8517,
+        "fraud": 43,
+        "fraud_rate_pct": 0.5049
+      },
+      {
+        "hour": 12,
+        "transactions": 7732,
+        "fraud": 9,
+        "fraud_rate_pct": 0.1164
+      },
+      {
+        "hour": 13,
+        "transactions": 7585,
+        "fraud": 9,
+        "fraud_rate_pct": 0.1187
+      },
+      {
+        "hour": 14,
+        "transactions": 8029,
+        "fraud": 13,
+        "fraud_rate_pct": 0.1619
+      },
+      {
+        "hour": 15,
+        "transactions": 7836,
+        "fraud": 14,
+        "fraud_rate_pct": 0.1787
+      },
+      {
+        "hour": 16,
+        "transactions": 7786,
+        "fraud": 14,
+        "fraud_rate_pct": 0.1798
+      },
+      {
+        "hour": 17,
+        "transactions": 7882,
+        "fraud": 12,
+        "fraud_rate_pct": 0.1522
+      },
+      {
+        "hour": 18,
+        "transactions": 8607,
+        "fraud": 15,
+        "fraud_rate_pct": 0.1743
+      },
+      {
+        "hour": 19,
+        "transactions": 7994,
+        "fraud": 7,
+        "fraud_rate_pct": 0.0876
+      },
+      {
+        "hour": 20,
+        "transactions": 8980,
+        "fraud": 8,
+        "fraud_rate_pct": 0.0891
+      },
+      {
+        "hour": 21,
+        "transactions": 9895,
+        "fraud": 14,
+        "fraud_rate_pct": 0.1415
+      },
+      {
+        "hour": 22,
+        "transactions": 8977,
+        "fraud": 3,
+        "fraud_rate_pct": 0.0334
+      },
+      {
+        "hour": 23,
+        "transactions": 6082,
+        "fraud": 17,
+        "fraud_rate_pct": 0.2795
+      },
+      {
+        "hour": 24,
+        "transactions": 3732,
+        "fraud": 4,
+        "fraud_rate_pct": 0.1072
+      },
+      {
+        "hour": 25,
+        "transactions": 2003,
+        "fraud": 8,
+        "fraud_rate_pct": 0.3994
+      },
+      {
+        "hour": 26,
+        "transactions": 1752,
+        "fraud": 36,
+        "fraud_rate_pct": 2.0548
+      },
+      {
+        "hour": 27,
+        "transactions": 1671,
+        "fraud": 4,
+        "fraud_rate_pct": 0.2394
+      },
+      {
+        "hour": 28,
+        "transactions": 1127,
+        "fraud": 17,
+        "fraud_rate_pct": 1.5084
+      },
+      {
+        "hour": 29,
+        "transactions": 1309,
+        "fraud": 0,
+        "fraud_rate_pct": 0.0
+      },
+      {
+        "hour": 30,
+        "transactions": 2270,
+        "fraud": 6,
+        "fraud_rate_pct": 0.2643
+      },
+      {
+        "hour": 31,
+        "transactions": 3875,
+        "fraud": 0,
+        "fraud_rate_pct": 0.0
+      },
+      {
+        "hour": 32,
+        "transactions": 5097,
+        "fraud": 4,
+        "fraud_rate_pct": 0.0785
+      },
+      {
+        "hour": 33,
+        "transactions": 7960,
+        "fraud": 1,
+        "fraud_rate_pct": 0.0126
+      },
+      {
+        "hour": 34,
+        "transactions": 8310,
+        "fraud": 6,
+        "fraud_rate_pct": 0.0722
+      },
+      {
+        "hour": 35,
+        "transactions": 8339,
+        "fraud": 10,
+        "fraud_rate_pct": 0.1199
+      },
+      {
+        "hour": 36,
+        "transactions": 7688,
+        "fraud": 8,
+        "fraud_rate_pct": 0.1041
+      },
+      {
+        "hour": 37,
+        "transactions": 7780,
+        "fraud": 8,
+        "fraud_rate_pct": 0.1028
+      },
+      {
+        "hour": 38,
+        "transactions": 8541,
+        "fraud": 10,
+        "fraud_rate_pct": 0.1171
+      },
+      {
+        "hour": 39,
+        "transactions": 8625,
+        "fraud": 12,
+        "fraud_rate_pct": 0.1391
+      },
+      {
+        "hour": 40,
+        "transactions": 8667,
+        "fraud": 8,
+        "fraud_rate_pct": 0.0923
+      },
+      {
+        "hour": 41,
+        "transactions": 8284,
+        "fraud": 17,
+        "fraud_rate_pct": 0.2052
+      },
+      {
+        "hour": 42,
+        "transactions": 8432,
+        "fraud": 18,
+        "fraud_rate_pct": 0.2135
+      },
+      {
+        "hour": 43,
+        "transactions": 7655,
+        "fraud": 12,
+        "fraud_rate_pct": 0.1568
+      },
+      {
+        "hour": 44,
+        "transactions": 7776,
+        "fraud": 10,
+        "fraud_rate_pct": 0.1286
+      },
+      {
+        "hour": 45,
+        "transactions": 7808,
+        "fraud": 2,
+        "fraud_rate_pct": 0.0256
+      },
+      {
+        "hour": 46,
+        "transactions": 6464,
+        "fraud": 6,
+        "fraud_rate_pct": 0.0928
+      },
+      {
+        "hour": 47,
+        "transactions": 4856,
+        "fraud": 4,
+        "fraud_rate_pct": 0.0824
+      }
+    ],
+    "amount_bands": [
+      {
+        "band": "\u20ac0",
+        "transactions": 16804,
+        "fraud": 68,
+        "fraud_rate_pct": 0.4047
+      },
+      {
+        "band": "\u20ac1\u201310",
+        "transactions": 80510,
+        "fraud": 181,
+        "fraud_rate_pct": 0.2248
+      },
+      {
+        "band": "\u20ac10\u201350",
+        "transactions": 92390,
+        "fraud": 56,
+        "fraud_rate_pct": 0.0606
+      },
+      {
+        "band": "\u20ac50\u2013100",
+        "transactions": 37718,
+        "fraud": 57,
+        "fraud_rate_pct": 0.1511
+      },
+      {
+        "band": "\u20ac100\u2013500",
+        "transactions": 47893,
+        "fraud": 95,
+        "fraud_rate_pct": 0.1984
+      },
+      {
+        "band": "\u20ac500\u20131k",
+        "transactions": 6423,
+        "fraud": 26,
+        "fraud_rate_pct": 0.4048
+      },
+      {
+        "band": "\u20ac1k+",
+        "transactions": 3069,
+        "fraud": 9,
+        "fraud_rate_pct": 0.2933
+      }
+    ],
+    "n_fraud_test": 125,
+    "review_budget": 100,
+    "dataset": {
+      "n_transactions": 284807,
+      "n_fraud": 492,
+      "fraud_rate": 0.001727485630620034,
+      "imbalance_ratio": 577.8760162601626,
+      "all_legit_accuracy": 0.9982725143693799,
+      "hours_covered": 47.99777777777778,
+      "median_amount_legit": 22.0,
+      "median_amount_fraud": 9.25,
+      "mean_amount_legit": 88.29102242231328,
+      "mean_amount_fraud": 122.21132113821139,
+      "fraud_value_total": 60127.97,
+      "n_features": 30,
+      "zero_amount_fraud": 27
+    }
+  },
+  "best_model": "Logistic regression",
+  "best_score": 0.7547158633255983,
+  "lift_over_baseline": 608.2972107800219
+}
