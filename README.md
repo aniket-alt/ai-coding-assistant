@@ -44,7 +44,7 @@ Ports are assigned so every project can run simultaneously.
 | 03 | Customer Segmentation | Clustering, topological partitioning | Online Retail II | 8003 | 5103 | ⬜ |
 | 04 | Market Basket Mining | Apriori, FP-Growth | Instacart | 8004 | 5104 | ⬜ |
 | 05 | DS Skills Lab | Analytical skills catalogue | multiple | 8005 | 5105 | ⬜ |
-| 06 | **Anomaly Detection** | Multi-backbone outlier scoring | Credit Card Fraud | 8006 | 5106 | ⬜ |
+| 06 | [**Anomaly Detection**](./06_anomaly_detection) | Fraud ranking under 1:578 imbalance | ULB Credit Card Fraud (284,807) | 8006 | 5106 | ✅ |
 | 07 | AutoML Stacking | Multi-level stacking, ensembling | Adult / Covertype | 8007 | 5107 | ⬜ |
 | 08 | DS Visual Foundations | Interactive maths simulators | — | 8008 | 5108 | ⬜ |
 | 09 | FlowForge DAG Engine | Advanced TypeScript, Kahn's algorithm | — | 8009 | 5109 | ⬜ |
@@ -57,9 +57,12 @@ Ports are assigned so every project can run simultaneously.
 
 ✅ complete · 🚧 in progress · ⬜ not started
 
-**Bold** projects are the three built to full depth; the rest share their
-architecture. This table is updated as work lands — it reflects what is actually
-in the repository, not what is planned.
+**Bold** projects are built to full depth; the rest share their architecture.
+This table reflects what is actually in the repository, not what is planned.
+
+None of the six shared components computes an aggregate of its own. Every figure
+they render arrives from `metrics.json` or an API response, so a number on screen
+can always be traced to the run that produced it.
 
 ---
 
@@ -82,8 +85,10 @@ platform/
     ├── styles/tokens.css    design system + colourblind-validated palette
     ├── types.ts             TS mirrors of the Python dataclasses
     ├── hooks/useApi.ts      typed fetch layer
-    └── components/          ProvenanceBadge · CrispDmPanel · AuditPanel
-                             Leaderboard · StatTile · MarkdownMath · AppShell
+    └── components/          six API-driven components shared by every project:
+                             MetricsPanel · ModelLeaderboard · CrispDmWalkthrough
+                             AuditPanel · PredictionForm · Chart
+                             plus AppShell · ProvenanceBadge · StatTile · MarkdownMath
 ```
 
 A project therefore reduces to: a data loader, a training script, ~40 lines of
