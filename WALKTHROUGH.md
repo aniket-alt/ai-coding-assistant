@@ -18,7 +18,7 @@ Shared by every project. A project imports it instead of re-implementing data so
 | [`platform/dsfs/provenance.py`](./platform/dsfs/provenance.py) | 100 | Thesis of this portfolio: every number in every README traces to a real, citable dataset. A `Provenance` is the receipt. Projects cannot register a dataset without one, and… |
 | [`platform/web/src/components/AppShell.tsx`](./platform/web/src/components/AppShell.tsx) | 295 | AppShell -- the frame every project's client renders inside. |
 | [`platform/web/src/components/AuditPanel.tsx`](./platform/web/src/components/AuditPanel.tsx) | 288 | AuditPanel -- the leakage audit, published in the running app. |
-| [`platform/web/src/components/Chart.tsx`](./platform/web/src/components/Chart.tsx) | 346 | Chart -- a thin wrapper over Recharts, not a charting library. |
+| [`platform/web/src/components/Chart.tsx`](./platform/web/src/components/Chart.tsx) | 353 | Chart -- a thin wrapper over Recharts, not a charting library. |
 | [`platform/web/src/components/CrispDmWalkthrough.tsx`](./platform/web/src/components/CrispDmWalkthrough.tsx) | 246 | CrispDmWalkthrough -- the six phases, driven entirely by report data. |
 | [`platform/web/src/components/MarkdownMath.tsx`](./platform/web/src/components/MarkdownMath.tsx) | 198 | MarkdownMath -- renders the narrative markdown the backend produces, including KaTeX maths. |
 | [`platform/web/src/components/MetricsPanel.tsx`](./platform/web/src/components/MetricsPanel.tsx) | 175 | MetricsPanel -- the headline summary of a training run. |
@@ -75,6 +75,28 @@ How long will this cab ride take? Estimated from booking-time information only. 
 | GET | `/api/importance` | Which features the winning model actually leans on. |
 
 ![NYC Taxi Trip Duration](./01_nyc_taxi_prediction/screenshots/01_trip_estimator.png)
+
+## 03 · Customer Segmentation
+
+Which customers behave differently, and do the groups still mean anything a year later? Best: **RFM scoring rule** (ω² next-year spend 0.3062). [README](./03_customer_segmentation/README.md) · [paper](./03_customer_segmentation/paper.md) · [design doc](./03_customer_segmentation/DESIGN_DOC.md)
+
+| File | Lines | What it does |
+|---|---:|---|
+| [`ml/features.py`](./03_customer_segmentation/ml/features.py) | 71 | Project 03 -- customer features and future outcomes. |
+| [`ml/train.py`](./03_customer_segmentation/ml/train.py) | 442 | Project 03 -- segmentation tournament, audit, and artefact generation. |
+| [`server/inference.py`](./03_customer_segmentation/server/inference.py) | 82 | Assigns a customer to the nearest segment of the winning segmentation and returns what that segment went on to do. Every profile figure comes from the training run's… |
+| [`server/main.py`](./03_customer_segmentation/server/main.py) | 69 | Project 03 -- FastAPI application. |
+| [`client/src/App.tsx`](./03_customer_segmentation/client/src/App.tsx) | 154 | SegmentExplorer is the only project-specific view. The customer assignment form is the shared schema-driven PredictionForm, with slider bounds taken from the training data's… |
+| [`client/src/SegmentExplorer.tsx`](./03_customer_segmentation/client/src/SegmentExplorer.tsx) | 147 | Choosing a row in the shared leaderboard loads that segmentation's profiles, so the comparison is between whole segmentations rather than one winner. Every figure is a field of… |
+| [`client/src/main.tsx`](./03_customer_segmentation/client/src/main.tsx) | 10 |  |
+
+| Method | Endpoint | Purpose |
+|---|---|---|
+| GET | `/api/segments` | Segment profiles for one segmentation, defaulting to the winner. |
+| GET | `/api/feature-ranges` | 5th percentile, median and 95th percentile of each feature, for input bounds. |
+| POST | `/api/assign` | Assign a customer to the nearest segment of the winning segmentation. |
+
+![Customer Segmentation](./03_customer_segmentation/screenshots/01_segments.png)
 
 ## 06 · Credit Card Fraud Detection
 

@@ -24,36 +24,6 @@ from playwright.sync_api import sync_playwright
 ROOT = Path(__file__).resolve().parents[1]
 VENV_PY = ROOT / ".venv" / "Scripts" / "python.exe"
 
-# Tab id -> (filename, a selector or text that proves the view rendered)
-TOURS: dict[str, list[tuple[str, str, str]]] = {
-    "01_nyc_taxi_prediction": [
-        ("estimator", "01_trip_estimator", "Estimated duration"),
-        ("crispdm", "02_crispdm_walkthrough", "Phase gate"),
-        ("models", "03_model_tournament", "Model tournament"),
-        ("audit", "04_leakage_audit", "Assertions executed during training"),
-    ],
-    "06_anomaly_detection": [
-        ("scorer", "01_transaction_scorer", "Suspicion score"),
-        ("budget", "02_review_budget", "Alerts reviewed per day"),
-        ("crispdm", "03_crispdm_walkthrough", "Phase gate"),
-        ("models", "04_detector_tournament", "Detector tournament"),
-        ("audit", "05_leakage_audit", "Assertions executed during training"),
-    ],
-    "15_spy_forecasting": [
-        ("forecast", "01_forecast_fan", "Median forecast"),
-        ("backtest", "02_backtest", "Buy-and-hold Sharpe"),
-        ("calibration", "03_calibration", "Are the intervals honest?"),
-        ("crispdm", "04_crispdm_walkthrough", "Phase gate"),
-        ("models", "05_model_tournament", "Model tournament"),
-        ("audit", "06_leakage_audit", "Assertions executed during training"),
-    ],
-}
-
-PORTS = {
-    "01_nyc_taxi_prediction": (8001, 5101),
-    "06_anomaly_detection": (8006, 5106),
-    "15_spy_forecasting": (8015, 5115),
-}
 
 
 def wait_for(url: str, timeout: int = 90) -> bool:
@@ -86,9 +56,11 @@ def main() -> int:
 
     meta = json.loads((proj / "artifacts" / "provenance.json").read_text(encoding="utf-8")) \
         if (proj / "artifacts" / "provenance.json").exists() else {}
-    default_api, default_web = PORTS.get(args.project, (8001, 5101))
-    api_port = args.api_port or default_api
-    web_port = args.web_port or default_web
+    # Each project describes its own tour: ports, tabs, and the text that
+    # proves each view rendered.
+    tour = json.loads((proj / "tour.json").read_text(encoding="utf-8"))
+    api_port = args.api_port or tour["api_port"]
+    web_port = args.web_port or tour["web_port"]
 
     shots = proj / "screenshots"
     shots.mkdir(exist_ok=True)
@@ -132,11 +104,17 @@ def main() -> int:
                 )
                 page.goto(f"http://127.0.0.1:{web_port}/", wait_until="networkidle")
 
-                for tab_id, name, proof in TOURS[args.project]:
-                    page.get_by_role("button", name=_tab_label(args.project, tab_id)).click()
-                    page.wait_for_timeout(1400)
-
-                    ok = page.get_by_text(proof, exact=False).count() > 0
+                for view in tour["views"]:
+                    name, proof = view["file"], view["expect"]
+                    page.get_by_role("button", name=view["tab"], exact=True).click()
+                    # Wait for the proof text rather than a fixed pause: a cold
+                    # server can take several seconds to answer the first request.
+                    try:
+                        page.get_by_text(proof, exact=False).first.wait_for(timeout=15_000)
+                        ok = True
+                    except Exception:
+                        ok = False
+                    page.wait_for_timeout(600)  # let charts finish animating
                     if not ok:
                         failures.append(f"{theme}/{name}: expected text {proof!r} not found")
 
@@ -176,26 +154,6 @@ def _kill_tree(proc: subprocess.Popen) -> None:
     except subprocess.TimeoutExpired:
         proc.kill()
 
-
-def _tab_label(project: str, tab_id: str) -> str:
-    """Visible tab text, per project -- tab ids are shared, labels are not."""
-    labels = {
-        "01_nyc_taxi_prediction": {
-            "estimator": "Trip estimator", "crispdm": "CRISP-DM",
-            "models": "Model tournament", "audit": "Audit",
-        },
-        "06_anomaly_detection": {
-            "scorer": "Transaction scorer", "budget": "Review budget",
-            "crispdm": "CRISP-DM", "models": "Detector tournament",
-            "audit": "Audit",
-        },
-        "15_spy_forecasting": {
-            "forecast": "Forecast", "backtest": "Backtest",
-            "calibration": "Calibration", "crispdm": "CRISP-DM",
-            "models": "Model tournament", "audit": "Audit",
-        },
-    }
-    return labels[project][tab_id]
 
 
 if __name__ == "__main__":

@@ -1,0 +1,37 @@
+{
+  "entity": "Segmentation",
+  "metric_columns": [
+    {"key": "omega2_future", "label": "ω² next-year spend", "fmt": "f4"},
+    {"key": "stability_ari", "label": "Stability (ARI)", "fmt": "f3"},
+    {"key": "silhouette", "label": "Silhouette", "fmt": "f3"},
+    {"key": "retention_spread", "label": "Retention spread (pts)", "fmt": "f1"},
+    {"key": "n_segments", "label": "k", "fmt": "int"}
+  ],
+  "reproduce": [
+    "python ml/train.py",
+    "python -m uvicorn main:app --app-dir server --port 8003",
+    "npm run dev -w 03_customer_segmentation/client"
+  ],
+  "non_goals": [
+    "Naming segments for a marketing audience. Segment tags are derived mechanically from medians.",
+    "Predicting an individual customer's spend. Segments are judged on how well they separate groups."
+  ],
+  "risks": [
+    "One retailer, two years, mostly UK gift buyers. Segments may not transfer to other businesses.",
+    "Second-year behaviour is observed for a single following year only.",
+    "Customers without an ID, over a fifth of lines, are excluded, and they may differ systematically from those with one."
+  ],
+  "lessons": [
+    "Clustering always returns clusters. A segmentation has to be judged on something that can fail, such as behaviour it never saw.",
+    "The geometrically tidiest segmentation was not the most useful one, which is why silhouette is reported but not ranked on.",
+    "A simple, stable marketing rule is a demanding baseline, and learned methods did not beat it here.",
+    "Stability matters as much as separation: a segment that changes on every rebuild cannot be acted on."
+  ],
+  "references": [
+    "Hughes, A. M. (1994). Strategic Database Marketing. Probus Publishing.",
+    "Hubert, L., & Arabie, P. (1985). Comparing partitions. Journal of Classification, 2(1), 193–218.",
+    "Olejnik, S., & Algina, J. (2003). Generalized eta and omega squared statistics. Psychological Methods, 8(4), 434–447.",
+    "Campello, R. J. G. B., Moulavi, D., & Sander, J. (2013). Density-based clustering based on hierarchical density estimates. PAKDD.",
+    "Rousseeuw, P. J. (1987). Silhouettes: a graphical aid to the interpretation and validation of cluster analysis. Journal of Computational and Applied Mathematics, 20, 53–65."
+  ]
+}

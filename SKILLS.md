@@ -11,7 +11,7 @@ Each skill links to the line where it is implemented. Links are located by searc
 | **Static leakage audit (AST)** | [`platform/dsfs/leakage.py`](./platform/dsfs/leakage.py#L196) | Flags fitting on held-out data, shuffled time splits and unseeded estimators. |
 | **Temporal split with embargo** | [`platform/dsfs/leakage.py`](./platform/dsfs/leakage.py#L337) | Guarantees training ends before testing starts, with a gap against boundary bleed. |
 | **Generated documentation with drift check** | [`platform/dsfs/docs.py`](./platform/dsfs/docs.py#L982) | Papers, abstracts and result tables are regenerated from artifacts; CI fails if they drift. |
-| **Rendered-output verification** | [`scripts/capture_screenshots.py`](./scripts/capture_screenshots.py#L74) | Screenshots are only saved as evidence after the view is confirmed to show its expected content. |
+| **Rendered-output verification** | [`scripts/capture_screenshots.py`](./scripts/capture_screenshots.py#L44) | Screenshots are only saved as evidence after the view is confirmed to show its expected content. |
 | **Excluding post-event fields** | [`01_nyc_taxi_prediction/ml/data.py`](./01_nyc_taxi_prediction/ml/data.py#L71) | Meter distance, fare and arrival time are unknowable at booking, so the model may not use them. |
 | **Data cleaning with an audit trail** | [`01_nyc_taxi_prediction/ml/data.py`](./01_nyc_taxi_prediction/ml/data.py#L111) | Each filter records how many rows it removed and why. |
 | **Missingness as a signal** | [`01_nyc_taxi_prediction/ml/data.py`](./01_nyc_taxi_prediction/ml/data.py#L177) | Missing fields cluster by vendor, so the gap itself is kept as a feature. |
@@ -30,12 +30,18 @@ Each skill links to the line where it is implemented. Links are located by searc
 | **Paired bootstrap significance testing** | [`15_spy_forecasting/ml/train.py`](./15_spy_forecasting/ml/train.py#L95) | Asks whether a winner beats a random walk or just got lucky. |
 | **Backtesting with costs against buy-and-hold** | [`15_spy_forecasting/ml/train.py`](./15_spy_forecasting/ml/train.py#L122) | A strategy is always compared with simply holding, net of execution cost. |
 | **Fat-tail-aware intervals** | [`15_spy_forecasting/ml/train.py`](./15_spy_forecasting/ml/train.py#L446) | Student-t quantiles over EWMA volatility, because returns have heavy tails. |
+| **Shared, audited data cleaning** | [`datasets/loaders/online_retail.py`](./datasets/loaders/online_retail.py#L73) | One loader for two projects, recording what each rule removed, including a nine-day overlap between source sheets. |
+| **Judging clusters on future behaviour** | [`03_customer_segmentation/ml/features.py`](./03_customer_segmentation/ml/features.py#L16) | Segments are built from one year and scored on the next, so they have to predict something they never saw. |
+| **Omega-squared effect size** | [`03_customer_segmentation/ml/train.py`](./03_customer_segmentation/ml/train.py#L47) | Corrects variance explained for the number of segments, so more clusters are not rewarded by default. |
+| **Clustering stability by subsampling** | [`03_customer_segmentation/ml/train.py`](./03_customer_segmentation/ml/train.py#L67) | Rebuilds each segmentation on overlapping subsamples and compares assignments with the adjusted Rand index. |
+| **RFM scoring as a baseline** | [`03_customer_segmentation/ml/train.py`](./03_customer_segmentation/ml/train.py#L116) | The classic marketing heuristic every learned segmentation has to beat. |
 
 ## Reproduction skills
 
 Each built project ships an agent skill at `skills/reproduce/SKILL.md` describing how to rebuild and verify it from a fresh clone:
 
 - [`01_nyc_taxi_prediction/skills/reproduce/SKILL.md`](./01_nyc_taxi_prediction/skills/reproduce/SKILL.md)
+- [`03_customer_segmentation/skills/reproduce/SKILL.md`](./03_customer_segmentation/skills/reproduce/SKILL.md)
 - [`06_anomaly_detection/skills/reproduce/SKILL.md`](./06_anomaly_detection/skills/reproduce/SKILL.md)
 - [`15_spy_forecasting/skills/reproduce/SKILL.md`](./15_spy_forecasting/skills/reproduce/SKILL.md)
 

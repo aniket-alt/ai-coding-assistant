@@ -1,0 +1,26 @@
+{
+  "api_port": 8001,
+  "web_port": 5101,
+  "views": [
+    {
+      "tab": "Trip estimator",
+      "file": "01_trip_estimator",
+      "expect": "Estimated duration"
+    },
+    {
+      "tab": "CRISP-DM",
+      "file": "02_crispdm_walkthrough",
+      "expect": "Phase gate"
+    },
+    {
+      "tab": "Model tournament",
+      "file": "03_model_tournament",
+      "expect": "Model tournament"
+    },
+    {
+      "tab": "Audit",
+      "file": "04_leakage_audit",
+      "expect": "Assertions executed during training"
+    }
+  ]
+}

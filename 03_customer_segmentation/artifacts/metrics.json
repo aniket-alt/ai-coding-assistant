@@ -1,0 +1,1195 @@
+{
+  "project_slug": "03_customer_segmentation",
+  "project_title": "Customer Segmentation",
+  "task": "customer segmentation (clustering)",
+  "primary_metric": "omega2_future",
+  "higher_is_better": true,
+  "provenance": {
+    "slug": "uci-online-retail-ii",
+    "name": "Online Retail II (UCI)",
+    "source_url": "https://archive.ics.uci.edu/static/public/502/online+retail+ii.zip",
+    "license": "Creative Commons Attribution 4.0 (CC BY 4.0)",
+    "citation": "Chen, D. (2019). Online Retail II [Dataset]. UCI Machine Learning Repository. https://doi.org/10.24432/C5CG6D",
+    "retrieved_at": "2026-09-16T23:17:46Z",
+    "sha256": "572e36277c2390fbfde10664750731e0a86f55e33470d91919085f0408e67bfb",
+    "n_rows": 1067371,
+    "n_cols": 8,
+    "bytes_on_disk": 45622418,
+    "synthetic": false,
+    "notes": "All transactions of a UK-based online gift retailer, 2009-12-01 to 2011-12-09, as two overlapping yearly sheets.",
+    "extra": {
+      "product_lines_after_cleaning": 776577,
+      "customers_in_first_year": 4239
+    }
+  },
+  "split": {
+    "strategy": "features from year one, outcomes from year two",
+    "n_train": 4239,
+    "n_test": 4239,
+    "n_val": 0,
+    "train_end": "2010-11-30 19:35:00",
+    "test_start": "2010-12-01 08:26:00",
+    "embargo": "",
+    "notes": "Every first-year customer is scored on their second-year revenue."
+  },
+  "models": [
+    {
+      "name": "Random segments",
+      "family": "baseline",
+      "metrics": {
+        "omega2_future": -0.00012995512776175182,
+        "retention_spread": 3.1000000000000085,
+        "stability_ari": 7.586117248770122e-05,
+        "silhouette": -0.008813560040850474,
+        "n_segments": 4.0,
+        "smallest_pct": 24.4
+      },
+      "params": {
+        "k": 4
+      },
+      "fit_seconds": 0.24,
+      "predict_ms_per_1k": 0.0,
+      "notes": "Assigns customers to four segments at random."
+    },
+    {
+      "name": "RFM scoring rule",
+      "family": "baseline",
+      "metrics": {
+        "omega2_future": 0.3061600223353017,
+        "retention_spread": 58.300000000000004,
+        "stability_ari": 0.9702938857865357,
+        "silhouette": 0.08503761476764862,
+        "n_segments": 4.0,
+        "smallest_pct": 20.8
+      },
+      "params": {
+        "tiers": 4
+      },
+      "fit_seconds": 0.28,
+      "predict_ms_per_1k": 0.0,
+      "notes": "Quintile scores for recency, frequency and spend, summed into four tiers."
+    },
+    {
+      "name": "k-means (k=3)",
+      "family": "partitioning",
+      "metrics": {
+        "omega2_future": 0.23626385771456404,
+        "retention_spread": 48.099999999999994,
+        "stability_ari": 0.9659610968947113,
+        "silhouette": 0.28840519432095457,
+        "n_segments": 3.0,
+        "smallest_pct": 23.5
+      },
+      "params": {
+        "k": 3,
+        "n_init": 10
+      },
+      "fit_seconds": 2.03,
+      "predict_ms_per_1k": 0.0,
+      "notes": ""
+    },
+    {
+      "name": "k-means (k=4)",
+      "family": "partitioning",
+      "metrics": {
+        "omega2_future": 0.23220444822539152,
+        "retention_spread": 48.9,
+        "stability_ari": 0.9702836764892739,
+        "silhouette": 0.30071273831831863,
+        "n_segments": 4.0,
+        "smallest_pct": 3.0
+      },
+      "params": {
+        "k": 4,
+        "n_init": 10
+      },
+      "fit_seconds": 2.28,
+      "predict_ms_per_1k": 0.0,
+      "notes": ""
+    },
+    {
+      "name": "k-means (k=5)",
+      "family": "partitioning",
+      "metrics": {
+        "omega2_future": 0.28419491236462335,
+        "retention_spread": 61.0,
+        "stability_ari": 0.9461545431746179,
+        "silhouette": 0.24609397247065537,
+        "n_segments": 5.0,
+        "smallest_pct": 2.9
+      },
+      "params": {
+        "k": 5,
+        "n_init": 10
+      },
+      "fit_seconds": 2.52,
+      "predict_ms_per_1k": 0.0,
+      "notes": ""
+    },
+    {
+      "name": "k-means (k=6)",
+      "family": "partitioning",
+      "metrics": {
+        "omega2_future": 0.2836707380111639,
+        "retention_spread": 58.0,
+        "stability_ari": 0.9063489327948474,
+        "silhouette": 0.23784743462981486,
+        "n_segments": 6.0,
+        "smallest_pct": 2.8
+      },
+      "params": {
+        "k": 6,
+        "n_init": 10
+      },
+      "fit_seconds": 2.84,
+      "predict_ms_per_1k": 0.0,
+      "notes": ""
+    },
+    {
+      "name": "k-means (k=8)",
+      "family": "partitioning",
+      "metrics": {
+        "omega2_future": 0.28559116558425685,
+        "retention_spread": 64.0,
+        "stability_ari": 0.733984336489889,
+        "silhouette": 0.22478821558245016,
+        "n_segments": 8.0,
+        "smallest_pct": 2.7
+      },
+      "params": {
+        "k": 8,
+        "n_init": 10
+      },
+      "fit_seconds": 2.95,
+      "predict_ms_per_1k": 0.0,
+      "notes": ""
+    },
+    {
+      "name": "Gaussian mixture (k=4)",
+      "family": "probabilistic",
+      "metrics": {
+        "omega2_future": 0.2623353750656402,
+        "retention_spread": 53.39999999999999,
+        "stability_ari": 0.6402487937886587,
+        "silhouette": 0.101497888246223,
+        "n_segments": 4.0,
+        "smallest_pct": 20.6
+      },
+      "params": {
+        "k": 4,
+        "covariance": "full"
+      },
+      "fit_seconds": 1.78,
+      "predict_ms_per_1k": 0.0,
+      "notes": ""
+    },
+    {
+      "name": "Gaussian mixture (k=6)",
+      "family": "probabilistic",
+      "metrics": {
+        "omega2_future": 0.27648984854608294,
+        "retention_spread": 55.800000000000004,
+        "stability_ari": 0.8106250613306253,
+        "silhouette": 0.05945354243640914,
+        "n_segments": 6.0,
+        "smallest_pct": 5.4
+      },
+      "params": {
+        "k": 6,
+        "covariance": "full"
+      },
+      "fit_seconds": 2.84,
+      "predict_ms_per_1k": 0.0,
+      "notes": ""
+    },
+    {
+      "name": "Agglomerative (ward, k=5)",
+      "family": "hierarchical",
+      "metrics": {
+        "omega2_future": 0.25519487347452496,
+        "retention_spread": 56.599999999999994,
+        "stability_ari": 0.4112785588287953,
+        "silhouette": 0.19127900521677904,
+        "n_segments": 5.0,
+        "smallest_pct": 5.0
+      },
+      "params": {
+        "k": 5,
+        "linkage": "ward"
+      },
+      "fit_seconds": 5.27,
+      "predict_ms_per_1k": 0.0,
+      "notes": ""
+    },
+    {
+      "name": "HDBSCAN",
+      "family": "density",
+      "metrics": {
+        "omega2_future": 0.03666917116522748,
+        "retention_spread": 51.7,
+        "stability_ari": 0.8553237436831772,
+        "silhouette": -0.2123492762251658,
+        "n_segments": 4.0,
+        "smallest_pct": 1.3
+      },
+      "params": {
+        "min_cluster_size": 50
+      },
+      "fit_seconds": 3.56,
+      "predict_ms_per_1k": 0.0,
+      "notes": "Density-based; customers in sparse regions are left unassigned."
+    }
+  ],
+  "baseline": {},
+  "audit": {
+    "critical": 0,
+    "warnings": 0,
+    "total": 0,
+    "runtime_assertions": [
+      {
+        "name": "assert_temporal_split",
+        "passed": true,
+        "detail": "Last training timestamp 2010-11-30 19:35:00 precedes first test timestamp 2010-12-01 08:26:00 by 0 days 12:51:00; no embargo required.",
+        "params": {
+          "train_end": "2010-11-30 19:35:00",
+          "test_start": "2010-12-01 08:26:00",
+          "gap": "0 days 12:51:00",
+          "embargo_required": "",
+          "chronologically_ordered": true
+        },
+        "at": "2026-09-16T23:17:48Z"
+      },
+      {
+        "name": "assert_disjoint",
+        "passed": true,
+        "detail": "385,427 training and 391,150 test row indices compared; 0 appear in both.",
+        "params": {
+          "n_train": 385427,
+          "n_test": 391150,
+          "n_overlap": 0
+        },
+        "at": "2026-09-16T23:17:48Z"
+      },
+      {
+        "name": "assert_no_target_leak",
+        "passed": true,
+        "detail": "7 numeric features correlated against the target; strongest was recency_days at |r|=0.4046 (threshold 0.995).",
+        "params": {
+          "features_checked": 7,
+          "max_abs_correlation": 0.404568,
+          "max_correlation_feature": "recency_days",
+          "threshold": 0.995,
+          "leaked_features": []
+        },
+        "at": "2026-09-16T23:17:48Z"
+      }
+    ],
+    "assertions_passed": 3,
+    "assertions_run": 3
+  },
+  "env": {
+    "python": "3.11.6",
+    "platform": "Windows 10",
+    "machine": "AMD64",
+    "numpy": "2.4.6",
+    "pandas": "3.0.5",
+    "sklearn": "1.9.1",
+    "git_commit": "799695b"
+  },
+  "created_at": "2026-09-16T23:17:48Z",
+  "duration_seconds": 30.1,
+  "extra": {
+    "segments": {
+      "Random segments": [
+        {
+          "segment_id": 1,
+          "customers": 1059,
+          "share_pct": 25.0,
+          "median_recency_days": 48.0,
+          "median_orders": 2.0,
+          "median_spend": 674.16,
+          "median_basket": 286.4,
+          "return_rate_pct": 2.63,
+          "retained_pct": 63.7,
+          "median_future_revenue": 306.13,
+          "mean_future_revenue": 2371.38,
+          "tag": "mid value \u00b7 lapsing",
+          "label": "Segment 1"
+        },
+        {
+          "segment_id": 2,
+          "customers": 1036,
+          "share_pct": 24.4,
+          "median_recency_days": 49.0,
+          "median_orders": 2.0,
+          "median_spend": 634.97,
+          "median_basket": 286.57,
+          "return_rate_pct": 2.36,
+          "retained_pct": 62.8,
+          "median_future_revenue": 290.38,
+          "mean_future_revenue": 1522.4,
+          "tag": "mid value \u00b7 lapsing",
+          "label": "Segment 2"
+        },
+        {
+          "segment_id": 3,
+          "customers": 1063,
+          "share_pct": 25.1,
+          "median_recency_days": 44.0,
+          "median_orders": 2.0,
+          "median_spend": 724.73,
+          "median_basket": 286.31,
+          "return_rate_pct": 2.46,
+          "retained_pct": 65.9,
+          "median_future_revenue": 363.65,
+          "mean_future_revenue": 1426.54,
+          "tag": "mid value \u00b7 recent",
+          "label": "Segment 3"
+        },
+        {
+          "segment_id": 0,
+          "customers": 1081,
+          "share_pct": 25.5,
+          "median_recency_days": 47.0,
+          "median_orders": 2.0,
+          "median_spend": 683.15,
+          "median_basket": 291.13,
+          "return_rate_pct": 2.87,
+          "retained_pct": 64.3,
+          "median_future_revenue": 316.11,
+          "mean_future_revenue": 1311.75,
+          "tag": "mid value \u00b7 lapsing",
+          "label": "Segment 4"
+        }
+      ],
+      "RFM scoring rule": [
+        {
+          "segment_id": 3,
+          "customers": 883,
+          "share_pct": 20.8,
+          "median_recency_days": 9.0,
+          "median_orders": 8.0,
+          "median_spend": 2955.79,
+          "median_basket": 355.07,
+          "return_rate_pct": 2.75,
+          "retained_pct": 94.9,
+          "median_future_revenue": 2262.62,
+          "mean_future_revenue": 5387.25,
+          "tag": "high value \u00b7 recent",
+          "label": "Segment 1"
+        },
+        {
+          "segment_id": 2,
+          "customers": 1012,
+          "share_pct": 23.9,
+          "median_recency_days": 33.0,
+          "median_orders": 4.0,
+          "median_spend": 1236.3,
+          "median_basket": 320.42,
+          "return_rate_pct": 2.79,
+          "retained_pct": 76.3,
+          "median_future_revenue": 582.18,
+          "mean_future_revenue": 1387.01,
+          "tag": "mid value \u00b7 recent",
+          "label": "Segment 2"
+        },
+        {
+          "segment_id": 1,
+          "customers": 1132,
+          "share_pct": 26.7,
+          "median_recency_days": 54.0,
+          "median_orders": 2.0,
+          "median_spend": 534.81,
+          "median_basket": 282.49,
+          "return_rate_pct": 2.29,
+          "retained_pct": 58.9,
+          "median_future_revenue": 179.69,
+          "mean_future_revenue": 454.33,
+          "tag": "mid value \u00b7 lapsing",
+          "label": "Segment 3"
+        },
+        {
+          "segment_id": 0,
+          "customers": 1212,
+          "share_pct": 28.6,
+          "median_recency_days": 188.0,
+          "median_orders": 1.0,
+          "median_spend": 220.45,
+          "median_basket": 194.8,
+          "return_rate_pct": 2.55,
+          "retained_pct": 36.6,
+          "median_future_revenue": 0.0,
+          "mean_future_revenue": 287.13,
+          "tag": "low value \u00b7 lapsing",
+          "label": "Segment 4"
+        }
+      ],
+      "k-means (k=3)": [
+        {
+          "segment_id": 1,
+          "customers": 1780,
+          "share_pct": 42.0,
+          "median_recency_days": 25.0,
+          "median_orders": 5.0,
+          "median_spend": 1946.89,
+          "median_basket": 352.49,
+          "return_rate_pct": 2.89,
+          "retained_pct": 84.8,
+          "median_future_revenue": 1137.99,
+          "mean_future_revenue": 3349.99,
+          "tag": "high value \u00b7 recent",
+          "label": "Segment 1"
+        },
+        {
+          "segment_id": 2,
+          "customers": 1464,
+          "share_pct": 34.5,
+          "median_recency_days": 36.0,
+          "median_orders": 1.0,
+          "median_spend": 399.0,
+          "median_basket": 256.47,
+          "return_rate_pct": 1.58,
+          "retained_pct": 57.9,
+          "median_future_revenue": 172.27,
+          "mean_future_revenue": 510.73,
+          "tag": "mid value \u00b7 recent",
+          "label": "Segment 2"
+        },
+        {
+          "segment_id": 0,
+          "customers": 995,
+          "share_pct": 23.5,
+          "median_recency_days": 224.0,
+          "median_orders": 1.0,
+          "median_spend": 273.35,
+          "median_basket": 190.47,
+          "return_rate_pct": 3.5,
+          "retained_pct": 36.7,
+          "median_future_revenue": 0.0,
+          "mean_future_revenue": 313.78,
+          "tag": "low value \u00b7 lapsing",
+          "label": "Segment 3"
+        }
+      ],
+      "k-means (k=4)": [
+        {
+          "segment_id": 2,
+          "customers": 1742,
+          "share_pct": 41.1,
+          "median_recency_days": 25.0,
+          "median_orders": 5.0,
+          "median_spend": 1964.3,
+          "median_basket": 353.01,
+          "return_rate_pct": 2.49,
+          "retained_pct": 84.8,
+          "median_future_revenue": 1149.73,
+          "mean_future_revenue": 3393.22,
+          "tag": "high value \u00b7 recent",
+          "label": "Segment 1"
+        },
+        {
+          "segment_id": 3,
+          "customers": 126,
+          "share_pct": 3.0,
+          "median_recency_days": 105.5,
+          "median_orders": 2.0,
+          "median_spend": 374.45,
+          "median_basket": 209.6,
+          "return_rate_pct": 30.49,
+          "retained_pct": 54.0,
+          "median_future_revenue": 62.4,
+          "mean_future_revenue": 1201.75,
+          "tag": "mid value \u00b7 lapsing",
+          "label": "Segment 2"
+        },
+        {
+          "segment_id": 1,
+          "customers": 1443,
+          "share_pct": 34.0,
+          "median_recency_days": 36.0,
+          "median_orders": 1.0,
+          "median_spend": 404.45,
+          "median_basket": 259.09,
+          "return_rate_pct": 1.15,
+          "retained_pct": 58.4,
+          "median_future_revenue": 178.7,
+          "mean_future_revenue": 517.6,
+          "tag": "mid value \u00b7 recent",
+          "label": "Segment 3"
+        },
+        {
+          "segment_id": 0,
+          "customers": 928,
+          "share_pct": 21.9,
+          "median_recency_days": 225.0,
+          "median_orders": 1.0,
+          "median_spend": 269.29,
+          "median_basket": 191.92,
+          "return_rate_pct": 1.18,
+          "retained_pct": 35.9,
+          "median_future_revenue": 0.0,
+          "mean_future_revenue": 230.17,
+          "tag": "low value \u00b7 lapsing",
+          "label": "Segment 4"
+        }
+      ],
+      "k-means (k=5)": [
+        {
+          "segment_id": 1,
+          "customers": 749,
+          "share_pct": 17.7,
+          "median_recency_days": 14.0,
+          "median_orders": 9.0,
+          "median_spend": 3777.2,
+          "median_basket": 400.92,
+          "return_rate_pct": 2.89,
+          "retained_pct": 94.5,
+          "median_future_revenue": 2662.2,
+          "mean_future_revenue": 6441.14,
+          "tag": "high value \u00b7 recent",
+          "label": "Segment 1"
+        },
+        {
+          "segment_id": 4,
+          "customers": 121,
+          "share_pct": 2.9,
+          "median_recency_days": 110.0,
+          "median_orders": 2.0,
+          "median_spend": 372.2,
+          "median_basket": 205.41,
+          "return_rate_pct": 31.06,
+          "retained_pct": 52.9,
+          "median_future_revenue": 45.0,
+          "mean_future_revenue": 1234.78,
+          "tag": "mid value \u00b7 lapsing",
+          "label": "Segment 2"
+        },
+        {
+          "segment_id": 2,
+          "customers": 1402,
+          "share_pct": 33.1,
+          "median_recency_days": 43.0,
+          "median_orders": 3.0,
+          "median_spend": 1135.08,
+          "median_basket": 308.83,
+          "return_rate_pct": 2.07,
+          "retained_pct": 75.2,
+          "median_future_revenue": 485.25,
+          "mean_future_revenue": 983.47,
+          "tag": "mid value \u00b7 recent",
+          "label": "Segment 3"
+        },
+        {
+          "segment_id": 3,
+          "customers": 1148,
+          "share_pct": 27.1,
+          "median_recency_days": 36.0,
+          "median_orders": 1.0,
+          "median_spend": 335.62,
+          "median_basket": 245.74,
+          "return_rate_pct": 1.06,
+          "retained_pct": 54.1,
+          "median_future_revenue": 115.12,
+          "mean_future_revenue": 432.34,
+          "tag": "low value \u00b7 recent",
+          "label": "Segment 4"
+        },
+        {
+          "segment_id": 0,
+          "customers": 819,
+          "share_pct": 19.3,
+          "median_recency_days": 243.0,
+          "median_orders": 1.0,
+          "median_spend": 240.95,
+          "median_basket": 182.64,
+          "return_rate_pct": 1.1,
+          "retained_pct": 33.5,
+          "median_future_revenue": 0.0,
+          "mean_future_revenue": 212.36,
+          "tag": "low value \u00b7 lapsing",
+          "label": "Segment 5"
+        }
+      ],
+      "k-means (k=6)": [
+        {
+          "segment_id": 5,
+          "customers": 705,
+          "share_pct": 16.6,
+          "median_recency_days": 14.0,
+          "median_orders": 9.0,
+          "median_spend": 3940.13,
+          "median_basket": 423.81,
+          "return_rate_pct": 2.88,
+          "retained_pct": 94.3,
+          "median_future_revenue": 2804.54,
+          "mean_future_revenue": 6770.69,
+          "tag": "high value \u00b7 recent",
+          "label": "Segment 1"
+        },
+        {
+          "segment_id": 2,
+          "customers": 118,
+          "share_pct": 2.8,
+          "median_recency_days": 107.0,
+          "median_orders": 2.0,
+          "median_spend": 374.45,
+          "median_basket": 203.49,
+          "return_rate_pct": 31.39,
+          "retained_pct": 53.4,
+          "median_future_revenue": 46.74,
+          "mean_future_revenue": 1261.45,
+          "tag": "mid value \u00b7 lapsing",
+          "label": "Segment 2"
+        },
+        {
+          "segment_id": 0,
+          "customers": 1268,
+          "share_pct": 29.9,
+          "median_recency_days": 39.0,
+          "median_orders": 4.0,
+          "median_spend": 1161.55,
+          "median_basket": 289.25,
+          "return_rate_pct": 2.17,
+          "retained_pct": 77.1,
+          "median_future_revenue": 515.81,
+          "mean_future_revenue": 944.99,
+          "tag": "mid value \u00b7 recent",
+          "label": "Segment 3"
+        },
+        {
+          "segment_id": 4,
+          "customers": 1017,
+          "share_pct": 24.0,
+          "median_recency_days": 34.0,
+          "median_orders": 1.0,
+          "median_spend": 442.32,
+          "median_basket": 310.69,
+          "return_rate_pct": 1.19,
+          "retained_pct": 59.5,
+          "median_future_revenue": 227.21,
+          "mean_future_revenue": 645.71,
+          "tag": "mid value \u00b7 recent",
+          "label": "Segment 4"
+        },
+        {
+          "segment_id": 3,
+          "customers": 670,
+          "share_pct": 15.8,
+          "median_recency_days": 252.0,
+          "median_orders": 1.0,
+          "median_spend": 313.87,
+          "median_basket": 249.67,
+          "return_rate_pct": 1.42,
+          "retained_pct": 36.3,
+          "median_future_revenue": 0.0,
+          "mean_future_revenue": 261.98,
+          "tag": "low value \u00b7 lapsing",
+          "label": "Segment 5"
+        },
+        {
+          "segment_id": 1,
+          "customers": 461,
+          "share_pct": 10.9,
+          "median_recency_days": 96.0,
+          "median_orders": 1.0,
+          "median_spend": 130.05,
+          "median_basket": 108.48,
+          "return_rate_pct": 0.65,
+          "retained_pct": 36.4,
+          "median_future_revenue": 0.0,
+          "mean_future_revenue": 152.42,
+          "tag": "low value \u00b7 lapsing",
+          "label": "Segment 6"
+        }
+      ],
+      "k-means (k=8)": [
+        {
+          "segment_id": 0,
+          "customers": 309,
+          "share_pct": 7.3,
+          "median_recency_days": 9.0,
+          "median_orders": 14.0,
+          "median_spend": 6739.01,
+          "median_basket": 464.99,
+          "return_rate_pct": 3.11,
+          "retained_pct": 96.4,
+          "median_future_revenue": 4791.87,
+          "mean_future_revenue": 11023.11,
+          "tag": "high value \u00b7 recent",
+          "label": "Segment 1"
+        },
+        {
+          "segment_id": 2,
+          "customers": 411,
+          "share_pct": 9.7,
+          "median_recency_days": 49.0,
+          "median_orders": 2.0,
+          "median_spend": 1634.64,
+          "median_basket": 767.78,
+          "return_rate_pct": 1.74,
+          "retained_pct": 69.8,
+          "median_future_revenue": 936.08,
+          "mean_future_revenue": 2696.29,
+          "tag": "high value \u00b7 lapsing",
+          "label": "Segment 2"
+        },
+        {
+          "segment_id": 5,
+          "customers": 814,
+          "share_pct": 19.2,
+          "median_recency_days": 22.0,
+          "median_orders": 6.0,
+          "median_spend": 2004.85,
+          "median_basket": 330.48,
+          "return_rate_pct": 2.5,
+          "retained_pct": 87.6,
+          "median_future_revenue": 1164.45,
+          "mean_future_revenue": 1699.76,
+          "tag": "high value \u00b7 recent",
+          "label": "Segment 3"
+        },
+        {
+          "segment_id": 7,
+          "customers": 114,
+          "share_pct": 2.7,
+          "median_recency_days": 110.5,
+          "median_orders": 2.0,
+          "median_spend": 364.42,
+          "median_basket": 201.07,
+          "return_rate_pct": 31.89,
+          "retained_pct": 53.5,
+          "median_future_revenue": 46.74,
+          "mean_future_revenue": 1294.75,
+          "tag": "mid value \u00b7 lapsing",
+          "label": "Segment 4"
+        },
+        {
+          "segment_id": 1,
+          "customers": 751,
+          "share_pct": 17.7,
+          "median_recency_days": 46.0,
+          "median_orders": 3.0,
+          "median_spend": 702.96,
+          "median_basket": 227.47,
+          "return_rate_pct": 2.03,
+          "retained_pct": 71.8,
+          "median_future_revenue": 300.92,
+          "mean_future_revenue": 518.29,
+          "tag": "mid value \u00b7 recent",
+          "label": "Segment 5"
+        },
+        {
+          "segment_id": 3,
+          "customers": 864,
+          "share_pct": 20.4,
+          "median_recency_days": 34.0,
+          "median_orders": 1.0,
+          "median_spend": 345.31,
+          "median_basket": 271.35,
+          "return_rate_pct": 1.15,
+          "retained_pct": 56.4,
+          "median_future_revenue": 156.49,
+          "mean_future_revenue": 444.74,
+          "tag": "mid value \u00b7 recent",
+          "label": "Segment 6"
+        },
+        {
+          "segment_id": 6,
+          "customers": 637,
+          "share_pct": 15.0,
+          "median_recency_days": 253.0,
+          "median_orders": 1.0,
+          "median_spend": 310.43,
+          "median_basket": 247.5,
+          "return_rate_pct": 1.47,
+          "retained_pct": 35.5,
+          "median_future_revenue": 0.0,
+          "mean_future_revenue": 252.46,
+          "tag": "low value \u00b7 lapsing",
+          "label": "Segment 7"
+        },
+        {
+          "segment_id": 4,
+          "customers": 339,
+          "share_pct": 8.0,
+          "median_recency_days": 133.0,
+          "median_orders": 1.0,
+          "median_spend": 110.95,
+          "median_basket": 93.3,
+          "return_rate_pct": 0.41,
+          "retained_pct": 32.4,
+          "median_future_revenue": 0.0,
+          "mean_future_revenue": 127.07,
+          "tag": "low value \u00b7 lapsing",
+          "label": "Segment 8"
+        }
+      ],
+      "Gaussian mixture (k=4)": [
+        {
+          "segment_id": 0,
+          "customers": 873,
+          "share_pct": 20.6,
+          "median_recency_days": 14.0,
+          "median_orders": 9.0,
+          "median_spend": 2960.73,
+          "median_basket": 331.4,
+          "return_rate_pct": 3.0,
+          "retained_pct": 91.6,
+          "median_future_revenue": 2097.88,
+          "mean_future_revenue": 5139.07,
+          "tag": "high value \u00b7 recent",
+          "label": "Segment 1"
+        },
+        {
+          "segment_id": 2,
+          "customers": 1134,
+          "share_pct": 26.8,
+          "median_recency_days": 40.0,
+          "median_orders": 4.0,
+          "median_spend": 1118.78,
+          "median_basket": 301.67,
+          "return_rate_pct": 3.03,
+          "retained_pct": 77.5,
+          "median_future_revenue": 545.29,
+          "mean_future_revenue": 1410.87,
+          "tag": "mid value \u00b7 recent",
+          "label": "Segment 2"
+        },
+        {
+          "segment_id": 3,
+          "customers": 1018,
+          "share_pct": 24.0,
+          "median_recency_days": 62.0,
+          "median_orders": 2.0,
+          "median_spend": 480.9,
+          "median_basket": 285.75,
+          "return_rate_pct": 4.81,
+          "retained_pct": 56.8,
+          "median_future_revenue": 152.47,
+          "mean_future_revenue": 557.98,
+          "tag": "mid value \u00b7 lapsing",
+          "label": "Segment 3"
+        },
+        {
+          "segment_id": 1,
+          "customers": 1214,
+          "share_pct": 28.6,
+          "median_recency_days": 117.0,
+          "median_orders": 1.0,
+          "median_spend": 228.32,
+          "median_basket": 228.32,
+          "return_rate_pct": 0.0,
+          "retained_pct": 38.2,
+          "median_future_revenue": 0.0,
+          "mean_future_revenue": 303.58,
+          "tag": "low value \u00b7 lapsing",
+          "label": "Segment 4"
+        }
+      ],
+      "Gaussian mixture (k=6)": [
+        {
+          "segment_id": 5,
+          "customers": 631,
+          "share_pct": 14.9,
+          "median_recency_days": 12.0,
+          "median_orders": 10.0,
+          "median_spend": 3695.91,
+          "median_basket": 344.62,
+          "return_rate_pct": 2.83,
+          "retained_pct": 95.2,
+          "median_future_revenue": 2748.31,
+          "mean_future_revenue": 6465.41,
+          "tag": "high value \u00b7 recent",
+          "label": "Segment 1"
+        },
+        {
+          "segment_id": 2,
+          "customers": 403,
+          "share_pct": 9.5,
+          "median_recency_days": 97.0,
+          "median_orders": 4.0,
+          "median_spend": 1266.15,
+          "median_basket": 283.83,
+          "return_rate_pct": 8.09,
+          "retained_pct": 69.5,
+          "median_future_revenue": 392.4,
+          "mean_future_revenue": 1581.26,
+          "tag": "mid value \u00b7 lapsing",
+          "label": "Segment 2"
+        },
+        {
+          "segment_id": 0,
+          "customers": 979,
+          "share_pct": 23.1,
+          "median_recency_days": 28.0,
+          "median_orders": 4.0,
+          "median_spend": 1206.0,
+          "median_basket": 302.43,
+          "return_rate_pct": 1.03,
+          "retained_pct": 81.7,
+          "median_future_revenue": 645.65,
+          "mean_future_revenue": 1398.93,
+          "tag": "mid value \u00b7 recent",
+          "label": "Segment 3"
+        },
+        {
+          "segment_id": 4,
+          "customers": 231,
+          "share_pct": 5.4,
+          "median_recency_days": 63.0,
+          "median_orders": 2.0,
+          "median_spend": 618.96,
+          "median_basket": 309.48,
+          "return_rate_pct": 8.15,
+          "retained_pct": 62.3,
+          "median_future_revenue": 266.97,
+          "mean_future_revenue": 951.42,
+          "tag": "mid value \u00b7 lapsing",
+          "label": "Segment 4"
+        },
+        {
+          "segment_id": 1,
+          "customers": 569,
+          "share_pct": 13.4,
+          "median_recency_days": 51.0,
+          "median_orders": 2.0,
+          "median_spend": 497.04,
+          "median_basket": 248.52,
+          "return_rate_pct": 0.0,
+          "retained_pct": 58.7,
+          "median_future_revenue": 168.3,
+          "mean_future_revenue": 487.72,
+          "tag": "mid value \u00b7 lapsing",
+          "label": "Segment 5"
+        },
+        {
+          "segment_id": 3,
+          "customers": 1426,
+          "share_pct": 33.6,
+          "median_recency_days": 117.0,
+          "median_orders": 1.0,
+          "median_spend": 243.83,
+          "median_basket": 243.83,
+          "return_rate_pct": 2.11,
+          "retained_pct": 39.4,
+          "median_future_revenue": 0.0,
+          "mean_future_revenue": 307.96,
+          "tag": "low value \u00b7 lapsing",
+          "label": "Segment 6"
+        }
+      ],
+      "Agglomerative (ward, k=5)": [
+        {
+          "segment_id": 1,
+          "customers": 1194,
+          "share_pct": 28.2,
+          "median_recency_days": 22.0,
+          "median_orders": 7.0,
+          "median_spend": 2506.04,
+          "median_basket": 384.89,
+          "return_rate_pct": 2.95,
+          "retained_pct": 88.1,
+          "median_future_revenue": 1709.73,
+          "mean_future_revenue": 4144.96,
+          "tag": "high value \u00b7 recent",
+          "label": "Segment 1"
+        },
+        {
+          "segment_id": 0,
+          "customers": 1332,
+          "share_pct": 31.4,
+          "median_recency_days": 43.0,
+          "median_orders": 3.0,
+          "median_spend": 795.73,
+          "median_basket": 296.36,
+          "return_rate_pct": 1.05,
+          "retained_pct": 70.2,
+          "median_future_revenue": 348.08,
+          "mean_future_revenue": 1109.15,
+          "tag": "mid value \u00b7 recent",
+          "label": "Segment 2"
+        },
+        {
+          "segment_id": 2,
+          "customers": 210,
+          "share_pct": 5.0,
+          "median_recency_days": 167.0,
+          "median_orders": 2.0,
+          "median_spend": 353.3,
+          "median_basket": 238.41,
+          "return_rate_pct": 22.55,
+          "retained_pct": 49.5,
+          "median_future_revenue": 0.0,
+          "mean_future_revenue": 844.41,
+          "tag": "mid value \u00b7 lapsing",
+          "label": "Segment 3"
+        },
+        {
+          "segment_id": 4,
+          "customers": 772,
+          "share_pct": 18.2,
+          "median_recency_days": 33.0,
+          "median_orders": 1.0,
+          "median_spend": 293.34,
+          "median_basket": 215.95,
+          "return_rate_pct": 1.56,
+          "retained_pct": 51.8,
+          "median_future_revenue": 80.15,
+          "mean_future_revenue": 346.85,
+          "tag": "low value \u00b7 recent",
+          "label": "Segment 4"
+        },
+        {
+          "segment_id": 3,
+          "customers": 731,
+          "share_pct": 17.2,
+          "median_recency_days": 235.0,
+          "median_orders": 1.0,
+          "median_spend": 215.46,
+          "median_basket": 180.45,
+          "return_rate_pct": 0.12,
+          "retained_pct": 31.5,
+          "median_future_revenue": 0.0,
+          "mean_future_revenue": 207.05,
+          "tag": "low value \u00b7 lapsing",
+          "label": "Segment 5"
+        }
+      ],
+      "HDBSCAN": [
+        {
+          "segment_id": -1,
+          "customers": 3429,
+          "share_pct": 80.9,
+          "median_recency_days": 56.0,
+          "median_orders": 2.0,
+          "median_spend": 705.11,
+          "median_basket": 281.02,
+          "return_rate_pct": 3.07,
+          "retained_pct": 63.4,
+          "median_future_revenue": 309.04,
+          "mean_future_revenue": 1838.41,
+          "tag": "noise",
+          "label": "Unassigned"
+        },
+        {
+          "segment_id": 0,
+          "customers": 419,
+          "share_pct": 9.9,
+          "median_recency_days": 22.0,
+          "median_orders": 5.0,
+          "median_spend": 1526.88,
+          "median_basket": 316.23,
+          "return_rate_pct": 0.97,
+          "retained_pct": 85.0,
+          "median_future_revenue": 899.63,
+          "mean_future_revenue": 1412.15,
+          "tag": "high value \u00b7 recent",
+          "label": "Segment 2"
+        },
+        {
+          "segment_id": 1,
+          "customers": 334,
+          "share_pct": 7.9,
+          "median_recency_days": 36.0,
+          "median_orders": 1.0,
+          "median_spend": 260.75,
+          "median_basket": 260.75,
+          "return_rate_pct": 0.01,
+          "retained_pct": 51.2,
+          "median_future_revenue": 82.75,
+          "mean_future_revenue": 355.73,
+          "tag": "low value \u00b7 recent",
+          "label": "Segment 3"
+        },
+        {
+          "segment_id": 2,
+          "customers": 57,
+          "share_pct": 1.3,
+          "median_recency_days": 243.0,
+          "median_orders": 1.0,
+          "median_spend": 269.21,
+          "median_basket": 269.21,
+          "return_rate_pct": 0.0,
+          "retained_pct": 33.3,
+          "median_future_revenue": 0.0,
+          "mean_future_revenue": 148.93,
+          "tag": "low value \u00b7 lapsing",
+          "label": "Segment 4"
+        }
+      ]
+    },
+    "cleaning_steps": [
+      {
+        "rule": "exact duplicate lines (includes the 9-day overlap between sheets)",
+        "removed": 34335,
+        "pct": 3.217,
+        "remaining": 1033036
+      },
+      {
+        "rule": "no customer ID",
+        "removed": 235151,
+        "pct": 22.031,
+        "remaining": 797885
+      },
+      {
+        "rule": "cancellation lines (kept aside for return rates)",
+        "removed": 18390,
+        "pct": 1.723,
+        "remaining": 779495
+      },
+      {
+        "rule": "non-product codes (postage, fees, adjustments, vouchers)",
+        "removed": 2858,
+        "pct": 0.268,
+        "remaining": 776637
+      },
+      {
+        "rule": "non-positive quantity or price",
+        "removed": 60,
+        "pct": 0.006,
+        "remaining": 776577
+      }
+    ],
+    "retained_pct": 64.18966737438076,
+    "feature_ranges": {
+      "recency_days": {
+        "p5": 2.0,
+        "median": 47.0,
+        "p95": 293.0999999999999
+      },
+      "frequency": {
+        "p5": 1.0,
+        "median": 2.0,
+        "p95": 13.0
+      },
+      "monetary": {
+        "p5": 109.42699999999999,
+        "median": 679.8,
+        "p95": 5997.934999999999
+      },
+      "avg_basket": {
+        "p5": 90.62700000000001,
+        "median": 287.685,
+        "p95": 912.4169999999995
+      },
+      "n_products": {
+        "p5": 4.0,
+        "median": 38.0,
+        "p95": 201.0
+      },
+      "tenure_days": {
+        "p5": 19.0,
+        "median": 244.0,
+        "p95": 362.0
+      },
+      "return_rate": {
+        "p5": 0.0,
+        "median": 0.0,
+        "p95": 0.125
+      }
+    }
+  },
+  "best_model": "RFM scoring rule",
+  "best_score": 0.3061600223353017,
+  "lift_over_baseline": null
+}

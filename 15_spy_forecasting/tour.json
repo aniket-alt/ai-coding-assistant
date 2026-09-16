@@ -1,0 +1,36 @@
+{
+  "api_port": 8015,
+  "web_port": 5115,
+  "views": [
+    {
+      "tab": "Forecast",
+      "file": "01_forecast_fan",
+      "expect": "Median forecast"
+    },
+    {
+      "tab": "Backtest",
+      "file": "02_backtest",
+      "expect": "Buy-and-hold Sharpe"
+    },
+    {
+      "tab": "Calibration",
+      "file": "03_calibration",
+      "expect": "Are the intervals honest?"
+    },
+    {
+      "tab": "CRISP-DM",
+      "file": "04_crispdm_walkthrough",
+      "expect": "Phase gate"
+    },
+    {
+      "tab": "Model tournament",
+      "file": "05_model_tournament",
+      "expect": "Model tournament"
+    },
+    {
+      "tab": "Audit",
+      "file": "06_leakage_audit",
+      "expect": "Assertions executed during training"
+    }
+  ]
+}

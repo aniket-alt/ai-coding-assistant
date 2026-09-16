@@ -1,0 +1,189 @@
+{
+  "project_slug": "03_customer_segmentation",
+  "project_title": "Customer Segmentation",
+  "business_question": "Which groups of customers behave differently enough to be treated differently, and do those groups still mean anything a year later?",
+  "phases": [
+    {
+      "name": "business_understanding",
+      "title": "1. Business Understanding",
+      "objective": "Find segments a retailer could act on, and prove they are more than an artefact of the algorithm.",
+      "narrative": "Segmentation is unusually easy to fake. Every clustering algorithm returns clusters, including on random noise, and the usual quality scores measure how tidy the clusters look rather than whether they are useful.\n\nA segment is useful if it predicts how customers will behave, and it is trustworthy if rebuilding it on a different sample gives the same answer. So segments here are built from customers' **first year** of purchases and judged on their **second year**, and every segmentation is rebuilt on repeated subsamples to measure its stability.\n\nTwo baselines keep the comparison honest: segments assigned at random, which should explain nothing, and the classic RFM scoring rule marketers have used for decades, which any learned method has to beat to be worth its complexity.",
+      "findings": [
+        {
+          "label": "Primary metric",
+          "value": "\u03c9\u00b2 of future spend",
+          "detail": "variance explained, corrected for k"
+        },
+        {
+          "label": "Robustness",
+          "value": "Subsample stability",
+          "detail": "adjusted Rand index"
+        },
+        {
+          "label": "Baselines",
+          "value": "Random \u00b7 RFM rule",
+          "detail": ""
+        }
+      ],
+      "figures": [],
+      "code_refs": [
+        "ml/train.py:omega_squared",
+        "ml/train.py:stability"
+      ],
+      "gate_passed": true,
+      "gate_notes": "Outcome, stability test and baselines fixed before clustering."
+    },
+    {
+      "name": "data_understanding",
+      "title": "2. Data Understanding",
+      "objective": "Reduce two years of raw transaction lines to genuine product sales by known customers.",
+      "narrative": "The export holds **1,067,371 lines** across two yearly sheets.\n\n| Rule | Removed | Share | Remaining |\n|---|---|---|---|\n| exact duplicate lines (includes the 9-day overlap between sheets) | 34,335 | 3.22% | 1,033,036 |\n| no customer ID | 235,151 | 22.03% | 797,885 |\n| cancellation lines (kept aside for return rates) | 18,390 | 1.72% | 779,495 |\n| non-product codes (postage, fees, adjustments, vouchers) | 2,858 | 0.27% | 776,637 |\n| non-positive quantity or price | 60 | 0.01% | 776,577 |\n\nThe two sheets **overlap by nine days**, 1 to 9 December 2010, so a straightforward concatenation counts those orders twice. The duplicate rule removes them along with genuine repeated lines.\n\nCancellations are removed from sales but not discarded: how often a customer returns goods is behaviour, and it becomes a feature.",
+      "findings": [
+        {
+          "label": "Raw lines",
+          "value": "1,067,371",
+          "detail": ""
+        },
+        {
+          "label": "Product sales lines",
+          "value": "776,577",
+          "detail": ""
+        },
+        {
+          "label": "First-year customers",
+          "value": "4,239",
+          "detail": ""
+        }
+      ],
+      "figures": [],
+      "code_refs": [
+        "datasets/loaders/online_retail.py:clean"
+      ],
+      "gate_passed": true,
+      "gate_notes": "776,577 product lines retained, each removal rule recorded."
+    },
+    {
+      "name": "data_preparation",
+      "title": "3. Data Preparation",
+      "objective": "Describe each customer by first-year behaviour only.",
+      "narrative": "Features are computed at a snapshot on 01 December 2010 from first-year purchases alone: recency, order count, total spend, average basket, distinct products, tenure and return rate. Counts and amounts are log-transformed so a handful of wholesale buyers do not each form a cluster of their own.\n\nThe outcome \u2014 second-year revenue \u2014 is attached afterwards and used only for scoring. **64.2%** of first-year customers bought again in the second year.\n\nSegmentations are scored on $\\omega^2$ of log future revenue:\n\n$$\\omega^2 = \\frac{SS_B - (k-1)\\,MS_W}{SS_T + MS_W}$$\n\nPlain $\\eta^2$ grows with every extra segment, so a twenty-way split would always win. $\\omega^2$ subtracts what $k$ groups explain by chance, which is why it can be negative.",
+      "findings": [
+        {
+          "label": "Customers",
+          "value": "4,239",
+          "detail": ""
+        },
+        {
+          "label": "Features",
+          "value": "7",
+          "detail": ""
+        },
+        {
+          "label": "Bought again in year two",
+          "value": "64.2%",
+          "detail": ""
+        }
+      ],
+      "figures": [],
+      "code_refs": [
+        "ml/features.py:customer_features",
+        "ml/train.py:omega_squared"
+      ],
+      "gate_passed": true,
+      "gate_notes": "Features and outcome drawn from disjoint, ordered periods; assertions executed."
+    },
+    {
+      "name": "modeling",
+      "title": "4. Modeling",
+      "objective": "Compare partitioning, probabilistic, hierarchical and density-based methods against two baselines.",
+      "narrative": "Eleven segmentations were built on identical first-year features. The highest silhouette belongs to **k-means (k=4)** (0.301); the highest future-spend separation belongs to **RFM scoring rule** (\u03c9\u00b2 0.3062). They are different methods, which is the reason silhouette is not the ranking metric.\n\nThe RFM rule reaches \u03c9\u00b2 0.3062 with no learning at all.",
+      "findings": [
+        {
+          "label": "Segmentations",
+          "value": "11",
+          "detail": ""
+        },
+        {
+          "label": "Best on future spend",
+          "value": "RFM scoring rule",
+          "detail": ""
+        },
+        {
+          "label": "Best silhouette",
+          "value": "k-means (k=4)",
+          "detail": ""
+        },
+        {
+          "label": "RFM rule \u03c9\u00b2",
+          "value": "0.3062",
+          "detail": ""
+        }
+      ],
+      "figures": [],
+      "code_refs": [
+        "ml/train.py:evaluate"
+      ],
+      "gate_passed": true,
+      "gate_notes": "11 segmentations scored on outcome, stability and geometry."
+    },
+    {
+      "name": "evaluation",
+      "title": "5. Evaluation",
+      "objective": "Decide whether any learned segmentation earns its place over the marketing rule.",
+      "narrative": "**RFM scoring rule** separates second-year spend best, at \u03c9\u00b2 0.3062. The RFM rule itself won: no learned method beat a decades-old heuristic. Its segments rebuild with a stability of 0.970 (adjusted Rand index, where 1 is identical and 0 is chance), and retention differs by 58.3 percentage points between its most and least loyal segments.\n\nRandom segments score close to zero, as they should: that row is the check that the metric is not rewarding the act of splitting itself.\n\nStability deserves attention in the leaderboard. A method can separate future spend well and still produce different segments every time it is rebuilt, and a marketing team cannot act on a segment that changes on every rerun.",
+      "findings": [
+        {
+          "label": "Best \u03c9\u00b2",
+          "value": "0.3062",
+          "detail": ""
+        },
+        {
+          "label": "Stability (ARI)",
+          "value": "0.970",
+          "detail": ""
+        },
+        {
+          "label": "Retention spread",
+          "value": "58.3 pts",
+          "detail": ""
+        },
+        {
+          "label": "Critical findings",
+          "value": "0",
+          "detail": ""
+        }
+      ],
+      "figures": [],
+      "code_refs": [
+        "ml/train.py:omega_squared",
+        "ml/train.py:stability"
+      ],
+      "gate_passed": true,
+      "gate_notes": "No critical findings; every segment scored on behaviour it never saw."
+    },
+    {
+      "name": "deployment",
+      "title": "6. Deployment",
+      "objective": "Assign a new customer to a segment and show what that segment did next.",
+      "narrative": "`POST /api/assign` takes a customer's recency, order count, spend and the other features, and returns the nearest segment of the winning method by distance to its centre in the scaled feature space, with that segment's second-year behaviour. Nearest-centre assignment works for every method in the tournament, including those with no native way to label a new point.",
+      "findings": [
+        {
+          "label": "Served segmentation",
+          "value": "RFM scoring rule",
+          "detail": ""
+        },
+        {
+          "label": "Serving port",
+          "value": "8,003",
+          "detail": ""
+        }
+      ],
+      "figures": [],
+      "code_refs": [
+        "server/inference.py"
+      ],
+      "gate_passed": true,
+      "gate_notes": "Scaler, segment centres and profiles persisted together."
+    }
+  ]
+}

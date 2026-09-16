@@ -1,0 +1,26 @@
+{
+  "api_port": 8003,
+  "web_port": 5103,
+  "views": [
+    {
+      "tab": "Segments",
+      "file": "01_segments",
+      "expect": "Bought again"
+    },
+    {
+      "tab": "Assign a customer",
+      "file": "02_assign_customer",
+      "expect": "Distance to centre"
+    },
+    {
+      "tab": "CRISP-DM",
+      "file": "03_crispdm_walkthrough",
+      "expect": "Phase gate"
+    },
+    {
+      "tab": "Audit",
+      "file": "04_leakage_audit",
+      "expect": "Assertions executed during training"
+    }
+  ]
+}

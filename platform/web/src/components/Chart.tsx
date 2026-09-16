@@ -11,6 +11,9 @@
  *    rule obliges it, and it doubles as the accessible fallback)
  *  - one y-axis, always -- dual-axis charts are not expressible here
  *
+ *  - no entrance animation: a result chart is read, not watched, and an
+ *    animation interrupted by a resize leaves marks misaligned with the axis
+ *
  * It renders the rows it is given and computes no aggregate of its own. Every
  * value plotted must already exist in an artifact or an API response.
  */
@@ -177,6 +180,7 @@ export function Chart({
           {legend}
           {series.map((s, i) => (
             <Bar key={s.key} dataKey={s.key} name={s.label} fill={colors[i]}
+                 isAnimationActive={false}
                  radius={horizontal ? [0, 4, 4, 0] : [4, 4, 0, 0]}>
               {highlightKey && series.length === 1
                 ? data.map((row, ri) => (
@@ -210,6 +214,7 @@ export function Chart({
           {legend}
           {series.map((s, i) => (
             <Area key={s.key} type="monotone" dataKey={s.key} name={s.label}
+                  isAnimationActive={false}
                   stroke={colors[i]} strokeWidth={2}
                   fill={`url(#${titleId}-g${i})`} />
           ))}
@@ -228,6 +233,7 @@ export function Chart({
           {legend}
           {series.map((s, i) => (
             <Scatter key={s.key} data={data} name={s.label} fill={colors[i]}
+                     isAnimationActive={false}
                      // 2px surface ring keeps overlapping points separable
                      stroke="var(--surface-1)" strokeWidth={2} />
           ))}
@@ -245,6 +251,7 @@ export function Chart({
         {legend}
         {series.map((s, i) => (
           <Line key={s.key} type="monotone" dataKey={s.key} name={s.label}
+                isAnimationActive={false}
                 stroke={colors[i]} strokeWidth={2} dot={false}
                 activeDot={{ r: 4, strokeWidth: 2, stroke: 'var(--surface-1)' }}
                 label={labelPoints ? undefined : undefined} />

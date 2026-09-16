@@ -5,6 +5,7 @@ Every row below is read from a project's `artifacts/metrics.json`. Projects that
 | Project | Dataset | Real data | Critical | Warnings | Runtime assertions |
 |---|---|:---:|---:|---:|---|
 | [01 NYC Taxi Trip Duration](./01_nyc_taxi_prediction/audit_report.md) | NYC TLC Yellow Taxi Trip Records — January 2024 | yes | 0 | 0 | 3/3 passed |
+| [03 Customer Segmentation](./03_customer_segmentation/audit_report.md) | Online Retail II (UCI) | yes | 0 | 0 | 3/3 passed |
 | [06 Credit Card Fraud Detection](./06_anomaly_detection/audit_report.md) | Credit Card Fraud Detection (ULB) | yes | 0 | 0 | 3/3 passed |
 | [15 SPY Probabilistic Forecasting](./15_spy_forecasting/audit_report.md) | SPY Daily Bars with VIX and 10-Year Yield | yes | 0 | 0 | 2/2 passed |
 
@@ -17,6 +18,16 @@ Every row below is read from a project's `artifacts/metrics.json`. Projects that
 | `assert_temporal_split` | ✅ passed | Last training timestamp 2024-01-24 23:59:55 precedes first test timestamp 2024-01-26 00:00:01 by 1 days 00:00:06; embargo of 12h required. |
 | `assert_disjoint` | ✅ passed | 456,487 training and 121,130 test row indices compared; 0 appear in both. |
 | `assert_no_target_leak` | ✅ passed | 22 numeric features correlated against the target; strongest was zp_median_distance at |r|=0.7821 (threshold 0.995). |
+
+Recorded by the assertion ledger while training ran; generated from `artifacts/metrics.json`.
+
+### 03 · Customer Segmentation
+
+| Assertion | Result | What it measured |
+|---|---|---|
+| `assert_temporal_split` | ✅ passed | Last training timestamp 2010-11-30 19:35:00 precedes first test timestamp 2010-12-01 08:26:00 by 0 days 12:51:00; no embargo required. |
+| `assert_disjoint` | ✅ passed | 385,427 training and 391,150 test row indices compared; 0 appear in both. |
+| `assert_no_target_leak` | ✅ passed | 7 numeric features correlated against the target; strongest was recency_days at |r|=0.4046 (threshold 0.995). |
 
 Recorded by the assertion ledger while training ran; generated from `artifacts/metrics.json`.
 

@@ -1,0 +1,31 @@
+{
+  "api_port": 8006,
+  "web_port": 5106,
+  "views": [
+    {
+      "tab": "Transaction scorer",
+      "file": "01_transaction_scorer",
+      "expect": "Suspicion score"
+    },
+    {
+      "tab": "Review budget",
+      "file": "02_review_budget",
+      "expect": "Alerts reviewed per day"
+    },
+    {
+      "tab": "CRISP-DM",
+      "file": "03_crispdm_walkthrough",
+      "expect": "Phase gate"
+    },
+    {
+      "tab": "Detector tournament",
+      "file": "04_detector_tournament",
+      "expect": "Detector tournament"
+    },
+    {
+      "tab": "Audit",
+      "file": "05_leakage_audit",
+      "expect": "Assertions executed during training"
+    }
+  ]
+}
