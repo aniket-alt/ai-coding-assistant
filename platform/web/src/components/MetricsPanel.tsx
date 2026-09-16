@@ -65,7 +65,7 @@ export function MetricsPanel({
             <StatTile
               key={s.key}
               label={s.label}
-              value={v === undefined ? '—' : fmt(v)}
+              value={v === undefined || !Number.isFinite(v) ? '—' : fmt(v)}
               unit={s.unit}
               hint={s.hint}
               accent={i === 0 ? 'var(--series-1)' : undefined}

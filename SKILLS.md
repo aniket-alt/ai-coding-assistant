@@ -9,7 +9,7 @@ Each skill links to the line where it is implemented. Links are located by searc
 | **CRISP-DM as a data structure** | [`platform/dsfs/crispdm.py`](./platform/dsfs/crispdm.py#L75) | Training fills the report as it runs, so the write-up cannot drift from what happened. |
 | **Runtime leakage assertions with a ledger** | [`platform/dsfs/leakage.py`](./platform/dsfs/leakage.py#L99) | Each check records what it measured; deleting a check deletes its evidence. |
 | **Static leakage audit (AST)** | [`platform/dsfs/leakage.py`](./platform/dsfs/leakage.py#L196) | Flags fitting on held-out data, shuffled time splits and unseeded estimators. |
-| **Temporal split with embargo** | [`platform/dsfs/leakage.py`](./platform/dsfs/leakage.py#L337) | Guarantees training ends before testing starts, with a gap against boundary bleed. |
+| **Temporal split with embargo** | [`platform/dsfs/leakage.py`](./platform/dsfs/leakage.py#L350) | Guarantees training ends before testing starts, with a gap against boundary bleed. |
 | **Generated documentation with drift check** | [`platform/dsfs/docs.py`](./platform/dsfs/docs.py#L982) | Papers, abstracts and result tables are regenerated from artifacts; CI fails if they drift. |
 | **Rendered-output verification** | [`scripts/capture_screenshots.py`](./scripts/capture_screenshots.py#L44) | Screenshots are only saved as evidence after the view is confirmed to show its expected content. |
 | **Excluding post-event fields** | [`01_nyc_taxi_prediction/ml/data.py`](./01_nyc_taxi_prediction/ml/data.py#L71) | Meter distance, fare and arrival time are unknowable at booking, so the model may not use them. |
@@ -35,6 +35,12 @@ Each skill links to the line where it is implemented. Links are located by searc
 | **Omega-squared effect size** | [`03_customer_segmentation/ml/train.py`](./03_customer_segmentation/ml/train.py#L47) | Corrects variance explained for the number of segments, so more clusters are not rewarded by default. |
 | **Clustering stability by subsampling** | [`03_customer_segmentation/ml/train.py`](./03_customer_segmentation/ml/train.py#L67) | Rebuilds each segmentation on overlapping subsamples and compares assignments with the adjusted Rand index. |
 | **RFM scoring as a baseline** | [`03_customer_segmentation/ml/train.py`](./03_customer_segmentation/ml/train.py#L116) | The classic marketing heuristic every learned segmentation has to beat. |
+| **Held-out item recommendation test** | [`04_market_basket/ml/baskets.py`](./04_market_basket/ml/baskets.py#L53) | Hides one product from each later basket so every method, rules included, is judged on the same task. |
+| **FP-Growth association rules** | [`04_market_basket/ml/baskets.py`](./04_market_basket/ml/baskets.py#L144) | Frequent itemsets mined after pruning items below support, turned into single-consequent rules. |
+| **Item-to-item co-occurrence** | [`04_market_basket/ml/baskets.py`](./04_market_basket/ml/baskets.py#L107) | A sparse co-occurrence matrix as a threshold-free baseline, which won the tournament. |
+| **Rule survival across seasons** | [`04_market_basket/ml/baskets.py`](./04_market_basket/ml/baskets.py#L236) | Recomputes every mined rule on later baskets to see whether its association still holds. |
+| **Custom checks in the audit trail** | [`platform/dsfs/leakage.py`](./platform/dsfs/leakage.py#L234) | Project-specific leakage rules recorded in the same ledger as the standard assertions. |
+| **Deterministic tie-breaking** | [`04_market_basket/ml/baskets.py`](./04_market_basket/ml/baskets.py#L39) | Explicit ordering so results do not change with Python's randomised string hashing. |
 
 ## Reproduction skills
 
@@ -42,6 +48,7 @@ Each built project ships an agent skill at `skills/reproduce/SKILL.md` describin
 
 - [`01_nyc_taxi_prediction/skills/reproduce/SKILL.md`](./01_nyc_taxi_prediction/skills/reproduce/SKILL.md)
 - [`03_customer_segmentation/skills/reproduce/SKILL.md`](./03_customer_segmentation/skills/reproduce/SKILL.md)
+- [`04_market_basket/skills/reproduce/SKILL.md`](./04_market_basket/skills/reproduce/SKILL.md)
 - [`06_anomaly_detection/skills/reproduce/SKILL.md`](./06_anomaly_detection/skills/reproduce/SKILL.md)
 - [`15_spy_forecasting/skills/reproduce/SKILL.md`](./15_spy_forecasting/skills/reproduce/SKILL.md)
 

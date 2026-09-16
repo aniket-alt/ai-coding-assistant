@@ -1,0 +1,37 @@
+{
+  "entity": "Recommender",
+  "metric_columns": [
+    {"key": "hit_rate_at_5", "label": "Hit rate @ 5", "fmt": "pct"},
+    {"key": "mrr_at_5", "label": "MRR @ 5", "fmt": "f4"},
+    {"key": "coverage_pct", "label": "Coverage", "fmt": "pct_raw"},
+    {"key": "n_rules", "label": "Rules", "fmt": "int"},
+    {"key": "rule_survival_pct", "label": "Rules held next season", "fmt": "pct_raw"}
+  ],
+  "reproduce": [
+    "python ml/train.py",
+    "python -m uvicorn main:app --app-dir server --port 8004",
+    "npm run dev -w 04_market_basket/client"
+  ],
+  "non_goals": [
+    "Personalised recommendation. Suggestions depend only on the current basket, not on a customer's history.",
+    "Pricing or promotion effects. The data records what was bought, not what was offered."
+  ],
+  "risks": [
+    "The test season is Christmas, so seasonal products are over-represented among the hidden items.",
+    "One hidden item per basket is chosen at random, which weights every product in a basket equally.",
+    "Lift above one is a lenient definition of a rule surviving; confidence retained is the stronger evidence."
+  ],
+  "lessons": [
+    "Rules scored on the baskets they were mined from always look valid. Judging them on a later season is what makes the numbers mean something.",
+    "Plain item co-occurrence, with no mining and no thresholds, recommended better than every mined rule set.",
+    "Stricter rule thresholds produce stronger rules that stay silent for most baskets; coverage has to be reported beside accuracy.",
+    "The most durable associations were often variants of a single product line, which are stable because they are obvious.",
+    "Iterating a Python set follows randomised string hashing, so tie-breaking has to be explicit or results change between identical runs."
+  ],
+  "references": [
+    "Agrawal, R., Imieliński, T., & Swami, A. (1993). Mining association rules between sets of items in large databases. ACM SIGMOD.",
+    "Han, J., Pei, J., & Yin, Y. (2000). Mining frequent patterns without candidate generation. ACM SIGMOD.",
+    "Linden, G., Smith, B., & York, J. (2003). Amazon.com recommendations: Item-to-item collaborative filtering. IEEE Internet Computing, 7(1), 76–80.",
+    "Raschka, S. (2018). MLxtend: Providing machine learning and data science utilities and extensions to Python's scientific computing stack. Journal of Open Source Software, 3(24), 638."
+  ]
+}

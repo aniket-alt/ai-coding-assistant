@@ -1,0 +1,2671 @@
+{
+  "project_slug": "04_market_basket",
+  "project_title": "Market Basket Mining",
+  "task": "association rule mining and recommendation",
+  "primary_metric": "hit_rate_at_5",
+  "higher_is_better": true,
+  "provenance": {
+    "slug": "uci-online-retail-ii",
+    "name": "Online Retail II (UCI)",
+    "source_url": "https://archive.ics.uci.edu/static/public/502/online+retail+ii.zip",
+    "license": "Creative Commons Attribution 4.0 (CC BY 4.0)",
+    "citation": "Chen, D. (2019). Online Retail II [Dataset]. UCI Machine Learning Repository. https://doi.org/10.24432/C5CG6D",
+    "retrieved_at": "2026-09-16T23:40:19Z",
+    "sha256": "572e36277c2390fbfde10664750731e0a86f55e33470d91919085f0408e67bfb",
+    "n_rows": 1067371,
+    "n_cols": 8,
+    "bytes_on_disk": 45622418,
+    "synthetic": false,
+    "notes": "All transactions of a UK-based online gift retailer, 2009-12-01 to 2011-12-09, as two overlapping yearly sheets.",
+    "extra": {
+      "training_baskets": 32126,
+      "test_baskets": 7012,
+      "products_in_training": 4604
+    }
+  },
+  "split": {
+    "strategy": "chronological with 7-day embargo, one item hidden per test basket",
+    "n_train": 32126,
+    "n_test": 6548,
+    "n_val": 0,
+    "train_end": "2011-08-31 17:30:00",
+    "test_start": "2011-09-08 08:56:00",
+    "embargo": "7 days",
+    "notes": "9.9% of hidden products never appear in training and count as misses."
+  },
+  "models": [
+    {
+      "name": "Random products",
+      "family": "baseline",
+      "metrics": {
+        "hit_rate_at_5": 0.0010690287110568112,
+        "mrr_at_5": 0.0006032376298106293,
+        "coverage_pct": 100.0,
+        "catalogue_coverage_pct": 99.86967854039965
+      },
+      "params": {
+        "k": 5
+      },
+      "fit_seconds": 0.36,
+      "predict_ms_per_1k": 0.0,
+      "notes": ""
+    },
+    {
+      "name": "Bestsellers",
+      "family": "baseline",
+      "metrics": {
+        "hit_rate_at_5": 0.01878436163714111,
+        "mrr_at_5": 0.009562716351048675,
+        "coverage_pct": 100.0,
+        "catalogue_coverage_pct": 0.47784535186794097
+      },
+      "params": {
+        "k": 5
+      },
+      "fit_seconds": 0.01,
+      "predict_ms_per_1k": 0.0,
+      "notes": "The five most frequently bought products not already in the basket."
+    },
+    {
+      "name": "Item co-occurrence",
+      "family": "item-to-item",
+      "metrics": {
+        "hit_rate_at_5": 0.18631643249847282,
+        "mrr_at_5": 0.1153634697617597,
+        "coverage_pct": 98.16737935247404,
+        "catalogue_coverage_pct": 26.84622067767159
+      },
+      "params": {
+        "min_count": 20
+      },
+      "fit_seconds": 16.49,
+      "predict_ms_per_1k": 0.0,
+      "notes": "Highest P(item | basket item); no mining and no thresholds."
+    },
+    {
+      "name": "FP-Growth rules (s\u22652.0%, c\u226530%)",
+      "family": "association rules",
+      "metrics": {
+        "hit_rate_at_5": 0.032987171655467315,
+        "mrr_at_5": 0.02524689472612503,
+        "coverage_pct": 45.35736102626756,
+        "catalogue_coverage_pct": 0.7602085143353605,
+        "n_rules": 107.0,
+        "rule_survival_pct": 100.0,
+        "confidence_drift": 0.051192227674658045
+      },
+      "params": {
+        "min_support": 0.02,
+        "min_confidence": 0.3,
+        "max_len": 3
+      },
+      "fit_seconds": 0.11,
+      "predict_ms_per_1k": 0.0,
+      "notes": ""
+    },
+    {
+      "name": "FP-Growth rules (s\u22651.0%, c\u226520%)",
+      "family": "association rules",
+      "metrics": {
+        "hit_rate_at_5": 0.1001832620647526,
+        "mrr_at_5": 0.0679825901038484,
+        "coverage_pct": 85.20158827122786,
+        "catalogue_coverage_pct": 3.93136403127715,
+        "n_rules": 1147.0,
+        "rule_survival_pct": 99.82517482517483,
+        "confidence_drift": 0.0586231047397799
+      },
+      "params": {
+        "min_support": 0.01,
+        "min_confidence": 0.2,
+        "max_len": 3
+      },
+      "fit_seconds": 0.51,
+      "predict_ms_per_1k": 0.0,
+      "notes": ""
+    },
+    {
+      "name": "FP-Growth rules (s\u22650.5%, c\u226510%)",
+      "family": "association rules",
+      "metrics": {
+        "hit_rate_at_5": 0.14324984728161272,
+        "mrr_at_5": 0.09095143555284048,
+        "coverage_pct": 92.73060476481369,
+        "catalogue_coverage_pct": 9.839270199826238,
+        "n_rules": 11617.0,
+        "rule_survival_pct": 99.35150293576373,
+        "confidence_drift": 0.06705006866641011
+      },
+      "params": {
+        "min_support": 0.005,
+        "min_confidence": 0.1,
+        "max_len": 3
+      },
+      "fit_seconds": 2.41,
+      "predict_ms_per_1k": 0.0,
+      "notes": ""
+    },
+    {
+      "name": "Rules + bestseller fallback",
+      "family": "association rules",
+      "metrics": {
+        "hit_rate_at_5": 0.14386072083078802,
+        "mrr_at_5": 0.0913077784565261,
+        "coverage_pct": 92.73060476481369,
+        "catalogue_coverage_pct": 9.839270199826238,
+        "n_rules": 11617.0,
+        "rule_survival_pct": 99.35150293576373,
+        "confidence_drift": 0.06705006866641011
+      },
+      "params": {
+        "min_support": 0.005,
+        "min_confidence": 0.1,
+        "fallback": "bestsellers"
+      },
+      "fit_seconds": 2.68,
+      "predict_ms_per_1k": 0.0,
+      "notes": "Rule recommendations first; any empty slots filled with bestsellers."
+    }
+  ],
+  "baseline": {},
+  "audit": {
+    "critical": 0,
+    "warnings": 0,
+    "total": 0,
+    "runtime_assertions": [
+      {
+        "name": "assert_temporal_split",
+        "passed": true,
+        "detail": "Last training timestamp 2011-08-31 17:30:00 precedes first test timestamp 2011-09-08 08:56:00 by 7 days 15:26:00; embargo of 6D required.",
+        "params": {
+          "train_end": "2011-08-31 17:30:00",
+          "test_start": "2011-09-08 08:56:00",
+          "gap": "7 days 15:26:00",
+          "embargo_required": "6D",
+          "chronologically_ordered": true
+        },
+        "at": "2026-09-16T23:40:23Z"
+      },
+      {
+        "name": "assert_disjoint",
+        "passed": true,
+        "detail": "789,736 training and 203,765 test row indices compared; 0 appear in both.",
+        "params": {
+          "n_train": 789736,
+          "n_test": 203765,
+          "n_overlap": 0
+        },
+        "at": "2026-09-16T23:40:24Z"
+      },
+      {
+        "name": "assert_no_shared_invoices",
+        "passed": true,
+        "detail": "32,126 training and 7,012 test invoices compared; 0 in both.",
+        "params": {
+          "train_invoices": 32126,
+          "test_invoices": 7012,
+          "shared": 0
+        },
+        "at": "2026-09-16T23:40:24Z"
+      },
+      {
+        "name": "assert_hidden_item_not_visible",
+        "passed": true,
+        "detail": "6,548 test baskets checked; the hidden item was visible to the model in 0.",
+        "params": {
+          "baskets": 6548,
+          "violations": 0
+        },
+        "at": "2026-09-16T23:40:24Z"
+      }
+    ],
+    "assertions_passed": 4,
+    "assertions_run": 4
+  },
+  "env": {
+    "python": "3.11.6",
+    "platform": "Windows 10",
+    "machine": "AMD64",
+    "numpy": "2.4.6",
+    "pandas": "3.0.5",
+    "sklearn": "1.9.1",
+    "git_commit": "3d7f8d5"
+  },
+  "created_at": "2026-09-16T23:40:24Z",
+  "duration_seconds": 44.4,
+  "extra": {
+    "rules": [
+      {
+        "antecedent": "HERB MARKER THYME + HERB MARKER PARSLEY",
+        "antecedent_codes": [
+          "22916",
+          "22918"
+        ],
+        "consequent": "HERB MARKER CHIVES",
+        "consequent_code": "22921",
+        "support_pct": 0.504,
+        "confidence": 0.8663,
+        "lift": 151.26,
+        "test_confidence": 0.8571,
+        "test_lift": 176.77,
+        "survived": true
+      },
+      {
+        "antecedent": "HERB MARKER THYME + HERB MARKER CHIVES",
+        "antecedent_codes": [
+          "22916",
+          "22921"
+        ],
+        "consequent": "HERB MARKER PARSLEY",
+        "consequent_code": "22918",
+        "support_pct": 0.504,
+        "confidence": 0.9643,
+        "lift": 150.38,
+        "test_confidence": 1.0,
+        "test_lift": 171.02,
+        "survived": true
+      },
+      {
+        "antecedent": "HERB MARKER THYME + HERB MARKER MINT",
+        "antecedent_codes": [
+          "22916",
+          "22919"
+        ],
+        "consequent": "HERB MARKER ROSEMARY",
+        "consequent_code": "22917",
+        "support_pct": 0.532,
+        "confidence": 0.95,
+        "lift": 148.88,
+        "test_confidence": 1.0,
+        "test_lift": 155.82,
+        "survived": true
+      },
+      {
+        "antecedent": "HERB MARKER ROSEMARY + HERB MARKER PARSLEY",
+        "antecedent_codes": [
+          "22917",
+          "22918"
+        ],
+        "consequent": "HERB MARKER THYME",
+        "consequent_code": "22916",
+        "support_pct": 0.548,
+        "confidence": 0.9565,
+        "lift": 148.45,
+        "test_confidence": 0.8974,
+        "test_lift": 157.32,
+        "survived": true
+      },
+      {
+        "antecedent": "HERB MARKER PARSLEY + HERB MARKER CHIVES",
+        "antecedent_codes": [
+          "22918",
+          "22921"
+        ],
+        "consequent": "HERB MARKER THYME",
+        "consequent_code": "22916",
+        "support_pct": 0.504,
+        "confidence": 0.9529,
+        "lift": 147.89,
+        "test_confidence": 0.9375,
+        "test_lift": 164.34,
+        "survived": true
+      },
+      {
+        "antecedent": "HERB MARKER THYME + HERB MARKER PARSLEY",
+        "antecedent_codes": [
+          "22916",
+          "22918"
+        ],
+        "consequent": "HERB MARKER ROSEMARY",
+        "consequent_code": "22917",
+        "support_pct": 0.548,
+        "confidence": 0.9412,
+        "lift": 147.49,
+        "test_confidence": 1.0,
+        "test_lift": 155.82,
+        "survived": true
+      },
+      {
+        "antecedent": "HERB MARKER THYME + HERB MARKER BASIL",
+        "antecedent_codes": [
+          "22916",
+          "22920"
+        ],
+        "consequent": "HERB MARKER ROSEMARY",
+        "consequent_code": "22917",
+        "support_pct": 0.539,
+        "confidence": 0.9402,
+        "lift": 147.34,
+        "test_confidence": 1.0,
+        "test_lift": 155.82,
+        "survived": true
+      },
+      {
+        "antecedent": "HERB MARKER THYME + HERB MARKER MINT",
+        "antecedent_codes": [
+          "22916",
+          "22919"
+        ],
+        "consequent": "HERB MARKER PARSLEY",
+        "consequent_code": "22918",
+        "support_pct": 0.529,
+        "confidence": 0.9444,
+        "lift": 147.29,
+        "test_confidence": 0.9091,
+        "test_lift": 155.48,
+        "survived": true
+      },
+      {
+        "antecedent": "HERB MARKER ROSEMARY + HERB MARKER BASIL",
+        "antecedent_codes": [
+          "22917",
+          "22920"
+        ],
+        "consequent": "HERB MARKER THYME",
+        "consequent_code": "22916",
+        "support_pct": 0.539,
+        "confidence": 0.9402,
+        "lift": 145.92,
+        "test_confidence": 0.9211,
+        "test_lift": 161.46,
+        "survived": true
+      },
+      {
+        "antecedent": "HERB MARKER ROSEMARY + HERB MARKER MINT",
+        "antecedent_codes": [
+          "22917",
+          "22919"
+        ],
+        "consequent": "HERB MARKER THYME",
+        "consequent_code": "22916",
+        "support_pct": 0.532,
+        "confidence": 0.9344,
+        "lift": 145.02,
+        "test_confidence": 0.9167,
+        "test_lift": 160.69,
+        "survived": true
+      },
+      {
+        "antecedent": "HERB MARKER MINT + HERB MARKER BASIL",
+        "antecedent_codes": [
+          "22919",
+          "22920"
+        ],
+        "consequent": "HERB MARKER ROSEMARY",
+        "consequent_code": "22917",
+        "support_pct": 0.526,
+        "confidence": 0.9235,
+        "lift": 144.72,
+        "test_confidence": 0.9688,
+        "test_lift": 150.95,
+        "survived": true
+      },
+      {
+        "antecedent": "HERB MARKER THYME + HERB MARKER ROSEMARY",
+        "antecedent_codes": [
+          "22916",
+          "22917"
+        ],
+        "consequent": "HERB MARKER PARSLEY",
+        "consequent_code": "22918",
+        "support_pct": 0.548,
+        "confidence": 0.9263,
+        "lift": 144.46,
+        "test_confidence": 0.875,
+        "test_lift": 149.65,
+        "survived": true
+      },
+      {
+        "antecedent": "HERB MARKER THYME + HERB MARKER BASIL",
+        "antecedent_codes": [
+          "22916",
+          "22920"
+        ],
+        "consequent": "HERB MARKER PARSLEY",
+        "consequent_code": "22918",
+        "support_pct": 0.529,
+        "confidence": 0.9239,
+        "lift": 144.09,
+        "test_confidence": 0.9143,
+        "test_lift": 156.37,
+        "survived": true
+      },
+      {
+        "antecedent": "HERB MARKER CHIVES",
+        "antecedent_codes": [
+          "22921"
+        ],
+        "consequent": "HERB MARKER PARSLEY",
+        "consequent_code": "22918",
+        "support_pct": 0.529,
+        "confidence": 0.9239,
+        "lift": 144.09,
+        "test_confidence": 0.9412,
+        "test_lift": 160.96,
+        "survived": true
+      },
+      {
+        "antecedent": "HERB MARKER PARSLEY",
+        "antecedent_codes": [
+          "22918"
+        ],
+        "consequent": "HERB MARKER CHIVES",
+        "consequent_code": "22921",
+        "support_pct": 0.529,
+        "confidence": 0.8252,
+        "lift": 144.09,
+        "test_confidence": 0.7805,
+        "test_lift": 160.96,
+        "survived": true
+      },
+      {
+        "antecedent": "HERB MARKER ROSEMARY + HERB MARKER MINT",
+        "antecedent_codes": [
+          "22917",
+          "22919"
+        ],
+        "consequent": "HERB MARKER PARSLEY",
+        "consequent_code": "22918",
+        "support_pct": 0.526,
+        "confidence": 0.9235,
+        "lift": 144.02,
+        "test_confidence": 0.9167,
+        "test_lift": 156.77,
+        "survived": true
+      },
+      {
+        "antecedent": "HERB MARKER MINT + HERB MARKER BASIL",
+        "antecedent_codes": [
+          "22919",
+          "22920"
+        ],
+        "consequent": "HERB MARKER PARSLEY",
+        "consequent_code": "22918",
+        "support_pct": 0.526,
+        "confidence": 0.9235,
+        "lift": 144.02,
+        "test_confidence": 0.875,
+        "test_lift": 149.65,
+        "survived": true
+      },
+      {
+        "antecedent": "HERB MARKER ROSEMARY",
+        "antecedent_codes": [
+          "22917"
+        ],
+        "consequent": "HERB MARKER THYME",
+        "consequent_code": "22916",
+        "support_pct": 0.591,
+        "confidence": 0.9268,
+        "lift": 143.84,
+        "test_confidence": 0.8889,
+        "test_lift": 155.82,
+        "survived": true
+      },
+      {
+        "antecedent": "HERB MARKER THYME",
+        "antecedent_codes": [
+          "22916"
+        ],
+        "consequent": "HERB MARKER ROSEMARY",
+        "consequent_code": "22917",
+        "support_pct": 0.591,
+        "confidence": 0.9179,
+        "lift": 143.84,
+        "test_confidence": 1.0,
+        "test_lift": 155.82,
+        "survived": true
+      },
+      {
+        "antecedent": "HERB MARKER PARSLEY + HERB MARKER MINT",
+        "antecedent_codes": [
+          "22918",
+          "22919"
+        ],
+        "consequent": "HERB MARKER ROSEMARY",
+        "consequent_code": "22917",
+        "support_pct": 0.526,
+        "confidence": 0.9135,
+        "lift": 143.16,
+        "test_confidence": 1.0,
+        "test_lift": 155.82,
+        "survived": true
+      },
+      {
+        "antecedent": "HERB MARKER PARSLEY + HERB MARKER MINT",
+        "antecedent_codes": [
+          "22918",
+          "22919"
+        ],
+        "consequent": "HERB MARKER THYME",
+        "consequent_code": "22916",
+        "support_pct": 0.529,
+        "confidence": 0.9189,
+        "lift": 142.61,
+        "test_confidence": 0.9091,
+        "test_lift": 159.36,
+        "survived": true
+      },
+      {
+        "antecedent": "HERB MARKER PARSLEY + HERB MARKER BASIL",
+        "antecedent_codes": [
+          "22918",
+          "22920"
+        ],
+        "consequent": "HERB MARKER THYME",
+        "consequent_code": "22916",
+        "support_pct": 0.529,
+        "confidence": 0.9189,
+        "lift": 142.61,
+        "test_confidence": 0.8889,
+        "test_lift": 155.82,
+        "survived": true
+      },
+      {
+        "antecedent": "HERB MARKER ROSEMARY + HERB MARKER BASIL",
+        "antecedent_codes": [
+          "22917",
+          "22920"
+        ],
+        "consequent": "HERB MARKER PARSLEY",
+        "consequent_code": "22918",
+        "support_pct": 0.523,
+        "confidence": 0.913,
+        "lift": 142.39,
+        "test_confidence": 0.8947,
+        "test_lift": 153.02,
+        "survived": true
+      },
+      {
+        "antecedent": "HERB MARKER PARSLEY + HERB MARKER BASIL",
+        "antecedent_codes": [
+          "22918",
+          "22920"
+        ],
+        "consequent": "HERB MARKER ROSEMARY",
+        "consequent_code": "22917",
+        "support_pct": 0.523,
+        "confidence": 0.9081,
+        "lift": 142.31,
+        "test_confidence": 0.9444,
+        "test_lift": 147.17,
+        "survived": true
+      },
+      {
+        "antecedent": "HERB MARKER ROSEMARY + HERB MARKER MINT",
+        "antecedent_codes": [
+          "22917",
+          "22919"
+        ],
+        "consequent": "HERB MARKER BASIL",
+        "consequent_code": "22920",
+        "support_pct": 0.526,
+        "confidence": 0.9235,
+        "lift": 141.95,
+        "test_confidence": 0.8611,
+        "test_lift": 143.76,
+        "survived": true
+      },
+      {
+        "antecedent": "HERB MARKER THYME",
+        "antecedent_codes": [
+          "22916"
+        ],
+        "consequent": "HERB MARKER CHIVES",
+        "consequent_code": "22921",
+        "support_pct": 0.523,
+        "confidence": 0.8116,
+        "lift": 141.7,
+        "test_confidence": 0.75,
+        "test_lift": 154.68,
+        "survived": true
+      },
+      {
+        "antecedent": "HERB MARKER CHIVES",
+        "antecedent_codes": [
+          "22921"
+        ],
+        "consequent": "HERB MARKER THYME",
+        "consequent_code": "22916",
+        "support_pct": 0.523,
+        "confidence": 0.913,
+        "lift": 141.7,
+        "test_confidence": 0.8824,
+        "test_lift": 154.68,
+        "survived": true
+      },
+      {
+        "antecedent": "HERB MARKER ROSEMARY + HERB MARKER PARSLEY",
+        "antecedent_codes": [
+          "22917",
+          "22918"
+        ],
+        "consequent": "HERB MARKER MINT",
+        "consequent_code": "22919",
+        "support_pct": 0.526,
+        "confidence": 0.9185,
+        "lift": 141.18,
+        "test_confidence": 0.8462,
+        "test_lift": 156.14,
+        "survived": true
+      },
+      {
+        "antecedent": "HERB MARKER ROSEMARY + HERB MARKER BASIL",
+        "antecedent_codes": [
+          "22917",
+          "22920"
+        ],
+        "consequent": "HERB MARKER MINT",
+        "consequent_code": "22919",
+        "support_pct": 0.526,
+        "confidence": 0.9185,
+        "lift": 141.18,
+        "test_confidence": 0.8158,
+        "test_lift": 150.53,
+        "survived": true
+      },
+      {
+        "antecedent": "HERB MARKER THYME + HERB MARKER MINT",
+        "antecedent_codes": [
+          "22916",
+          "22919"
+        ],
+        "consequent": "HERB MARKER BASIL",
+        "consequent_code": "22920",
+        "support_pct": 0.514,
+        "confidence": 0.9167,
+        "lift": 140.9,
+        "test_confidence": 0.9091,
+        "test_lift": 151.77,
+        "survived": true
+      },
+      {
+        "antecedent": "HERB MARKER THYME",
+        "antecedent_codes": [
+          "22916"
+        ],
+        "consequent": "HERB MARKER PARSLEY",
+        "consequent_code": "22918",
+        "support_pct": 0.582,
+        "confidence": 0.9034,
+        "lift": 140.88,
+        "test_confidence": 0.875,
+        "test_lift": 149.65,
+        "survived": true
+      },
+      {
+        "antecedent": "HERB MARKER PARSLEY",
+        "antecedent_codes": [
+          "22918"
+        ],
+        "consequent": "HERB MARKER THYME",
+        "consequent_code": "22916",
+        "support_pct": 0.582,
+        "confidence": 0.9078,
+        "lift": 140.88,
+        "test_confidence": 0.8537,
+        "test_lift": 149.65,
+        "survived": true
+      },
+      {
+        "antecedent": "HERB MARKER ROSEMARY",
+        "antecedent_codes": [
+          "22917"
+        ],
+        "consequent": "HERB MARKER CHIVES",
+        "consequent_code": "22921",
+        "support_pct": 0.514,
+        "confidence": 0.8049,
+        "lift": 140.53,
+        "test_confidence": 0.7111,
+        "test_lift": 146.66,
+        "survived": true
+      },
+      {
+        "antecedent": "HERB MARKER CHIVES",
+        "antecedent_codes": [
+          "22921"
+        ],
+        "consequent": "HERB MARKER ROSEMARY",
+        "consequent_code": "22917",
+        "support_pct": 0.514,
+        "confidence": 0.8967,
+        "lift": 140.53,
+        "test_confidence": 0.9412,
+        "test_lift": 146.66,
+        "survived": true
+      },
+      {
+        "antecedent": "HERB MARKER PARSLEY + HERB MARKER BASIL",
+        "antecedent_codes": [
+          "22918",
+          "22920"
+        ],
+        "consequent": "HERB MARKER MINT",
+        "consequent_code": "22919",
+        "support_pct": 0.526,
+        "confidence": 0.9135,
+        "lift": 140.42,
+        "test_confidence": 0.7778,
+        "test_lift": 143.52,
+        "survived": true
+      },
+      {
+        "antecedent": "HERB MARKER PARSLEY + HERB MARKER MINT",
+        "antecedent_codes": [
+          "22918",
+          "22919"
+        ],
+        "consequent": "HERB MARKER BASIL",
+        "consequent_code": "22920",
+        "support_pct": 0.526,
+        "confidence": 0.9135,
+        "lift": 140.42,
+        "test_confidence": 0.8485,
+        "test_lift": 141.66,
+        "survived": true
+      },
+      {
+        "antecedent": "HERB MARKER ROSEMARY + HERB MARKER PARSLEY",
+        "antecedent_codes": [
+          "22917",
+          "22918"
+        ],
+        "consequent": "HERB MARKER BASIL",
+        "consequent_code": "22920",
+        "support_pct": 0.523,
+        "confidence": 0.913,
+        "lift": 140.35,
+        "test_confidence": 0.8718,
+        "test_lift": 145.55,
+        "survived": true
+      },
+      {
+        "antecedent": "HERB MARKER ROSEMARY",
+        "antecedent_codes": [
+          "22917"
+        ],
+        "consequent": "HERB MARKER PARSLEY",
+        "consequent_code": "22918",
+        "support_pct": 0.573,
+        "confidence": 0.8976,
+        "lift": 139.98,
+        "test_confidence": 0.8667,
+        "test_lift": 148.22,
+        "survived": true
+      },
+      {
+        "antecedent": "HERB MARKER PARSLEY",
+        "antecedent_codes": [
+          "22918"
+        ],
+        "consequent": "HERB MARKER ROSEMARY",
+        "consequent_code": "22917",
+        "support_pct": 0.573,
+        "confidence": 0.8932,
+        "lift": 139.98,
+        "test_confidence": 0.9512,
+        "test_lift": 148.22,
+        "survived": true
+      },
+      {
+        "antecedent": "HERB MARKER THYME + HERB MARKER ROSEMARY",
+        "antecedent_codes": [
+          "22916",
+          "22917"
+        ],
+        "consequent": "HERB MARKER BASIL",
+        "consequent_code": "22920",
+        "support_pct": 0.539,
+        "confidence": 0.9105,
+        "lift": 139.96,
+        "test_confidence": 0.875,
+        "test_lift": 146.08,
+        "survived": true
+      },
+      {
+        "antecedent": "HERB MARKER MINT + HERB MARKER BASIL",
+        "antecedent_codes": [
+          "22919",
+          "22920"
+        ],
+        "consequent": "HERB MARKER THYME",
+        "consequent_code": "22916",
+        "support_pct": 0.514,
+        "confidence": 0.9016,
+        "lift": 139.93,
+        "test_confidence": 0.9375,
+        "test_lift": 164.34,
+        "survived": true
+      },
+      {
+        "antecedent": "HERB MARKER THYME + HERB MARKER PARSLEY",
+        "antecedent_codes": [
+          "22916",
+          "22918"
+        ],
+        "consequent": "HERB MARKER BASIL",
+        "consequent_code": "22920",
+        "support_pct": 0.529,
+        "confidence": 0.9091,
+        "lift": 139.74,
+        "test_confidence": 0.9143,
+        "test_lift": 152.64,
+        "survived": true
+      },
+      {
+        "antecedent": "HERB MARKER THYME + HERB MARKER PARSLEY",
+        "antecedent_codes": [
+          "22916",
+          "22918"
+        ],
+        "consequent": "HERB MARKER MINT",
+        "consequent_code": "22919",
+        "support_pct": 0.529,
+        "confidence": 0.9091,
+        "lift": 139.74,
+        "test_confidence": 0.8571,
+        "test_lift": 158.17,
+        "survived": true
+      },
+      {
+        "antecedent": "HERB MARKER THYME + HERB MARKER ROSEMARY",
+        "antecedent_codes": [
+          "22916",
+          "22917"
+        ],
+        "consequent": "HERB MARKER MINT",
+        "consequent_code": "22919",
+        "support_pct": 0.532,
+        "confidence": 0.9,
+        "lift": 138.34,
+        "test_confidence": 0.825,
+        "test_lift": 152.23,
+        "survived": true
+      },
+      {
+        "antecedent": "REGENCY TEA PLATE PINK",
+        "antecedent_codes": [
+          "23172"
+        ],
+        "consequent": "REGENCY TEA PLATE GREEN",
+        "consequent_code": "23171",
+        "support_pct": 0.501,
+        "confidence": 0.92,
+        "lift": 138.11,
+        "test_confidence": 0.8934,
+        "test_lift": 40.68,
+        "survived": true
+      },
+      {
+        "antecedent": "REGENCY TEA PLATE GREEN",
+        "antecedent_codes": [
+          "23171"
+        ],
+        "consequent": "REGENCY TEA PLATE PINK",
+        "consequent_code": "23172",
+        "support_pct": 0.501,
+        "confidence": 0.7523,
+        "lift": 138.11,
+        "test_confidence": 0.7078,
+        "test_lift": 40.68,
+        "survived": true
+      },
+      {
+        "antecedent": "HERB MARKER PARSLEY",
+        "antecedent_codes": [
+          "22918"
+        ],
+        "consequent": "HERB MARKER BASIL",
+        "consequent_code": "22920",
+        "support_pct": 0.576,
+        "confidence": 0.8981,
+        "lift": 138.04,
+        "test_confidence": 0.878,
+        "test_lift": 146.59,
+        "survived": true
+      },
+      {
+        "antecedent": "HERB MARKER PARSLEY",
+        "antecedent_codes": [
+          "22918"
+        ],
+        "consequent": "HERB MARKER MINT",
+        "consequent_code": "22919",
+        "support_pct": 0.576,
+        "confidence": 0.8981,
+        "lift": 138.04,
+        "test_confidence": 0.8049,
+        "test_lift": 148.52,
+        "survived": true
+      },
+      {
+        "antecedent": "HERB MARKER BASIL",
+        "antecedent_codes": [
+          "22920"
+        ],
+        "consequent": "HERB MARKER PARSLEY",
+        "consequent_code": "22918",
+        "support_pct": 0.576,
+        "confidence": 0.8852,
+        "lift": 138.04,
+        "test_confidence": 0.8571,
+        "test_lift": 146.59,
+        "survived": true
+      },
+      {
+        "antecedent": "HERB MARKER MINT",
+        "antecedent_codes": [
+          "22919"
+        ],
+        "consequent": "HERB MARKER PARSLEY",
+        "consequent_code": "22918",
+        "support_pct": 0.576,
+        "confidence": 0.8852,
+        "lift": 138.04,
+        "test_confidence": 0.8684,
+        "test_lift": 148.52,
+        "survived": true
+      },
+      {
+        "antecedent": "HERB MARKER BASIL",
+        "antecedent_codes": [
+          "22920"
+        ],
+        "consequent": "HERB MARKER ROSEMARY",
+        "consequent_code": "22917",
+        "support_pct": 0.573,
+        "confidence": 0.8804,
+        "lift": 137.97,
+        "test_confidence": 0.9048,
+        "test_lift": 140.98,
+        "survived": true
+      },
+      {
+        "antecedent": "HERB MARKER ROSEMARY",
+        "antecedent_codes": [
+          "22917"
+        ],
+        "consequent": "HERB MARKER BASIL",
+        "consequent_code": "22920",
+        "support_pct": 0.573,
+        "confidence": 0.8976,
+        "lift": 137.97,
+        "test_confidence": 0.8444,
+        "test_lift": 140.98,
+        "survived": true
+      },
+      {
+        "antecedent": "HERB MARKER THYME + HERB MARKER BASIL",
+        "antecedent_codes": [
+          "22916",
+          "22920"
+        ],
+        "consequent": "HERB MARKER MINT",
+        "consequent_code": "22919",
+        "support_pct": 0.514,
+        "confidence": 0.8967,
+        "lift": 137.84,
+        "test_confidence": 0.8571,
+        "test_lift": 158.17,
+        "survived": true
+      },
+      {
+        "antecedent": "HERB MARKER CHIVES",
+        "antecedent_codes": [
+          "22921"
+        ],
+        "consequent": "HERB MARKER MINT",
+        "consequent_code": "22919",
+        "support_pct": 0.514,
+        "confidence": 0.8967,
+        "lift": 137.84,
+        "test_confidence": 0.9118,
+        "test_lift": 168.24,
+        "survived": true
+      },
+      {
+        "antecedent": "HERB MARKER MINT",
+        "antecedent_codes": [
+          "22919"
+        ],
+        "consequent": "HERB MARKER CHIVES",
+        "consequent_code": "22921",
+        "support_pct": 0.514,
+        "confidence": 0.7895,
+        "lift": 137.84,
+        "test_confidence": 0.8158,
+        "test_lift": 168.24,
+        "survived": true
+      },
+      {
+        "antecedent": "HERB MARKER ROSEMARY",
+        "antecedent_codes": [
+          "22917"
+        ],
+        "consequent": "HERB MARKER MINT",
+        "consequent_code": "22919",
+        "support_pct": 0.57,
+        "confidence": 0.8927,
+        "lift": 137.22,
+        "test_confidence": 0.8,
+        "test_lift": 147.62,
+        "survived": true
+      },
+      {
+        "antecedent": "HERB MARKER MINT",
+        "antecedent_codes": [
+          "22919"
+        ],
+        "consequent": "HERB MARKER ROSEMARY",
+        "consequent_code": "22917",
+        "support_pct": 0.57,
+        "confidence": 0.8756,
+        "lift": 137.22,
+        "test_confidence": 0.9474,
+        "test_lift": 147.62,
+        "survived": true
+      },
+      {
+        "antecedent": "HERB MARKER THYME",
+        "antecedent_codes": [
+          "22916"
+        ],
+        "consequent": "HERB MARKER BASIL",
+        "consequent_code": "22920",
+        "support_pct": 0.573,
+        "confidence": 0.8889,
+        "lift": 136.63,
+        "test_confidence": 0.875,
+        "test_lift": 146.08,
+        "survived": true
+      },
+      {
+        "antecedent": "HERB MARKER BASIL",
+        "antecedent_codes": [
+          "22920"
+        ],
+        "consequent": "HERB MARKER THYME",
+        "consequent_code": "22916",
+        "support_pct": 0.573,
+        "confidence": 0.8804,
+        "lift": 136.63,
+        "test_confidence": 0.8333,
+        "test_lift": 146.08,
+        "survived": true
+      },
+      {
+        "antecedent": "HERB MARKER BASIL",
+        "antecedent_codes": [
+          "22920"
+        ],
+        "consequent": "HERB MARKER CHIVES",
+        "consequent_code": "22921",
+        "support_pct": 0.507,
+        "confidence": 0.7799,
+        "lift": 136.17,
+        "test_confidence": 0.6667,
+        "test_lift": 137.49,
+        "survived": true
+      }
+    ],
+    "survival": {
+      "FP-Growth rules (s\u22652.0%, c\u226530%)": {
+        "evaluable": 107,
+        "survival_pct": 100.0,
+        "confidence_drift": 0.051192227674658045,
+        "median_confidence_ratio": 0.9659770802650957
+      },
+      "FP-Growth rules (s\u22651.0%, c\u226520%)": {
+        "evaluable": 1144,
+        "survival_pct": 99.82517482517483,
+        "confidence_drift": 0.0586231047397799,
+        "median_confidence_ratio": 0.9970904315680436
+      },
+      "FP-Growth rules (s\u22650.5%, c\u226510%)": {
+        "evaluable": 11411,
+        "survival_pct": 99.35150293576373,
+        "confidence_drift": 0.06705006866641011,
+        "median_confidence_ratio": 1.0105472417030208
+      },
+      "Rules + bestseller fallback": {
+        "evaluable": 11411,
+        "survival_pct": 99.35150293576373,
+        "confidence_drift": 0.06705006866641011,
+        "median_confidence_ratio": 1.0105472417030208
+      }
+    },
+    "unseen_hidden_pct": 9.880879657910812,
+    "popular_items": [
+      {
+        "code": "85123A",
+        "name": "WHITE HANGING HEART T-LIGHT HOLDER",
+        "support_pct": 14.7
+      },
+      {
+        "code": "22423",
+        "name": "REGENCY CAKESTAND 3 TIER",
+        "support_pct": 10.39
+      },
+      {
+        "code": "85099B",
+        "name": "JUMBO BAG RED RETROSPOT",
+        "support_pct": 10.22
+      },
+      {
+        "code": "21212",
+        "name": "PACK OF 72 RETROSPOT CAKE CASES",
+        "support_pct": 8.44
+      },
+      {
+        "code": "20725",
+        "name": "LUNCH BAG RED RETROSPOT",
+        "support_pct": 8.02
+      },
+      {
+        "code": "47566",
+        "name": "PARTY BUNTING",
+        "support_pct": 7.21
+      },
+      {
+        "code": "84879",
+        "name": "ASSORTED COLOUR BIRD ORNAMENT",
+        "support_pct": 7.08
+      },
+      {
+        "code": "21232",
+        "name": "STRAWBERRY CERAMIC TRINKET BOX",
+        "support_pct": 6.75
+      },
+      {
+        "code": "22383",
+        "name": "LUNCH BAG SUKI  DESIGN",
+        "support_pct": 6.26
+      },
+      {
+        "code": "21931",
+        "name": "JUMBO STORAGE BAG SUKI",
+        "support_pct": 6.17
+      },
+      {
+        "code": "20727",
+        "name": "LUNCH BAG  BLACK SKULL.",
+        "support_pct": 5.92
+      },
+      {
+        "code": "84991",
+        "name": "60 TEATIME FAIRY CAKE CASES",
+        "support_pct": 5.87
+      },
+      {
+        "code": "22386",
+        "name": "JUMBO BAG PINK POLKADOT",
+        "support_pct": 5.86
+      },
+      {
+        "code": "21080",
+        "name": "SET/20 RED RETROSPOT PAPER NAPKINS",
+        "support_pct": 5.82
+      },
+      {
+        "code": "21754",
+        "name": "HOME BUILDING BLOCK WORD",
+        "support_pct": 5.78
+      },
+      {
+        "code": "22411",
+        "name": "JUMBO SHOPPER VINTAGE RED PAISLEY",
+        "support_pct": 5.68
+      },
+      {
+        "code": "22384",
+        "name": "LUNCH BAG PINK POLKADOT",
+        "support_pct": 5.57
+      },
+      {
+        "code": "22197",
+        "name": "SMALL POPCORN HOLDER",
+        "support_pct": 5.44
+      },
+      {
+        "code": "22469",
+        "name": "HEART OF WICKER SMALL",
+        "support_pct": 5.44
+      },
+      {
+        "code": "22382",
+        "name": "LUNCH BAG SPACEBOY DESIGN",
+        "support_pct": 5.41
+      },
+      {
+        "code": "20914",
+        "name": "SET/5 RED RETROSPOT LID GLASS BOWLS",
+        "support_pct": 5.4
+      },
+      {
+        "code": "21977",
+        "name": "PACK OF 60 PINK PAISLEY CAKE CASES",
+        "support_pct": 5.4
+      },
+      {
+        "code": "20728",
+        "name": "LUNCH BAG CARS BLUE",
+        "support_pct": 5.3
+      },
+      {
+        "code": "82482",
+        "name": "WOODEN PICTURE FRAME WHITE FINISH",
+        "support_pct": 5.23
+      },
+      {
+        "code": "22457",
+        "name": "NATURAL SLATE HEART CHALKBOARD",
+        "support_pct": 5.16
+      },
+      {
+        "code": "20724",
+        "name": "RED RETROSPOT CHARLOTTE BAG",
+        "support_pct": 5.15
+      },
+      {
+        "code": "22139",
+        "name": "RETROSPOT TEA SET CERAMIC 11 PC",
+        "support_pct": 5.12
+      },
+      {
+        "code": "22470",
+        "name": "HEART OF WICKER LARGE",
+        "support_pct": 5.06
+      },
+      {
+        "code": "82494L",
+        "name": "WOODEN FRAME ANTIQUE WHITE",
+        "support_pct": 5.04
+      },
+      {
+        "code": "20726",
+        "name": "LUNCH BAG WOODLAND",
+        "support_pct": 4.98
+      },
+      {
+        "code": "85099F",
+        "name": "JUMBO BAG STRAWBERRY",
+        "support_pct": 4.97
+      },
+      {
+        "code": "85099C",
+        "name": "JUMBO  BAG BAROQUE BLACK WHITE",
+        "support_pct": 4.9
+      },
+      {
+        "code": "22090",
+        "name": "PAPER BUNTING RETROSPOT",
+        "support_pct": 4.83
+      },
+      {
+        "code": "20685",
+        "name": "DOORMAT RED RETROSPOT",
+        "support_pct": 4.8
+      },
+      {
+        "code": "21755",
+        "name": "LOVE BUILDING BLOCK WORD",
+        "support_pct": 4.78
+      },
+      {
+        "code": "22178",
+        "name": "VICTORIAN GLASS HANGING T-LIGHT",
+        "support_pct": 4.75
+      },
+      {
+        "code": "21034",
+        "name": "REX CASH+CARRY JUMBO SHOPPER",
+        "support_pct": 4.74
+      },
+      {
+        "code": "48138",
+        "name": "DOORMAT UNION FLAG",
+        "support_pct": 4.66
+      },
+      {
+        "code": "21733",
+        "name": "RED HANGING HEART T-LIGHT HOLDER",
+        "support_pct": 4.58
+      },
+      {
+        "code": "21181",
+        "name": "PLEASE ONE PERSON METAL SIGN",
+        "support_pct": 4.57
+      },
+      {
+        "code": "22355",
+        "name": "CHARLOTTE BAG SUKI DESIGN",
+        "support_pct": 4.54
+      },
+      {
+        "code": "21790",
+        "name": "VINTAGE SNAP CARDS",
+        "support_pct": 4.48
+      },
+      {
+        "code": "22138",
+        "name": "BAKING SET 9 PIECE RETROSPOT",
+        "support_pct": 4.46
+      },
+      {
+        "code": "22077",
+        "name": "6 RIBBONS RUSTIC CHARM",
+        "support_pct": 4.35
+      },
+      {
+        "code": "84946",
+        "name": "ANTIQUE SILVER TEA GLASS ETCHED",
+        "support_pct": 4.31
+      },
+      {
+        "code": "21843",
+        "name": "RED RETROSPOT CAKE STAND",
+        "support_pct": 4.31
+      },
+      {
+        "code": "21175",
+        "name": "GIN + TONIC DIET METAL SIGN",
+        "support_pct": 4.23
+      },
+      {
+        "code": "21929",
+        "name": "JUMBO BAG PINK VINTAGE PAISLEY",
+        "support_pct": 4.23
+      },
+      {
+        "code": "22379",
+        "name": "RECYCLING BAG RETROSPOT",
+        "support_pct": 4.21
+      },
+      {
+        "code": "22356",
+        "name": "CHARLOTTE BAG PINK POLKADOT",
+        "support_pct": 4.14
+      },
+      {
+        "code": "84970S",
+        "name": "HANGING HEART ZINC T-LIGHT HOLDER",
+        "support_pct": 4.08
+      },
+      {
+        "code": "21231",
+        "name": "SWEETHEART CERAMIC TRINKET BOX",
+        "support_pct": 4.07
+      },
+      {
+        "code": "20719",
+        "name": "WOODLAND CHARLOTTE BAG",
+        "support_pct": 4.07
+      },
+      {
+        "code": "21928",
+        "name": "JUMBO BAG SCANDINAVIAN PAISLEY",
+        "support_pct": 4.03
+      },
+      {
+        "code": "22149",
+        "name": "FELTCRAFT 6 FLOWER FRIENDS",
+        "support_pct": 3.98
+      },
+      {
+        "code": "22666",
+        "name": "RECIPE BOX PANTRY YELLOW DESIGN",
+        "support_pct": 3.93
+      },
+      {
+        "code": "84992",
+        "name": "72 SWEETHEART FAIRY CAKE CASES",
+        "support_pct": 3.93
+      },
+      {
+        "code": "84978",
+        "name": "HANGING HEART JAR T-LIGHT HOLDER",
+        "support_pct": 3.88
+      },
+      {
+        "code": "85152",
+        "name": "HAND OVER THE CHOCOLATE   SIGN",
+        "support_pct": 3.86
+      },
+      {
+        "code": "21213",
+        "name": "PACK OF 72 SKULL CAKE CASES",
+        "support_pct": 3.85
+      },
+      {
+        "code": "22111",
+        "name": "SCOTTIE DOG HOT WATER BOTTLE",
+        "support_pct": 3.83
+      },
+      {
+        "code": "48194",
+        "name": "DOORMAT HEARTS",
+        "support_pct": 3.74
+      },
+      {
+        "code": "84836",
+        "name": "ZINC METAL HEART DECORATION",
+        "support_pct": 3.73
+      },
+      {
+        "code": "21731",
+        "name": "RED TOADSTOOL LED NIGHT LIGHT",
+        "support_pct": 3.73
+      },
+      {
+        "code": "22112",
+        "name": "CHOCOLATE HOT WATER BOTTLE",
+        "support_pct": 3.73
+      },
+      {
+        "code": "22083",
+        "name": "PAPER CHAIN KIT RETROSPOT",
+        "support_pct": 3.69
+      },
+      {
+        "code": "21166",
+        "name": "COOK WITH WINE METAL SIGN",
+        "support_pct": 3.62
+      },
+      {
+        "code": "20723",
+        "name": "STRAWBERRY CHARLOTTE BAG",
+        "support_pct": 3.61
+      },
+      {
+        "code": "21621",
+        "name": "VINTAGE UNION JACK BUNTING",
+        "support_pct": 3.61
+      },
+      {
+        "code": "20712",
+        "name": "JUMBO BAG WOODLAND ANIMALS",
+        "support_pct": 3.58
+      },
+      {
+        "code": "84755",
+        "name": "COLOUR GLASS T-LIGHT HOLDER HANGING",
+        "support_pct": 3.58
+      },
+      {
+        "code": "82580",
+        "name": "BATHROOM METAL SIGN",
+        "support_pct": 3.56
+      },
+      {
+        "code": "20972",
+        "name": "PINK CREAM FELT CRAFT TRINKET BOX",
+        "support_pct": 3.55
+      },
+      {
+        "code": "22189",
+        "name": "CREAM HEART CARD HOLDER",
+        "support_pct": 3.51
+      },
+      {
+        "code": "22326",
+        "name": "ROUND SNACK BOXES SET OF4 WOODLAND",
+        "support_pct": 3.49
+      },
+      {
+        "code": "22086",
+        "name": "PAPER CHAIN KIT 50'S CHRISTMAS",
+        "support_pct": 3.48
+      },
+      {
+        "code": "48187",
+        "name": "DOORMAT NEW ENGLAND",
+        "support_pct": 3.45
+      },
+      {
+        "code": "21975",
+        "name": "PACK OF 60 DINOSAUR CAKE CASES",
+        "support_pct": 3.43
+      },
+      {
+        "code": "22699",
+        "name": "ROSES REGENCY TEACUP AND SAUCER",
+        "support_pct": 3.43
+      },
+      {
+        "code": "20713",
+        "name": "JUMBO BAG OWLS",
+        "support_pct": 3.41
+      },
+      {
+        "code": "82600",
+        "name": "NO SINGING METAL SIGN",
+        "support_pct": 3.38
+      },
+      {
+        "code": "82486",
+        "name": "WOOD S/3 CABINET ANT WHITE FINISH",
+        "support_pct": 3.36
+      },
+      {
+        "code": "21930",
+        "name": "JUMBO STORAGE BAG SKULLS",
+        "support_pct": 3.33
+      },
+      {
+        "code": "22629",
+        "name": "SPACEBOY LUNCH BOX",
+        "support_pct": 3.33
+      },
+      {
+        "code": "21559",
+        "name": "STRAWBERRY LUNCH BOX WITH CUTLERY",
+        "support_pct": 3.32
+      },
+      {
+        "code": "22697",
+        "name": "GREEN REGENCY TEACUP AND SAUCER",
+        "support_pct": 3.29
+      },
+      {
+        "code": "22114",
+        "name": "HOT WATER BOTTLE TEA AND SYMPATHY",
+        "support_pct": 3.28
+      },
+      {
+        "code": "21485",
+        "name": "RETROSPOT HEART HOT WATER BOTTLE",
+        "support_pct": 3.26
+      },
+      {
+        "code": "22630",
+        "name": "DOLLY GIRL LUNCH BOX",
+        "support_pct": 3.26
+      },
+      {
+        "code": "84378",
+        "name": "SET OF 3 HEART COOKIE CUTTERS",
+        "support_pct": 3.23
+      },
+      {
+        "code": "21535",
+        "name": "RED RETROSPOT SMALL MILK JUG",
+        "support_pct": 3.17
+      },
+      {
+        "code": "21791",
+        "name": "VINTAGE HEADS AND TAILS CARD GAME",
+        "support_pct": 3.17
+      },
+      {
+        "code": "20718",
+        "name": "RED RETROSPOT SHOPPER BAG",
+        "support_pct": 3.16
+      },
+      {
+        "code": "22385",
+        "name": "JUMBO BAG SPACEBOY DESIGN",
+        "support_pct": 3.14
+      },
+      {
+        "code": "22551",
+        "name": "PLASTERS IN TIN SPACEBOY",
+        "support_pct": 3.14
+      },
+      {
+        "code": "21524",
+        "name": "DOORMAT SPOTTY HOME SWEET HOME",
+        "support_pct": 3.14
+      },
+      {
+        "code": "21210",
+        "name": "SET OF 72 RETROSPOT PAPER  DOILIES",
+        "support_pct": 3.09
+      },
+      {
+        "code": "22147",
+        "name": "FELTCRAFT BUTTERFLY HEARTS",
+        "support_pct": 3.08
+      },
+      {
+        "code": "22219",
+        "name": "LOVEBIRD HANGING DECORATION WHITE",
+        "support_pct": 3.08
+      },
+      {
+        "code": "21936",
+        "name": "RED RETROSPOT PICNIC BAG",
+        "support_pct": 3.06
+      },
+      {
+        "code": "22558",
+        "name": "CLOTHES PEGS RETROSPOT PACK 24",
+        "support_pct": 3.04
+      },
+      {
+        "code": "22328",
+        "name": "ROUND SNACK BOXES SET OF 4 FRUITS",
+        "support_pct": 3.04
+      },
+      {
+        "code": "22381",
+        "name": "TOY TIDY PINK POLKADOT",
+        "support_pct": 3.04
+      },
+      {
+        "code": "22352",
+        "name": "LUNCH BOX WITH CUTLERY RETROSPOT",
+        "support_pct": 3.03
+      },
+      {
+        "code": "22554",
+        "name": "PLASTERS IN TIN WOODLAND ANIMALS",
+        "support_pct": 3.02
+      },
+      {
+        "code": "22556",
+        "name": "PLASTERS IN TIN CIRCUS PARADE",
+        "support_pct": 3.02
+      },
+      {
+        "code": "84970L",
+        "name": "SINGLE HEART ZINC T-LIGHT HOLDER",
+        "support_pct": 3.02
+      },
+      {
+        "code": "82484",
+        "name": "WOOD BLACK BOARD ANT WHITE FINISH",
+        "support_pct": 2.99
+      },
+      {
+        "code": "21174",
+        "name": "POTTERING IN THE SHED METAL SIGN",
+        "support_pct": 2.98
+      },
+      {
+        "code": "47591D",
+        "name": "PINK FAIRY CAKE CHILDRENS APRON",
+        "support_pct": 2.96
+      },
+      {
+        "code": "21523",
+        "name": "DOORMAT FANCY FONT HOME SWEET HOME",
+        "support_pct": 2.95
+      },
+      {
+        "code": "22417",
+        "name": "PACK OF 60 SPACEBOY CAKE CASES",
+        "support_pct": 2.94
+      },
+      {
+        "code": "22624",
+        "name": "IVORY KITCHEN SCALES",
+        "support_pct": 2.94
+      },
+      {
+        "code": "82583",
+        "name": "HOT BATHS METAL SIGN",
+        "support_pct": 2.93
+      },
+      {
+        "code": "20711",
+        "name": "JUMBO BAG TOYS",
+        "support_pct": 2.91
+      },
+      {
+        "code": "71459",
+        "name": "HANGING JAM JAR T-LIGHT HOLDER",
+        "support_pct": 2.89
+      },
+      {
+        "code": "22585",
+        "name": "PACK OF 6 BIRDY GIFT TAGS",
+        "support_pct": 2.89
+      },
+      {
+        "code": "22727",
+        "name": "ALARM CLOCK BAKELIKE RED",
+        "support_pct": 2.88
+      },
+      {
+        "code": "84997D",
+        "name": "PINK 3 PIECE MINI DOTS CUTLERY SET",
+        "support_pct": 2.88
+      },
+      {
+        "code": "22029",
+        "name": "SPACEBOY BIRTHDAY CARD",
+        "support_pct": 2.88
+      },
+      {
+        "code": "85150",
+        "name": "LADIES & GENTLEMEN METAL SIGN",
+        "support_pct": 2.87
+      },
+      {
+        "code": "84692",
+        "name": "BOX OF 24 COCKTAIL PARASOLS",
+        "support_pct": 2.87
+      },
+      {
+        "code": "22502",
+        "name": "PICNIC BASKET WICKER SMALL",
+        "support_pct": 2.86
+      },
+      {
+        "code": "15056N",
+        "name": "EDWARDIAN PARASOL NATURAL",
+        "support_pct": 2.86
+      },
+      {
+        "code": "84997B",
+        "name": "RED 3 PIECE MINI DOTS CUTLERY SET",
+        "support_pct": 2.85
+      },
+      {
+        "code": "22367",
+        "name": "CHILDRENS APRON SPACEBOY DESIGN",
+        "support_pct": 2.84
+      },
+      {
+        "code": "82483",
+        "name": "WOOD 2 DRAWER CABINET WHITE FINISH",
+        "support_pct": 2.84
+      },
+      {
+        "code": "20971",
+        "name": "PINK BLUE FELT CRAFT TRINKET BOX",
+        "support_pct": 2.83
+      },
+      {
+        "code": "84380",
+        "name": "SET OF 3 BUTTERFLY COOKIE CUTTERS",
+        "support_pct": 2.82
+      },
+      {
+        "code": "48185",
+        "name": "DOORMAT FAIRY CAKE",
+        "support_pct": 2.81
+      },
+      {
+        "code": "22720",
+        "name": "SET OF 3 CAKE TINS PANTRY DESIGN",
+        "support_pct": 2.8
+      },
+      {
+        "code": "84988",
+        "name": "SET OF 72 PINK HEART PAPER DOILIES",
+        "support_pct": 2.8
+      },
+      {
+        "code": "84029E",
+        "name": "RED WOOLLY HOTTIE WHITE HEART.",
+        "support_pct": 2.79
+      },
+      {
+        "code": "22557",
+        "name": "PLASTERS IN TIN VINTAGE PAISLEY",
+        "support_pct": 2.76
+      },
+      {
+        "code": "21314",
+        "name": "SMALL GLASS HEART TRINKET POT",
+        "support_pct": 2.75
+      },
+      {
+        "code": "21533",
+        "name": "RETRO SPOT LARGE MILK JUG",
+        "support_pct": 2.75
+      },
+      {
+        "code": "79321",
+        "name": "CHILLI LIGHTS",
+        "support_pct": 2.75
+      },
+      {
+        "code": "22297",
+        "name": "HEART IVORY TRELLIS SMALL",
+        "support_pct": 2.73
+      },
+      {
+        "code": "15036",
+        "name": "ASSORTED COLOURS SILK FAN",
+        "support_pct": 2.72
+      },
+      {
+        "code": "22659",
+        "name": "LUNCH BOX I LOVE LONDON",
+        "support_pct": 2.7
+      },
+      {
+        "code": "21094",
+        "name": "SET/6 RED SPOTTY PAPER PLATES",
+        "support_pct": 2.69
+      },
+      {
+        "code": "20676",
+        "name": "RED RETROSPOT BOWL",
+        "support_pct": 2.66
+      },
+      {
+        "code": "22467",
+        "name": "GUMBALL COAT RACK",
+        "support_pct": 2.64
+      },
+      {
+        "code": "84997C",
+        "name": "BLUE 3 PIECE MINI DOTS CUTLERY SET",
+        "support_pct": 2.63
+      },
+      {
+        "code": "21429",
+        "name": "RED GINGHAM ROSE JEWELLERY BOX",
+        "support_pct": 2.63
+      },
+      {
+        "code": "21868",
+        "name": "POTTING SHED TEA MUG",
+        "support_pct": 2.61
+      },
+      {
+        "code": "22553",
+        "name": "PLASTERS IN TIN SKULLS",
+        "support_pct": 2.6
+      },
+      {
+        "code": "22173",
+        "name": "METAL 4 HOOK HANGER FRENCH CHATEAU",
+        "support_pct": 2.6
+      },
+      {
+        "code": "22348",
+        "name": "TEA BAG PLATE RED RETROSPOT",
+        "support_pct": 2.6
+      },
+      {
+        "code": "21165",
+        "name": "BEWARE OF THE CAT METAL SIGN",
+        "support_pct": 2.6
+      },
+      {
+        "code": "21035",
+        "name": "SET/2 RED RETROSPOT TEA TOWELS",
+        "support_pct": 2.59
+      },
+      {
+        "code": "21527",
+        "name": "RED RETROSPOT TRADITIONAL TEAPOT",
+        "support_pct": 2.59
+      },
+      {
+        "code": "22961",
+        "name": "JAM MAKING SET PRINTED",
+        "support_pct": 2.58
+      },
+      {
+        "code": "21155",
+        "name": "RED RETROSPOT PEG BAG",
+        "support_pct": 2.57
+      },
+      {
+        "code": "21976",
+        "name": "PACK OF 60 MUSHROOM CAKE CASES",
+        "support_pct": 2.56
+      },
+      {
+        "code": "21217",
+        "name": "RED RETROSPOT ROUND CAKE TINS",
+        "support_pct": 2.56
+      },
+      {
+        "code": "22196",
+        "name": "SMALL HEART MEASURING SPOONS",
+        "support_pct": 2.55
+      },
+      {
+        "code": "21908",
+        "name": "CHOCOLATE THIS WAY METAL SIGN",
+        "support_pct": 2.54
+      },
+      {
+        "code": "72741",
+        "name": "GRAND CHOCOLATECANDLE",
+        "support_pct": 2.54
+      },
+      {
+        "code": "22726",
+        "name": "ALARM CLOCK BAKELIKE GREEN",
+        "support_pct": 2.53
+      },
+      {
+        "code": "21172",
+        "name": "PARTY METAL SIGN",
+        "support_pct": 2.53
+      },
+      {
+        "code": "22960",
+        "name": "JAM MAKING SET WITH JARS",
+        "support_pct": 2.52
+      },
+      {
+        "code": "21238",
+        "name": "RED RETROSPOT CUP",
+        "support_pct": 2.51
+      },
+      {
+        "code": "22084",
+        "name": "PAPER CHAIN KIT EMPIRE",
+        "support_pct": 2.51
+      },
+      {
+        "code": "22087",
+        "name": "PAPER BUNTING WHITE LACE",
+        "support_pct": 2.51
+      },
+      {
+        "code": "21481",
+        "name": "FAWN BLUE HOT WATER BOTTLE",
+        "support_pct": 2.5
+      },
+      {
+        "code": "21889",
+        "name": "WOODEN BOX OF DOMINOES",
+        "support_pct": 2.49
+      },
+      {
+        "code": "84029G",
+        "name": "KNITTED UNION FLAG HOT WATER BOTTLE",
+        "support_pct": 2.49
+      },
+      {
+        "code": "20754",
+        "name": "RETROSPOT RED WASHING UP GLOVES",
+        "support_pct": 2.49
+      },
+      {
+        "code": "84077",
+        "name": "WORLD WAR 2 GLIDERS ASSTD DESIGNS",
+        "support_pct": 2.49
+      },
+      {
+        "code": "22910",
+        "name": "PAPER CHAIN KIT VINTAGE CHRISTMAS",
+        "support_pct": 2.48
+      },
+      {
+        "code": "21985",
+        "name": "PACK OF 12 HEARTS DESIGN TISSUES",
+        "support_pct": 2.48
+      },
+      {
+        "code": "82581",
+        "name": "TOILET METAL SIGN",
+        "support_pct": 2.47
+      },
+      {
+        "code": "21156",
+        "name": "RETROSPOT CHILDRENS APRON",
+        "support_pct": 2.46
+      },
+      {
+        "code": "22662",
+        "name": "LUNCH BAG DOLLY GIRL DESIGN",
+        "support_pct": 2.46
+      },
+      {
+        "code": "84406B",
+        "name": "CREAM CUPID HEARTS COAT HANGER",
+        "support_pct": 2.46
+      },
+      {
+        "code": "22082",
+        "name": "RIBBON REEL STRIPES DESIGN",
+        "support_pct": 2.45
+      },
+      {
+        "code": "21218",
+        "name": "RED SPOTTY BISCUIT TIN",
+        "support_pct": 2.45
+      },
+      {
+        "code": "20750",
+        "name": "RED RETROSPOT MINI CASES",
+        "support_pct": 2.43
+      },
+      {
+        "code": "22487",
+        "name": "WHITE WOOD GARDEN PLANT LADDER",
+        "support_pct": 2.41
+      },
+      {
+        "code": "85066",
+        "name": "CREAM SWEETHEART MINI CHEST",
+        "support_pct": 2.41
+      },
+      {
+        "code": "22294",
+        "name": "HEART FILIGREE DOVE  SMALL",
+        "support_pct": 2.39
+      },
+      {
+        "code": "85014B",
+        "name": "RED RETROSPOT UMBRELLA",
+        "support_pct": 2.39
+      },
+      {
+        "code": "22698",
+        "name": "PINK REGENCY TEACUP AND SAUCER",
+        "support_pct": 2.38
+      },
+      {
+        "code": "47590B",
+        "name": "PINK HAPPY BIRTHDAY BUNTING",
+        "support_pct": 2.38
+      },
+      {
+        "code": "22625",
+        "name": "RED KITCHEN SCALES",
+        "support_pct": 2.38
+      },
+      {
+        "code": "21121",
+        "name": "SET/10 RED POLKADOT PARTY CANDLES",
+        "support_pct": 2.37
+      },
+      {
+        "code": "22296",
+        "name": "HEART IVORY TRELLIS LARGE",
+        "support_pct": 2.35
+      },
+      {
+        "code": "22413",
+        "name": "METAL SIGN TAKE IT OR LEAVE IT",
+        "support_pct": 2.35
+      },
+      {
+        "code": "48184",
+        "name": "DOORMAT ENGLISH ROSE",
+        "support_pct": 2.35
+      },
+      {
+        "code": "21086",
+        "name": "SET/6 RED SPOTTY PAPER CUPS",
+        "support_pct": 2.34
+      },
+      {
+        "code": "20975",
+        "name": "12 PENCILS SMALL TUBE RED RETROSPOT",
+        "support_pct": 2.33
+      },
+      {
+        "code": "22646",
+        "name": "CERAMIC STRAWBERRY CAKE MONEY BANK",
+        "support_pct": 2.33
+      },
+      {
+        "code": "15056BL",
+        "name": "EDWARDIAN PARASOL BLACK",
+        "support_pct": 2.32
+      },
+      {
+        "code": "22501",
+        "name": "PICNIC BASKET WICKER LARGE",
+        "support_pct": 2.32
+      },
+      {
+        "code": "23298",
+        "name": "SPOTTY BUNTING",
+        "support_pct": 2.31
+      },
+      {
+        "code": "22027",
+        "name": "TEA PARTY BIRTHDAY CARD",
+        "support_pct": 2.31
+      },
+      {
+        "code": "21915",
+        "name": "RED  HARMONICA IN BOX",
+        "support_pct": 2.3
+      },
+      {
+        "code": "22427",
+        "name": "ENAMEL FLOWER JUG CREAM",
+        "support_pct": 2.29
+      },
+      {
+        "code": "22652",
+        "name": "TRAVEL SEWING KIT",
+        "support_pct": 2.28
+      },
+      {
+        "code": "22570",
+        "name": "FELTCRAFT CUSHION RABBIT",
+        "support_pct": 2.28
+      },
+      {
+        "code": "21154",
+        "name": "RED RETROSPOT OVEN GLOVE",
+        "support_pct": 2.27
+      },
+      {
+        "code": "22555",
+        "name": "PLASTERS IN TIN STRONGMAN",
+        "support_pct": 2.27
+      },
+      {
+        "code": "21122",
+        "name": "SET/10 PINK POLKADOT PARTY CANDLES",
+        "support_pct": 2.26
+      },
+      {
+        "code": "21531",
+        "name": "RED RETROSPOT SUGAR JAM BOWL",
+        "support_pct": 2.26
+      },
+      {
+        "code": "84987",
+        "name": "SET OF 36 TEATIME PAPER DOILIES",
+        "support_pct": 2.25
+      },
+      {
+        "code": "21935",
+        "name": "SUKI  SHOULDER BAG",
+        "support_pct": 2.25
+      },
+      {
+        "code": "84520B",
+        "name": "PACK 20 ENGLISH ROSE PAPER NAPKINS",
+        "support_pct": 2.25
+      },
+      {
+        "code": "22617",
+        "name": "BAKING SET SPACEBOY DESIGN",
+        "support_pct": 2.24
+      },
+      {
+        "code": "47566B",
+        "name": "TEA TIME PARTY BUNTING",
+        "support_pct": 2.24
+      },
+      {
+        "code": "22499",
+        "name": "WOODEN UNION JACK BUNTING",
+        "support_pct": 2.24
+      },
+      {
+        "code": "22507",
+        "name": "MEMO BOARD RETROSPOT  DESIGN",
+        "support_pct": 2.24
+      },
+      {
+        "code": "22150",
+        "name": "3 STRIPEY MICE FELTCRAFT",
+        "support_pct": 2.24
+      },
+      {
+        "code": "21078",
+        "name": "SET/20 STRAWBERRY PAPER NAPKINS",
+        "support_pct": 2.22
+      },
+      {
+        "code": "22212",
+        "name": "FOUR HOOK  WHITE LOVEBIRDS",
+        "support_pct": 2.22
+      },
+      {
+        "code": "20974",
+        "name": "12 PENCILS SMALL TUBE SKULL",
+        "support_pct": 2.21
+      },
+      {
+        "code": "22993",
+        "name": "SET OF 4 PANTRY JELLY MOULDS",
+        "support_pct": 2.21
+      },
+      {
+        "code": "22569",
+        "name": "FELTCRAFT CUSHION BUTTERFLY",
+        "support_pct": 2.2
+      },
+      {
+        "code": "22561",
+        "name": "WOODEN SCHOOL COLOURING SET",
+        "support_pct": 2.19
+      },
+      {
+        "code": "21672",
+        "name": "WHITE SPOT RED CERAMIC DRAWER KNOB",
+        "support_pct": 2.18
+      },
+      {
+        "code": "21216",
+        "name": "SET 3 RETROSPOT TEA,COFFEE,SUGAR",
+        "support_pct": 2.17
+      },
+      {
+        "code": "21668",
+        "name": "RED STRIPE CERAMIC DRAWER KNOB",
+        "support_pct": 2.17
+      },
+      {
+        "code": "21900",
+        "name": "KEY FOB , SHED",
+        "support_pct": 2.17
+      },
+      {
+        "code": "21240",
+        "name": "BLUE POLKADOT CUP",
+        "support_pct": 2.16
+      },
+      {
+        "code": "21907",
+        "name": "I'M ON HOLIDAY METAL SIGN",
+        "support_pct": 2.15
+      },
+      {
+        "code": "21955",
+        "name": "DOORMAT UNION JACK GUNS AND ROSES",
+        "support_pct": 2.15
+      },
+      {
+        "code": "21974",
+        "name": "SET OF 36 PAISLEY FLOWER DOILIES",
+        "support_pct": 2.15
+      },
+      {
+        "code": "22667",
+        "name": "RECIPE BOX RETROSPOT",
+        "support_pct": 2.15
+      },
+      {
+        "code": "22456",
+        "name": "NATURAL SLATE CHALKBOARD LARGE",
+        "support_pct": 2.14
+      },
+      {
+        "code": "22568",
+        "name": "FELTCRAFT CUSHION OWL",
+        "support_pct": 2.13
+      },
+      {
+        "code": "22113",
+        "name": "GREY HEART HOT WATER BOTTLE",
+        "support_pct": 2.12
+      },
+      {
+        "code": "21498",
+        "name": "RED RETROSPOT WRAP",
+        "support_pct": 2.12
+      },
+      {
+        "code": "22195",
+        "name": "LARGE HEART MEASURING SPOONS",
+        "support_pct": 2.11
+      },
+      {
+        "code": "22952",
+        "name": "60 CAKE CASES VINTAGE CHRISTMAS",
+        "support_pct": 2.11
+      },
+      {
+        "code": "21669",
+        "name": "BLUE STRIPE CERAMIC DRAWER KNOB",
+        "support_pct": 2.1
+      },
+      {
+        "code": "84050",
+        "name": "PINK HEART SHAPE EGG FRYING PAN",
+        "support_pct": 2.1
+      },
+      {
+        "code": "21430",
+        "name": "SET/3 RED GINGHAM ROSE STORAGE BOX",
+        "support_pct": 2.1
+      },
+      {
+        "code": "22865",
+        "name": "HAND WARMER OWL DESIGN",
+        "support_pct": 2.1
+      },
+      {
+        "code": "22055",
+        "name": "MINI CAKE STAND  HANGING STRAWBERY",
+        "support_pct": 2.09
+      },
+      {
+        "code": "21539",
+        "name": "RED RETROSPOT BUTTER DISH",
+        "support_pct": 2.09
+      },
+      {
+        "code": "22488",
+        "name": "NATURAL SLATE RECTANGLE CHALKBOARD",
+        "support_pct": 2.09
+      },
+      {
+        "code": "82552",
+        "name": "WASHROOM METAL SIGN",
+        "support_pct": 2.09
+      },
+      {
+        "code": "22607",
+        "name": "WOODEN ROUNDERS GARDEN SET",
+        "support_pct": 2.09
+      },
+      {
+        "code": "21239",
+        "name": "PINK  POLKADOT CUP",
+        "support_pct": 2.08
+      },
+      {
+        "code": "22464",
+        "name": "HANGING METAL HEART LANTERN",
+        "support_pct": 2.08
+      },
+      {
+        "code": "20677",
+        "name": "PINK POLKADOT BOWL",
+        "support_pct": 2.08
+      },
+      {
+        "code": "21912",
+        "name": "VINTAGE SNAKES & LADDERS",
+        "support_pct": 2.06
+      },
+      {
+        "code": "48111",
+        "name": "DOORMAT 3 SMILEY CATS",
+        "support_pct": 2.05
+      },
+      {
+        "code": "22616",
+        "name": "PACK OF 12 LONDON TISSUES",
+        "support_pct": 2.05
+      },
+      {
+        "code": "21670",
+        "name": "BLUE SPOT CERAMIC DRAWER KNOB",
+        "support_pct": 2.05
+      },
+      {
+        "code": "21871",
+        "name": "SAVE THE PLANET MUG",
+        "support_pct": 2.05
+      },
+      {
+        "code": "71477",
+        "name": "COLOUR GLASS. STAR T-LIGHT HOLDER",
+        "support_pct": 2.05
+      },
+      {
+        "code": "21888",
+        "name": "BINGO SET",
+        "support_pct": 2.04
+      },
+      {
+        "code": "21673",
+        "name": "WHITE SPOT BLUE CERAMIC DRAWER KNOB",
+        "support_pct": 2.04
+      },
+      {
+        "code": "21937",
+        "name": "STRAWBERRY   PICNIC BAG",
+        "support_pct": 2.04
+      },
+      {
+        "code": "22271",
+        "name": "FELTCRAFT DOLL ROSIE",
+        "support_pct": 2.04
+      },
+      {
+        "code": "21484",
+        "name": "CHICK GREY HOT WATER BOTTLE",
+        "support_pct": 2.03
+      },
+      {
+        "code": "22273",
+        "name": "FELTCRAFT DOLL MOLLY",
+        "support_pct": 2.03
+      },
+      {
+        "code": "22907",
+        "name": "PACK OF 20 NAPKINS PANTRY DESIGN",
+        "support_pct": 2.03
+      },
+      {
+        "code": "23206",
+        "name": "LUNCH BAG APPLE DESIGN",
+        "support_pct": 2.02
+      },
+      {
+        "code": "21164",
+        "name": "HOME SWEET HOME METAL SIGN",
+        "support_pct": 2.02
+      },
+      {
+        "code": "21918",
+        "name": "SET 12 KIDS COLOUR  CHALK STICKS",
+        "support_pct": 2.01
+      },
+      {
+        "code": "22198",
+        "name": "LARGE POPCORN HOLDER",
+        "support_pct": 2.01
+      },
+      {
+        "code": "20717",
+        "name": "STRAWBERRY SHOPPER BAG",
+        "support_pct": 2.01
+      },
+      {
+        "code": "21479",
+        "name": "WHITE SKULL HOT WATER BOTTLE",
+        "support_pct": 2.01
+      },
+      {
+        "code": "22295",
+        "name": "HEART FILIGREE DOVE LARGE",
+        "support_pct": 2.0
+      },
+      {
+        "code": "21877",
+        "name": "HOME SWEET HOME MUG",
+        "support_pct": 1.99
+      },
+      {
+        "code": "22759",
+        "name": "SET OF 3 NOTEBOOKS IN PARCEL",
+        "support_pct": 1.99
+      },
+      {
+        "code": "48188",
+        "name": "DOORMAT WELCOME PUPPIES",
+        "support_pct": 1.99
+      },
+      {
+        "code": "71053",
+        "name": "WHITE METAL LANTERN",
+        "support_pct": 1.99
+      },
+      {
+        "code": "21558",
+        "name": "SKULL LUNCH BOX WITH CUTLERY",
+        "support_pct": 1.98
+      },
+      {
+        "code": "22694",
+        "name": "WICKER STAR",
+        "support_pct": 1.98
+      },
+      {
+        "code": "22867",
+        "name": "HAND WARMER BIRD DESIGN",
+        "support_pct": 1.98
+      },
+      {
+        "code": "82551",
+        "name": "LAUNDRY 15C METAL SIGN",
+        "support_pct": 1.98
+      },
+      {
+        "code": "22030",
+        "name": "SWALLOWS GREETING CARD",
+        "support_pct": 1.97
+      },
+      {
+        "code": "82582",
+        "name": "AREA PATROLLED METAL SIGN",
+        "support_pct": 1.97
+      },
+      {
+        "code": "22728",
+        "name": "ALARM CLOCK BAKELIKE PINK",
+        "support_pct": 1.97
+      },
+      {
+        "code": "21870",
+        "name": "I CAN ONLY PLEASE ONE PERSON MUG",
+        "support_pct": 1.96
+      },
+      {
+        "code": "22505",
+        "name": "MEMO BOARD COTTAGE DESIGN",
+        "support_pct": 1.96
+      },
+      {
+        "code": "22866",
+        "name": "HAND WARMER SCOTTY DOG DESIGN",
+        "support_pct": 1.96
+      },
+      {
+        "code": "23203",
+        "name": "JUMBO BAG VINTAGE DOILY",
+        "support_pct": 1.95
+      },
+      {
+        "code": "22909",
+        "name": "SET OF 20 VINTAGE CHRISTMAS NAPKINS",
+        "support_pct": 1.95
+      },
+      {
+        "code": "21671",
+        "name": "RED SPOT CERAMIC DRAWER KNOB",
+        "support_pct": 1.95
+      },
+      {
+        "code": "20749",
+        "name": "ASSORTED COLOUR MINI CASES",
+        "support_pct": 1.94
+      },
+      {
+        "code": "21891",
+        "name": "TRADITIONAL WOODEN SKIPPING ROPE",
+        "support_pct": 1.94
+      },
+      {
+        "code": "22665",
+        "name": "RECIPE BOX BLUE SKETCHBOOK DESIGN",
+        "support_pct": 1.94
+      },
+      {
+        "code": "21892",
+        "name": "TRADITIONAL WOODEN CATCH CUP GAME",
+        "support_pct": 1.94
+      },
+      {
+        "code": "21385",
+        "name": "IVORY HANGING DECORATION  HEART",
+        "support_pct": 1.93
+      },
+      {
+        "code": "22088",
+        "name": "PAPER BUNTING COLOURED LACE",
+        "support_pct": 1.93
+      },
+      {
+        "code": "20675",
+        "name": "BLUE POLKADOT BOWL",
+        "support_pct": 1.92
+      },
+      {
+        "code": "22620",
+        "name": "4 TRADITIONAL SPINNING TOPS",
+        "support_pct": 1.91
+      },
+      {
+        "code": "22131",
+        "name": "FOOD CONTAINER SET 3 LOVE HEART",
+        "support_pct": 1.91
+      },
+      {
+        "code": "21622",
+        "name": "VINTAGE UNION JACK CUSHION COVER",
+        "support_pct": 1.91
+      },
+      {
+        "code": "21914",
+        "name": "BLUE HARMONICA IN BOX",
+        "support_pct": 1.9
+      },
+      {
+        "code": "85049E",
+        "name": "SCANDINAVIAN REDS RIBBONS",
+        "support_pct": 1.9
+      },
+      {
+        "code": "22151",
+        "name": "PLACE SETTING WHITE HEART",
+        "support_pct": 1.9
+      },
+      {
+        "code": "22835",
+        "name": "HOT WATER BOTTLE I AM SO POORLY",
+        "support_pct": 1.89
+      },
+      {
+        "code": "23209",
+        "name": "LUNCH BAG VINTAGE DOILY",
+        "support_pct": 1.88
+      },
+      {
+        "code": "47559B",
+        "name": "TEA TIME OVEN GLOVE",
+        "support_pct": 1.88
+      },
+      {
+        "code": "82578",
+        "name": "KITCHEN METAL SIGN",
+        "support_pct": 1.87
+      }
+    ],
+    "cleaning_steps": [
+      {
+        "rule": "exact duplicate lines (includes the 9-day overlap between sheets)",
+        "removed": 34335,
+        "pct": 3.217,
+        "remaining": 1033036
+      },
+      {
+        "rule": "cancellation lines (kept aside for return rates)",
+        "removed": 19104,
+        "pct": 1.79,
+        "remaining": 1013932
+      },
+      {
+        "rule": "non-product codes (postage, fees, adjustments, vouchers)",
+        "removed": 4791,
+        "pct": 0.449,
+        "remaining": 1009141
+      },
+      {
+        "rule": "non-positive quantity or price",
+        "removed": 5928,
+        "pct": 0.555,
+        "remaining": 1003213
+      }
+    ]
+  },
+  "best_model": "Item co-occurrence",
+  "best_score": 0.18631643249847282,
+  "lift_over_baseline": null
+}

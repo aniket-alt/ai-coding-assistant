@@ -70,12 +70,16 @@ def load_raw() -> tuple[pd.DataFrame, Provenance]:
     return df, stamp_frame(prov, df)
 
 
-def clean(raw: pd.DataFrame) -> dict:
+def clean(raw: pd.DataFrame, require_customer: bool = True) -> dict:
     """
     Reduce raw lines to genuine product sales, keeping cancellations aside.
 
     Returns the sales lines, the cancellation lines (still useful: a customer's
     return rate is behaviour), and an audit trail of what each rule removed.
+
+    `require_customer=False` keeps orders with no customer ID. A basket is
+    still a basket without one, so market-basket analysis keeps them, while
+    customer segmentation cannot.
     """
     n0 = len(raw)
     steps: list[dict] = []
@@ -91,10 +95,11 @@ def clean(raw: pd.DataFrame) -> dict:
     record("exact duplicate lines (includes the 9-day overlap between sheets)",
            before - len(d), len(d))
 
-    before = len(d)
-    d = d[d["CustomerID"].notna()].copy()
-    record("no customer ID", before - len(d), len(d))
-    d["CustomerID"] = d["CustomerID"].astype("int64")
+    if require_customer:
+        before = len(d)
+        d = d[d["CustomerID"].notna()].copy()
+        record("no customer ID", before - len(d), len(d))
+        d["CustomerID"] = d["CustomerID"].astype("int64")
 
     is_cancel = d["Invoice"].str.startswith("C")
     cancellations = d[is_cancel].copy()

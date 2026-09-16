@@ -42,7 +42,7 @@ Ports are assigned so every project can run simultaneously.
 | 01 | [**NYC Taxi Trip Prediction**](./01_nyc_taxi_prediction) | Booking-time spatial regression | NYC TLC (2.96M trips) | 8001 | 5101 | ✅ |
 | 02 | Nano LLM Transformer | Autoregressive transformer, RoPE + SwiGLU | TinyStories | 8002 | 5102 | ⬜ |
 | 03 | [**Customer Segmentation**](./03_customer_segmentation) | Clustering judged on next-year behaviour | Online Retail II (1,067,371 lines) | 8003 | 5103 | ✅ |
-| 04 | Market Basket Mining | Apriori, FP-Growth | Instacart | 8004 | 5104 | ⬜ |
+| 04 | [**Market Basket Mining**](./04_market_basket) | FP-Growth rules judged on a later season | Online Retail II (shared with 03) | 8004 | 5104 | ✅ |
 | 05 | DS Skills Lab | Analytical skills catalogue | multiple | 8005 | 5105 | ⬜ |
 | 06 | [**Anomaly Detection**](./06_anomaly_detection) | Fraud ranking under 1:578 imbalance | ULB Credit Card Fraud (284,807) | 8006 | 5106 | ✅ |
 | 07 | AutoML Stacking | Multi-level stacking, ensembling | Adult / Covertype | 8007 | 5107 | ⬜ |

@@ -184,5 +184,41 @@
     "file": "03_customer_segmentation/ml/train.py",
     "symbol": "rfm_scores",
     "why": "The classic marketing heuristic every learned segmentation has to beat."
+  },
+  {
+    "skill": "Held-out item recommendation test",
+    "file": "04_market_basket/ml/baskets.py",
+    "symbol": "hold_out",
+    "why": "Hides one product from each later basket so every method, rules included, is judged on the same task."
+  },
+  {
+    "skill": "FP-Growth association rules",
+    "file": "04_market_basket/ml/baskets.py",
+    "symbol": "RuleSet",
+    "why": "Frequent itemsets mined after pruning items below support, turned into single-consequent rules."
+  },
+  {
+    "skill": "Item-to-item co-occurrence",
+    "file": "04_market_basket/ml/baskets.py",
+    "symbol": "CoOccurrence",
+    "why": "A sparse co-occurrence matrix as a threshold-free baseline, which won the tournament."
+  },
+  {
+    "skill": "Rule survival across seasons",
+    "file": "04_market_basket/ml/baskets.py",
+    "symbol": "rule_survival",
+    "why": "Recomputes every mined rule on later baskets to see whether its association still holds."
+  },
+  {
+    "skill": "Custom checks in the audit trail",
+    "file": "platform/dsfs/leakage.py",
+    "symbol": "require",
+    "why": "Project-specific leakage rules recorded in the same ledger as the standard assertions."
+  },
+  {
+    "skill": "Deterministic tie-breaking",
+    "file": "04_market_basket/ml/baskets.py",
+    "symbol": "item_support",
+    "why": "Explicit ordering so results do not change with Python's randomised string hashing."
   }
 ]

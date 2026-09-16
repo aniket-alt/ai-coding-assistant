@@ -13,8 +13,8 @@ Shared by every project. A project imports it instead of re-implementing data so
 | [`platform/dsfs/crispdm.py`](./platform/dsfs/crispdm.py) | 134 | CRISP-DM as a data structure, not a section heading. |
 | [`platform/dsfs/datasets.py`](./platform/dsfs/datasets.py) | 102 | `fetch()` downloads a URL once into `datasets/cache/`, checksums it, and returns a stamped `Provenance`. Re-running is free and offline-safe. Every project's data step goes… |
 | [`platform/dsfs/docs.py`](./platform/dsfs/docs.py) | 994 | Every figure in a generated document is read from the artifacts a training run wrote: metrics.json, crispdm.json, provenance.json and audit.json. The only hand-written inputs… |
-| [`platform/dsfs/leakage.py`](./platform/dsfs/leakage.py) | 445 | Leakage auditor: static (AST) + runtime assertions. |
-| [`platform/dsfs/metrics.py`](./platform/dsfs/metrics.py) | 191 | The single source of truth for every number this portfolio publishes. |
+| [`platform/dsfs/leakage.py`](./platform/dsfs/leakage.py) | 458 | Leakage auditor: static (AST) + runtime assertions. |
+| [`platform/dsfs/metrics.py`](./platform/dsfs/metrics.py) | 205 | The single source of truth for every number this portfolio publishes. |
 | [`platform/dsfs/provenance.py`](./platform/dsfs/provenance.py) | 100 | Thesis of this portfolio: every number in every README traces to a real, citable dataset. A `Provenance` is the receipt. Projects cannot register a dataset without one, and… |
 | [`platform/web/src/components/AppShell.tsx`](./platform/web/src/components/AppShell.tsx) | 295 | AppShell -- the frame every project's client renders inside. |
 | [`platform/web/src/components/AuditPanel.tsx`](./platform/web/src/components/AuditPanel.tsx) | 288 | AuditPanel -- the leakage audit, published in the running app. |
@@ -22,7 +22,7 @@ Shared by every project. A project imports it instead of re-implementing data so
 | [`platform/web/src/components/CrispDmWalkthrough.tsx`](./platform/web/src/components/CrispDmWalkthrough.tsx) | 246 | CrispDmWalkthrough -- the six phases, driven entirely by report data. |
 | [`platform/web/src/components/MarkdownMath.tsx`](./platform/web/src/components/MarkdownMath.tsx) | 198 | MarkdownMath -- renders the narrative markdown the backend produces, including KaTeX maths. |
 | [`platform/web/src/components/MetricsPanel.tsx`](./platform/web/src/components/MetricsPanel.tsx) | 175 | MetricsPanel -- the headline summary of a training run. |
-| [`platform/web/src/components/ModelLeaderboard.tsx`](./platform/web/src/components/ModelLeaderboard.tsx) | 246 | ModelLeaderboard -- the tournament table, for any project. |
+| [`platform/web/src/components/ModelLeaderboard.tsx`](./platform/web/src/components/ModelLeaderboard.tsx) | 250 | ModelLeaderboard -- the tournament table, for any project. |
 | [`platform/web/src/components/PredictionForm.tsx`](./platform/web/src/components/PredictionForm.tsx) | 410 | PredictionForm -- schema-driven inference input. |
 | [`platform/web/src/components/ProvenanceBadge.tsx`](./platform/web/src/components/ProvenanceBadge.tsx) | 179 | ProvenanceBadge -- renders the dataset receipt. |
 | [`platform/web/src/components/StatTile.tsx`](./platform/web/src/components/StatTile.tsx) | 175 | Per the dataviz form heuristic, one number is not a chart. Hero figures use proportional figures; only aligned columns get tabular-nums. Delta direction ships with an arrow… |
@@ -97,6 +97,28 @@ Which customers behave differently, and do the groups still mean anything a year
 | POST | `/api/assign` | Assign a customer to the nearest segment of the winning segmentation. |
 
 ![Customer Segmentation](./03_customer_segmentation/screenshots/01_segments.png)
+
+## 04 · Market Basket Mining
+
+Which products go together, and do those associations hold next season? Best: **Item co-occurrence** (hit rate @ 5 18.6%). [README](./04_market_basket/README.md) · [paper](./04_market_basket/paper.md) · [design doc](./04_market_basket/DESIGN_DOC.md)
+
+| File | Lines | What it does |
+|---|---:|---|
+| [`ml/baskets.py`](./04_market_basket/ml/baskets.py) | 279 | Project 04 -- baskets, association rules and recommenders. |
+| [`ml/train.py`](./04_market_basket/ml/train.py) | 371 | Project 04 -- market basket tournament, rule survival, and artefacts. |
+| [`server/inference.py`](./04_market_basket/server/inference.py) | 84 | Recommends products for a basket with the tournament's winning method, and explains each suggestion by the basket item that most strongly implies it. Rules and their… |
+| [`server/main.py`](./04_market_basket/server/main.py) | 60 | Project 04 -- FastAPI application. |
+| [`client/src/App.tsx`](./04_market_basket/client/src/App.tsx) | 168 | RuleTable is the only project-specific view. The basket builder is the shared PredictionForm with a multiselect fed by /api/items, and the tournament is the shared… |
+| [`client/src/RuleTable.tsx`](./04_market_basket/client/src/RuleTable.tsx) | 103 | The strongest mined rules, each shown with its statistics in the training period beside what it did in the following season. A rule's training confidence alone says little;… |
+| [`client/src/main.tsx`](./04_market_basket/client/src/main.tsx) | 10 |  |
+
+| Method | Endpoint | Purpose |
+|---|---|---|
+| GET | `/api/items` | The 300 most frequently bought products, for building a basket. |
+| GET | `/api/rules` | Strongest rules, with their statistics in training and in the following season. |
+| POST | `/api/recommend` | Five product suggestions for a basket, each with the reason it was suggested. |
+
+![Market Basket Mining](./04_market_basket/screenshots/01_build_basket.png)
 
 ## 06 · Credit Card Fraud Detection
 

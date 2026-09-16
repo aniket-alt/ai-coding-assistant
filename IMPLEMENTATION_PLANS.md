@@ -11,7 +11,7 @@ done, and for the rest they are intentions, not claims.
 | 01 | [NYC Taxi Trip Duration](./01_nyc_taxi_prediction) | ✅ built | NYC TLC Yellow Taxi, January 2024 |
 | 02 | Nano LLM Transformer | ⬜ planned | TinyStories (Hugging Face) |
 | 03 | [Customer Segmentation](./03_customer_segmentation) | ✅ built | UCI Online Retail II |
-| 04 | Market Basket Mining | ⬜ planned | UCI Online Retail II invoices |
+| 04 | [Market Basket Mining](./04_market_basket) | ✅ built | UCI Online Retail II invoices |
 | 05 | Data Science Skills Lab | ⬜ planned | several OpenML datasets |
 | 06 | [Credit Card Fraud Detection](./06_anomaly_detection) | ✅ built | ULB credit card fraud (OpenML 1597) |
 | 07 | AutoML Stacking | ⬜ planned | Adult census (OpenML 1590) |

@@ -81,3 +81,12 @@ def test_ledger_only_contains_checks_that_ran():
     assert leakage.ledger() == []
     leakage.assert_disjoint([1], [2])
     assert [e["name"] for e in leakage.ledger()] == ["assert_disjoint"]
+
+
+def test_require_records_and_raises():
+    leakage.require("custom_ok", True, "fine", checked=3)
+    with pytest.raises(leakage.LeakageError, match="custom_bad"):
+        leakage.require("custom_bad", False, "broken", checked=1)
+    names = [(e["name"], e["passed"]) for e in leakage.ledger()]
+    assert names == [("custom_ok", True), ("custom_bad", False)]
+    assert leakage.ledger()[0]["params"] == {"checked": 3}

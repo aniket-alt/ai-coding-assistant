@@ -231,6 +231,19 @@ def audit_source(
 # Runtime assertions -- these run during training and raise on real leakage
 # --------------------------------------------------------------------------
 
+def require(name: str, passed: bool, detail: str, **measured: Any) -> None:
+    """
+    A project-specific check that belongs in the same audit trail.
+
+    Records the outcome and what was measured, then raises if it failed. Use it
+    for leakage rules the generic assertions cannot express, such as a held-out
+    item that must not also be visible to the model.
+    """
+    _record(name, passed=bool(passed), detail=detail, **measured)
+    if not passed:
+        raise LeakageError(f"{name} failed: {detail}")
+
+
 def assert_no_target_leak(X, y, *, threshold: float = 0.995) -> list[str]:
     """
     Flag features almost perfectly correlated with the target -- the signature

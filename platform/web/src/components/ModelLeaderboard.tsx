@@ -190,7 +190,11 @@ export function ModelLeaderboard({
                   </td>
                   {cols.map((c) => (
                     <td key={c.key} style={{ ...td, textAlign: 'right' }}>
-                      {(c.format ?? defaultFormat)(m.metrics[c.key])}
+                      {/* A model may not have every metric (baselines have no rule count);
+                          custom formatters are only called on real numbers. */}
+                      {Number.isFinite(m.metrics[c.key])
+                        ? (c.format ?? defaultFormat)(m.metrics[c.key])
+                        : '—'}
                     </td>
                   ))}
                   {showTiming && (

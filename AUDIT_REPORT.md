@@ -6,6 +6,7 @@ Every row below is read from a project's `artifacts/metrics.json`. Projects that
 |---|---|:---:|---:|---:|---|
 | [01 NYC Taxi Trip Duration](./01_nyc_taxi_prediction/audit_report.md) | NYC TLC Yellow Taxi Trip Records — January 2024 | yes | 0 | 0 | 3/3 passed |
 | [03 Customer Segmentation](./03_customer_segmentation/audit_report.md) | Online Retail II (UCI) | yes | 0 | 0 | 3/3 passed |
+| [04 Market Basket Mining](./04_market_basket/audit_report.md) | Online Retail II (UCI) | yes | 0 | 0 | 4/4 passed |
 | [06 Credit Card Fraud Detection](./06_anomaly_detection/audit_report.md) | Credit Card Fraud Detection (ULB) | yes | 0 | 0 | 3/3 passed |
 | [15 SPY Probabilistic Forecasting](./15_spy_forecasting/audit_report.md) | SPY Daily Bars with VIX and 10-Year Yield | yes | 0 | 0 | 2/2 passed |
 
@@ -28,6 +29,17 @@ Recorded by the assertion ledger while training ran; generated from `artifacts/m
 | `assert_temporal_split` | ✅ passed | Last training timestamp 2010-11-30 19:35:00 precedes first test timestamp 2010-12-01 08:26:00 by 0 days 12:51:00; no embargo required. |
 | `assert_disjoint` | ✅ passed | 385,427 training and 391,150 test row indices compared; 0 appear in both. |
 | `assert_no_target_leak` | ✅ passed | 7 numeric features correlated against the target; strongest was recency_days at |r|=0.4046 (threshold 0.995). |
+
+Recorded by the assertion ledger while training ran; generated from `artifacts/metrics.json`.
+
+### 04 · Market Basket Mining
+
+| Assertion | Result | What it measured |
+|---|---|---|
+| `assert_temporal_split` | ✅ passed | Last training timestamp 2011-08-31 17:30:00 precedes first test timestamp 2011-09-08 08:56:00 by 7 days 15:26:00; embargo of 6D required. |
+| `assert_disjoint` | ✅ passed | 789,736 training and 203,765 test row indices compared; 0 appear in both. |
+| `assert_no_shared_invoices` | ✅ passed | 32,126 training and 7,012 test invoices compared; 0 in both. |
+| `assert_hidden_item_not_visible` | ✅ passed | 6,548 test baskets checked; the hidden item was visible to the model in 0. |
 
 Recorded by the assertion ledger while training ran; generated from `artifacts/metrics.json`.
 

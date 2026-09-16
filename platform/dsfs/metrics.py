@@ -135,7 +135,10 @@ class RunRecord:
     def save(self, path: str | Path) -> Path:
         p = Path(path)
         p.parent.mkdir(parents=True, exist_ok=True)
-        p.write_text(json.dumps(self.to_dict(), indent=2, default=str), encoding="utf-8")
+        # NaN and infinity are not valid JSON; browsers refuse to parse a file
+        # containing them. An undefined metric is written as null instead.
+        p.write_text(json.dumps(_finite(self.to_dict()), indent=2, default=str, allow_nan=False),
+                     encoding="utf-8")
         return p
 
     @staticmethod
@@ -157,6 +160,17 @@ class RunRecord:
             star = " 🏆" if m is rows[0] else ""
             out.append(f"| {i} | **{m.name}**{star} | {vals} | {m.fit_seconds:.1f} |")
         return "\n".join(out) + "\n"
+
+
+def _finite(obj: Any) -> Any:
+    """Replace NaN and infinities with None, recursively."""
+    if isinstance(obj, float):
+        return obj if obj == obj and obj not in (float("inf"), float("-inf")) else None
+    if isinstance(obj, dict):
+        return {k: _finite(v) for k, v in obj.items()}
+    if isinstance(obj, (list, tuple)):
+        return [_finite(v) for v in obj]
+    return obj
 
 
 def capture_env() -> dict[str, str]:

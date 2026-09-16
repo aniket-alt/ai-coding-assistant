@@ -1,0 +1,200 @@
+{
+  "project_slug": "04_market_basket",
+  "project_title": "Market Basket Mining",
+  "business_question": "Which products go together strongly enough to recommend, and do those associations still hold next season?",
+  "phases": [
+    {
+      "name": "business_understanding",
+      "title": "1. Business Understanding",
+      "objective": "Recommend a next item to add to a basket, using associations that hold up over time.",
+      "narrative": "Association rules are usually reported with support, confidence and lift computed on the same transactions they were mined from. Measured that way, every rule above its thresholds looks valid by construction.\n\nThe questions a retailer actually has are different: *if I recommend from these rules, will customers want what I suggest?* and *will the rules still be true next season?* So rules are mined from purchases before September 2011 and judged on the following Christmas season, in two ways:\n\n- **Recommendation.** One item is hidden from every later basket, and each method recommends five items from the rest. A hit means the hidden item was among them.\n- **Survival.** Every rule is recomputed on the later baskets to see whether its association still exists.\n\nRules compete against two baselines, a random guess and the current bestsellers, and against plain item co-occurrence, which learns conditional probabilities but needs no mining or thresholds.",
+      "findings": [
+        {
+          "label": "Primary metric",
+          "value": "Hit rate @ 5",
+          "detail": "hidden item recovered"
+        },
+        {
+          "label": "Robustness",
+          "value": "Rule survival",
+          "detail": "lift still above 1 next season"
+        },
+        {
+          "label": "Baselines",
+          "value": "Random \u00b7 Bestsellers",
+          "detail": ""
+        },
+        {
+          "label": "Threshold-free rival",
+          "value": "Item co-occurrence",
+          "detail": ""
+        }
+      ],
+      "figures": [],
+      "code_refs": [
+        "ml/baskets.py:score_recommender",
+        "ml/baskets.py:rule_survival"
+      ],
+      "gate_passed": true,
+      "gate_notes": "Held-out test, survival definition and baselines fixed before mining."
+    },
+    {
+      "name": "data_understanding",
+      "title": "2. Data Understanding",
+      "objective": "Turn transaction lines into baskets, keeping orders from customers without an ID.",
+      "narrative": "The shared Online Retail II loader reduces 1,067,371 lines to genuine product sales. Unlike segmentation, market-basket analysis keeps orders with no customer ID: a basket is still a basket.\n\n| Rule | Removed | Share | Remaining |\n|---|---|---|---|\n| exact duplicate lines (includes the 9-day overlap between sheets) | 34,335 | 3.22% | 1,033,036 |\n| cancellation lines (kept aside for return rates) | 19,104 | 1.79% | 1,013,932 |\n| non-product codes (postage, fees, adjustments, vouchers) | 4,791 | 0.45% | 1,009,141 |\n| non-positive quantity or price | 5,928 | 0.56% | 1,003,213 |\n\nBefore September 2011 there are **32,126 baskets** over 4,604 products, with a median of 15 distinct products per basket. Purchases are very long-tailed: only 691 products appear in at least 1% of baskets.",
+      "findings": [
+        {
+          "label": "Training baskets",
+          "value": "32,126",
+          "detail": ""
+        },
+        {
+          "label": "Test baskets",
+          "value": "7,012",
+          "detail": ""
+        },
+        {
+          "label": "Products",
+          "value": "4,604",
+          "detail": ""
+        },
+        {
+          "label": "Median basket size",
+          "value": "15",
+          "detail": ""
+        }
+      ],
+      "figures": [],
+      "code_refs": [
+        "datasets/loaders/online_retail.py:clean",
+        "ml/baskets.py:to_baskets"
+      ],
+      "gate_passed": true,
+      "gate_notes": "32,126 training and 7,012 test baskets."
+    },
+    {
+      "name": "data_preparation",
+      "title": "3. Data Preparation",
+      "objective": "Build an evaluation no method can pass by seeing the answer.",
+      "narrative": "Training covers purchases before 01 September 2011; testing starts a week later, on 08 September 2011. From each of the **6,548 test baskets** with at least two products, one product is hidden at random and the rest are shown to the recommender.\n\n**9.9%** of hidden products never appeared in training at all \u2014 new Christmas stock, mostly. No method can recommend a product it has never seen, so these count as misses for everyone. They are kept in rather than filtered out, because filtering them would flatter every method equally and hide a real limit of mining past purchases.\n\nTwo project-specific checks run alongside the standard ones: no invoice appears on both sides, and no hidden product is visible to the model.",
+      "findings": [
+        {
+          "label": "Test baskets scored",
+          "value": "6,548",
+          "detail": ""
+        },
+        {
+          "label": "Hidden products never seen in training",
+          "value": "9.9%",
+          "detail": ""
+        },
+        {
+          "label": "Embargo",
+          "value": "7 days",
+          "detail": ""
+        }
+      ],
+      "figures": [],
+      "code_refs": [
+        "ml/baskets.py:hold_out",
+        "ml/train.py:TEST_START"
+      ],
+      "gate_passed": true,
+      "gate_notes": "Temporal, disjointness, invoice and hidden-item assertions all executed."
+    },
+    {
+      "name": "modeling",
+      "title": "4. Modeling",
+      "objective": "Compare mined rules at three thresholds with baselines that need no mining.",
+      "narrative": "FP-Growth was run at three support and confidence thresholds, from strict to permissive, producing between 107 and 11,617 single-consequent rules.\n\nStricter thresholds give fewer, stronger rules, but a rule can only recommend when its antecedent is in the basket, so strict rule sets stay silent for many baskets. **Coverage** in the leaderboard is the share of baskets where a method produced any recommendation of its own. The hybrid fills the silence with bestsellers, which separates the value of the rules from the value of always saying something.",
+      "findings": [
+        {
+          "label": "Recommenders",
+          "value": "7",
+          "detail": ""
+        },
+        {
+          "label": "Winner",
+          "value": "Item co-occurrence",
+          "detail": ""
+        },
+        {
+          "label": "Hit rate @ 5",
+          "value": "18.63%",
+          "detail": ""
+        },
+        {
+          "label": "Most rules",
+          "value": "11,617",
+          "detail": ""
+        }
+      ],
+      "figures": [],
+      "code_refs": [
+        "ml/baskets.py:RuleSet",
+        "ml/baskets.py:CoOccurrence"
+      ],
+      "gate_passed": true,
+      "gate_notes": "7 recommenders scored on 6,548 held-out baskets."
+    },
+    {
+      "name": "evaluation",
+      "title": "5. Evaluation",
+      "objective": "Establish whether mined rules add anything a retailer could not get from a bestseller list.",
+      "narrative": "**Item co-occurrence** recovers the hidden product in 18.63% of later baskets, against 1.88% for simply recommending the bestsellers.\n\nOf the 11,617 rules in the most permissive set, 11,411 had antecedents common enough in the test season to judge. **99.4%** of those still showed a positive association (lift above 1), and their confidence moved by 0.067 on average between seasons. The median rule kept 101% of its training confidence.\n\nThat survival rate should not be read as a discovery. Lift above 1 is a low bar, and the confidence figures are the stronger evidence. More revealing still is what the strongest rules say: the top rule by lift is *HERB MARKER THYME + HERB MARKER PARSLEY* \u2192 *HERB MARKER CHIVES*. Many of the strongest associations link variants of one product line. Those are durable precisely because they are obvious, and a merchandiser would not need a mining algorithm to find them.\n\nRead the absolute hit rates with the unseen-product share in mind: a hidden product that never existed before September counts as a miss for every method, so no method can approach 100%.",
+      "findings": [
+        {
+          "label": "Best hit rate @ 5",
+          "value": "18.63%",
+          "detail": ""
+        },
+        {
+          "label": "Bestsellers hit rate",
+          "value": "1.88%",
+          "detail": ""
+        },
+        {
+          "label": "Rules surviving next season",
+          "value": "99.4%",
+          "detail": ""
+        },
+        {
+          "label": "Mean confidence drift",
+          "value": "0.067",
+          "detail": ""
+        }
+      ],
+      "figures": [],
+      "code_refs": [
+        "ml/baskets.py:rule_survival"
+      ],
+      "gate_passed": true,
+      "gate_notes": "No critical findings; every recommendation judged on a later season."
+    },
+    {
+      "name": "deployment",
+      "title": "6. Deployment",
+      "objective": "Recommend for a basket, and show which rules justify each suggestion.",
+      "narrative": "`POST /api/recommend` takes the products in a basket and returns five suggestions from the winning method. `GET /api/rules` returns the strongest rules with both their training statistics and their measured behaviour in the following season, so a merchandiser can see which associations are durable and which were seasonal.",
+      "findings": [
+        {
+          "label": "Served recommender",
+          "value": "Item co-occurrence",
+          "detail": ""
+        },
+        {
+          "label": "Serving port",
+          "value": "8,004",
+          "detail": ""
+        }
+      ],
+      "figures": [],
+      "code_refs": [
+        "server/inference.py"
+      ],
+      "gate_passed": true,
+      "gate_notes": "Winning recommender, bestseller fallback and product names persisted."
+    }
+  ]
+}
