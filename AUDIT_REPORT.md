@@ -8,6 +8,7 @@ Every row below is read from a project's `artifacts/metrics.json`. Projects that
 | [03 Customer Segmentation](./03_customer_segmentation/audit_report.md) | Online Retail II (UCI) | yes | 0 | 0 | 3/3 passed |
 | [04 Market Basket Mining](./04_market_basket/audit_report.md) | Online Retail II (UCI) | yes | 0 | 0 | 4/4 passed |
 | [06 Credit Card Fraud Detection](./06_anomaly_detection/audit_report.md) | Credit Card Fraud Detection (ULB) | yes | 0 | 0 | 3/3 passed |
+| [12 Energy Demand Forecasting](./12_energy_forecasting/audit_report.md) | Individual Household Electric Power Consumption (UCI) | yes | 0 | 0 | 4/4 passed |
 | [15 SPY Probabilistic Forecasting](./15_spy_forecasting/audit_report.md) | SPY Daily Bars with VIX and 10-Year Yield | yes | 0 | 0 | 2/2 passed |
 
 ## Runtime assertions by project
@@ -50,6 +51,17 @@ Recorded by the assertion ledger while training ran; generated from `artifacts/m
 | `assert_temporal_split` | ✅ passed | Last training timestamp 1 days 09:59:57 precedes first test timestamp 1 days 11:00:00 by 0 days 01:00:03; embargo of 30min required. |
 | `assert_disjoint` | ✅ passed | 175,582 training and 100,915 test row indices compared; 0 appear in both. |
 | `assert_no_target_leak` | ✅ passed | 30 numeric features correlated against the target; strongest was V17 at |r|=0.4096 (threshold 0.995). |
+
+Recorded by the assertion ledger while training ran; generated from `artifacts/metrics.json`.
+
+### 12 · Energy Demand Forecasting
+
+| Assertion | Result | What it measured |
+|---|---|---|
+| `assert_lags_respect_horizon` | ✅ passed | 8 lags checked against a 24-hour horizon; shortest is 24 hours; 0 shorter than the horizon. |
+| `assert_no_lookahead` | ✅ passed | 600 feature values across 30 target hours recomputed from data available at the forecast origin; 0 differed. |
+| `assert_temporal_split` | ✅ passed | Last training timestamp 2007-12-16 17:00:00 precedes first test timestamp 2007-12-16 18:00:00 by 0 days 01:00:00; no embargo required. |
+| `assert_no_target_leak` | ✅ passed | 20 numeric features correlated against the target; strongest was same_hour_4wk_mean at |r|=0.5275 (threshold 0.995). |
 
 Recorded by the assertion ledger while training ran; generated from `artifacts/metrics.json`.
 

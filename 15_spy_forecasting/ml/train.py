@@ -27,6 +27,7 @@ from sklearn.preprocessing import StandardScaler
 import lightgbm as lgb
 
 from dsfs import CrispDmReport, ModelScore, RunRecord, SplitInfo, leakage
+from dsfs.forecasting import QUANTILES, paired_bootstrap, pinball, pinball_series
 
 from data import WHY_RETURNS_NOT_PRICES, load, price_history, summarise
 from features import FEATURE_COLUMNS, assert_no_lookahead, build
@@ -35,7 +36,6 @@ ROOT = Path(__file__).resolve().parents[1]
 ARTIFACTS = ROOT / "artifacts"
 SEED = 42
 
-QUANTILES = (0.1, 0.5, 0.9)
 BURN_IN = 750        # ~3 years before the first forecast
 REFIT_EVERY = 63     # refit quarterly
 COST_BPS = 2.0       # round-trip execution cost, basis points
@@ -45,10 +45,6 @@ COST_BPS = 2.0       # round-trip execution cost, basis points
 # Metrics
 # --------------------------------------------------------------------------
 
-def pinball(y: np.ndarray, pred: np.ndarray, q: float) -> float:
-    """Quantile (pinball) loss. Asymmetric: under- and over-prediction differ."""
-    d = y - pred
-    return float(np.mean(np.maximum(q * d, (q - 1) * d)))
 
 
 def evaluate(y: np.ndarray, q10: np.ndarray, q50: np.ndarray,
@@ -82,41 +78,8 @@ def evaluate(y: np.ndarray, q10: np.ndarray, q50: np.ndarray,
     }
 
 
-def pinball_series(y: np.ndarray, q10: np.ndarray, q50: np.ndarray,
-                   q90: np.ndarray) -> np.ndarray:
-    """Per-observation pinball loss, averaged over the three quantiles."""
-    out = np.zeros(len(y))
-    for q, pred in zip(QUANTILES, (q10, q50, q90)):
-        d = y - pred
-        out += np.maximum(q * d, (q - 1) * d)
-    return out / len(QUANTILES)
 
 
-def paired_bootstrap(loss_a: np.ndarray, loss_b: np.ndarray,
-                     n: int = 5000, seed: int = SEED) -> dict:
-    """
-    Is model A's loss genuinely lower than model B's, or is the gap noise?
-
-    Resamples the paired per-day loss differences. With eleven years of daily
-    data the differences between good forecasters are small, and reporting a
-    winner without this check overstates how much was actually learned.
-    """
-    rng = np.random.default_rng(seed)
-    diff = loss_a - loss_b
-    idx = rng.integers(0, len(diff), size=(n, len(diff)))
-    means = diff[idx].mean(axis=1)
-    lo, hi = np.quantile(means, [0.025, 0.975])
-    # A negative difference means lower loss, i.e. better than the reference.
-    # The verdict is only "better" or "worse" when the whole interval agrees.
-    verdict = "better" if hi < 0 else "worse" if lo > 0 else "inconclusive"
-    return {
-        "mean_diff": float(diff.mean()),
-        "ci_low": float(lo),
-        "ci_high": float(hi),
-        "verdict": verdict,
-        "significant": verdict != "inconclusive",
-        "better_than_reference": verdict == "better",
-    }
 
 
 def backtest(y: np.ndarray, q50: np.ndarray, dates: pd.DatetimeIndex,

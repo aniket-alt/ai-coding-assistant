@@ -48,7 +48,7 @@ Training is the only writer of results. The API serves the artifacts it wrote, a
 |---|---:|---|
 | `ml/data.py` | 175 | Project 15 -- SPY forecasting: market data acquisition. |
 | `ml/features.py` | 139 | Every feature at row t is computed from information available at the close of day t, and the target is the return of day t+1. That single rule is the whole discipline of this… |
-| `ml/train.py` | 624 | Project 15 -- walk-forward forecasting tournament. |
+| `ml/train.py` | 587 | Project 15 -- walk-forward forecasting tournament. |
 | `server/inference.py` | 90 | Everything served here was computed during the walk-forward run and stored in metrics.json. Nothing is recalculated at request time, so the forecast band a visitor sees is the… |
 | `server/main.py` | 74 | Project 15 -- FastAPI application. |
 | `client/src/App.tsx` | 354 | ForecastFan is the only project-specific view. This project is the hardest test of the shared components: the primary metric is lower-is-better, the "models" include pure… |
@@ -118,7 +118,7 @@ Recorded by the assertion ledger while training ran; generated from `artifacts/m
 
 ## 9. Reproducibility
 
-Last trained at commit `e7b6737` on Python 3.11.6.
+Last trained at commit `39e3212` on Python 3.11.6.
 
 ```bash
 python ml/data.py

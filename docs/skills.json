@@ -127,7 +127,7 @@
   },
   {
     "skill": "Quantile regression and pinball loss",
-    "file": "15_spy_forecasting/ml/train.py",
+    "file": "platform/dsfs/forecasting.py",
     "symbol": "pinball",
     "why": "Scores a whole predictive distribution rather than a single point."
   },
@@ -139,7 +139,7 @@
   },
   {
     "skill": "Paired bootstrap significance testing",
-    "file": "15_spy_forecasting/ml/train.py",
+    "file": "platform/dsfs/forecasting.py",
     "symbol": "paired_bootstrap",
     "why": "Asks whether a winner beats a random walk or just got lucky."
   },
@@ -220,5 +220,29 @@
     "file": "04_market_basket/ml/baskets.py",
     "symbol": "item_support",
     "why": "Explicit ordering so results do not change with Python's randomised string hashing."
+  },
+  {
+    "skill": "Minimum lag equal to the forecast horizon",
+    "file": "12_energy_forecasting/ml/features.py",
+    "symbol": "LAGS",
+    "why": "Every feature must exist when a day-ahead forecast is issued; enforced by an assertion in training."
+  },
+  {
+    "skill": "Measuring the cost of a leak",
+    "file": "12_energy_forecasting/ml/train.py",
+    "symbol": "leaky_frame",
+    "why": "Scores a deliberately leaky model the same way and reports how much it would have flattered the result."
+  },
+  {
+    "skill": "Missing data without interpolation",
+    "file": "12_energy_forecasting/ml/data.py",
+    "symbol": "hourly",
+    "why": "Hours with too few readings stay missing and are excluded from training and scoring."
+  },
+  {
+    "skill": "Interval calibration",
+    "file": "platform/dsfs/forecasting.py",
+    "symbol": "interval_scores",
+    "why": "Checks whether an 80% band actually contains 80% of outcomes, shared by both forecasting projects."
   }
 ]

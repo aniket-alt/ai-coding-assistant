@@ -8,11 +8,12 @@ Shared by every project. A project imports it instead of re-implementing data so
 
 | File | Lines | What it does |
 |---|---:|---|
-| [`platform/dsfs/__init__.py`](./platform/dsfs/__init__.py) | 25 | dsfs -- the shared kernel behind this 16-project data science portfolio. |
+| [`platform/dsfs/__init__.py`](./platform/dsfs/__init__.py) | 26 | dsfs -- the shared kernel behind this 16-project data science portfolio. |
 | [`platform/dsfs/app.py`](./platform/dsfs/app.py) | 165 | FastAPI application factory shared by all 16 project backends. |
 | [`platform/dsfs/crispdm.py`](./platform/dsfs/crispdm.py) | 134 | CRISP-DM as a data structure, not a section heading. |
 | [`platform/dsfs/datasets.py`](./platform/dsfs/datasets.py) | 102 | `fetch()` downloads a URL once into `datasets/cache/`, checksums it, and returns a stamped `Provenance`. Re-running is free and offline-safe. Every project's data step goes… |
 | [`platform/dsfs/docs.py`](./platform/dsfs/docs.py) | 994 | Every figure in a generated document is read from the artifacts a training run wrote: metrics.json, crispdm.json, provenance.json and audit.json. The only hand-written inputs… |
+| [`platform/dsfs/forecasting.py`](./platform/dsfs/forecasting.py) | 73 | Shared evaluation for probabilistic forecasts. |
 | [`platform/dsfs/leakage.py`](./platform/dsfs/leakage.py) | 458 | Leakage auditor: static (AST) + runtime assertions. |
 | [`platform/dsfs/metrics.py`](./platform/dsfs/metrics.py) | 205 | The single source of truth for every number this portfolio publishes. |
 | [`platform/dsfs/provenance.py`](./platform/dsfs/provenance.py) | 100 | Thesis of this portfolio: every number in every README traces to a real, citable dataset. A `Provenance` is the receipt. Projects cannot register a dataset without one, and… |
@@ -143,6 +144,29 @@ Which handful of transactions should an analyst look at today? Best: **Logistic 
 
 ![Credit Card Fraud Detection](./06_anomaly_detection/screenshots/01_transaction_scorer.png)
 
+## 12 · Energy Demand Forecasting
+
+How much electricity will this home use in each hour of tomorrow? Best: **LightGBM quantile** (pinball loss (kw) 0.1428). [README](./12_energy_forecasting/README.md) · [paper](./12_energy_forecasting/paper.md) · [design doc](./12_energy_forecasting/DESIGN_DOC.md)
+
+| File | Lines | What it does |
+|---|---:|---|
+| [`ml/data.py`](./12_energy_forecasting/ml/data.py) | 115 | Project 12 -- household electricity: acquisition and hourly aggregation. |
+| [`ml/features.py`](./12_energy_forecasting/ml/features.py) | 94 | Rows are indexed by the hour being forecast, T. The forecast is issued 24 hours earlier, at T - 24, so every feature must be computable from readings at or before T - 24. |
+| [`ml/train.py`](./12_energy_forecasting/ml/train.py) | 422 | Project 12 -- day-ahead household energy forecasting. |
+| [`server/inference.py`](./12_energy_forecasting/server/inference.py) | 57 | Every response is read from the training run's metrics.json: tomorrow's band, the recent track record, load profiles, calibration, significance and the leakage demonstration.… |
+| [`server/main.py`](./12_energy_forecasting/server/main.py) | 55 | Project 12 -- FastAPI application. |
+| [`client/src/App.tsx`](./12_energy_forecasting/client/src/App.tsx) | 194 | LoadFan is the only project-specific view. Patterns, calibration, the tournament and the leakage demonstration are built from shared components reading the training artifacts. |
+| [`client/src/LoadFan.tsx`](./12_energy_forecasting/client/src/LoadFan.tsx) | 97 | Recent actual load against the day-ahead band issued for it, followed by the band for the day after the data ends. Showing the track record beside the forecast lets a reader… |
+| [`client/src/main.tsx`](./12_energy_forecasting/client/src/main.tsx) | 10 |  |
+
+| Method | Endpoint | Purpose |
+|---|---|---|
+| GET | `/api/forecast` | Tomorrow's hourly band, with the last fourteen days of forecasts against actual load. |
+| GET | `/api/patterns` | Average load by hour for weekdays and weekends, and by month. |
+| GET | `/api/calibration` | Interval coverage, significance against yesterday, and the leakage demonstration. |
+
+![Energy Demand Forecasting](./12_energy_forecasting/screenshots/01_day_ahead_forecast.png)
+
 ## 15 · SPY Probabilistic Forecasting
 
 How much of tomorrow's S&P 500 move is actually predictable? Best: **Historical drift** (pinball loss 0.002660). [README](./15_spy_forecasting/README.md) · [paper](./15_spy_forecasting/paper.md) · [design doc](./15_spy_forecasting/DESIGN_DOC.md)
@@ -151,7 +175,7 @@ How much of tomorrow's S&P 500 move is actually predictable? Best: **Historical 
 |---|---:|---|
 | [`ml/data.py`](./15_spy_forecasting/ml/data.py) | 175 | Project 15 -- SPY forecasting: market data acquisition. |
 | [`ml/features.py`](./15_spy_forecasting/ml/features.py) | 139 | Every feature at row t is computed from information available at the close of day t, and the target is the return of day t+1. That single rule is the whole discipline of this… |
-| [`ml/train.py`](./15_spy_forecasting/ml/train.py) | 624 | Project 15 -- walk-forward forecasting tournament. |
+| [`ml/train.py`](./15_spy_forecasting/ml/train.py) | 587 | Project 15 -- walk-forward forecasting tournament. |
 | [`server/inference.py`](./15_spy_forecasting/server/inference.py) | 90 | Everything served here was computed during the walk-forward run and stored in metrics.json. Nothing is recalculated at request time, so the forecast band a visitor sees is the… |
 | [`server/main.py`](./15_spy_forecasting/server/main.py) | 74 | Project 15 -- FastAPI application. |
 | [`client/src/App.tsx`](./15_spy_forecasting/client/src/App.tsx) | 354 | ForecastFan is the only project-specific view. This project is the hardest test of the shared components: the primary metric is lower-is-better, the "models" include pure… |

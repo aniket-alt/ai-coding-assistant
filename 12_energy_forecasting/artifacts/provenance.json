@@ -1,0 +1,18 @@
+{
+  "slug": "uci-household-power",
+  "name": "Individual Household Electric Power Consumption (UCI)",
+  "source_url": "https://archive.ics.uci.edu/static/public/235/individual+household+electric+power+consumption.zip",
+  "license": "Creative Commons Attribution 4.0 (CC BY 4.0)",
+  "citation": "Hebrail, G., & Berard, A. (2006). Individual Household Electric Power Consumption [Dataset]. UCI Machine Learning Repository. https://doi.org/10.24432/C58K54",
+  "retrieved_at": "2026-09-16T23:48:19Z",
+  "sha256": "9f84b46ade8a2d8e1286ec4b2b6c2987a45a755c59f263be3b3b3d10dfbda3ff",
+  "n_rows": 2075259,
+  "n_cols": 7,
+  "bytes_on_disk": 20640916,
+  "synthetic": false,
+  "notes": "One household in Sceaux, France, sampled every minute from December 2006 to November 2010.",
+  "extra": {
+    "hours_after_aggregation": 34587,
+    "hours_missing": 436
+  }
+}

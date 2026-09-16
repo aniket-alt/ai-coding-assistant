@@ -207,7 +207,7 @@ Recorded by the assertion ledger while training ran; generated from `artifacts/m
 
 ## Reproducibility
 
-Trained 2026-09-14T06:44:23Z in 95.0 s at commit `e7b6737` with Python 3.11.6, NumPy 2.4.6, pandas 3.0.5 and scikit-learn 1.9.1.
+Trained 2026-09-16T23:44:50Z in 44.1 s at commit `39e3212` with Python 3.11.6, NumPy 2.4.6, pandas 3.0.5 and scikit-learn 1.9.1.
 
 ```bash
 python ml/data.py

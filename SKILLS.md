@@ -25,11 +25,11 @@ Each skill links to the line where it is implemented. Links are located by searc
 | **Forecasting returns, not prices** | [`15_spy_forecasting/ml/data.py`](./15_spy_forecasting/ml/data.py#L52) | Price levels give a near-perfect R² for free; returns remove the illusion. |
 | **Empirical lookahead verification** | [`15_spy_forecasting/ml/features.py`](./15_spy_forecasting/ml/features.py#L98) | Features are recomputed on truncated history and must match, proving they never read the future. |
 | **Range-based volatility estimation** | [`15_spy_forecasting/ml/features.py`](./15_spy_forecasting/ml/features.py#L48) | The Parkinson estimator uses the day's high and low, not just closes. |
-| **Quantile regression and pinball loss** | [`15_spy_forecasting/ml/train.py`](./15_spy_forecasting/ml/train.py#L48) | Scores a whole predictive distribution rather than a single point. |
-| **Walk-forward validation with purging** | [`15_spy_forecasting/ml/train.py`](./15_spy_forecasting/ml/train.py#L161) | Repeated out-of-sample refits, dropping training rows whose targets overlap the test block. |
-| **Paired bootstrap significance testing** | [`15_spy_forecasting/ml/train.py`](./15_spy_forecasting/ml/train.py#L95) | Asks whether a winner beats a random walk or just got lucky. |
-| **Backtesting with costs against buy-and-hold** | [`15_spy_forecasting/ml/train.py`](./15_spy_forecasting/ml/train.py#L122) | A strategy is always compared with simply holding, net of execution cost. |
-| **Fat-tail-aware intervals** | [`15_spy_forecasting/ml/train.py`](./15_spy_forecasting/ml/train.py#L446) | Student-t quantiles over EWMA volatility, because returns have heavy tails. |
+| **Quantile regression and pinball loss** | [`platform/dsfs/forecasting.py`](./platform/dsfs/forecasting.py#L16) | Scores a whole predictive distribution rather than a single point. |
+| **Walk-forward validation with purging** | [`15_spy_forecasting/ml/train.py`](./15_spy_forecasting/ml/train.py#L124) | Repeated out-of-sample refits, dropping training rows whose targets overlap the test block. |
+| **Paired bootstrap significance testing** | [`platform/dsfs/forecasting.py`](./platform/dsfs/forecasting.py#L45) | Asks whether a winner beats a random walk or just got lucky. |
+| **Backtesting with costs against buy-and-hold** | [`15_spy_forecasting/ml/train.py`](./15_spy_forecasting/ml/train.py#L85) | A strategy is always compared with simply holding, net of execution cost. |
+| **Fat-tail-aware intervals** | [`15_spy_forecasting/ml/train.py`](./15_spy_forecasting/ml/train.py#L409) | Student-t quantiles over EWMA volatility, because returns have heavy tails. |
 | **Shared, audited data cleaning** | [`datasets/loaders/online_retail.py`](./datasets/loaders/online_retail.py#L73) | One loader for two projects, recording what each rule removed, including a nine-day overlap between source sheets. |
 | **Judging clusters on future behaviour** | [`03_customer_segmentation/ml/features.py`](./03_customer_segmentation/ml/features.py#L16) | Segments are built from one year and scored on the next, so they have to predict something they never saw. |
 | **Omega-squared effect size** | [`03_customer_segmentation/ml/train.py`](./03_customer_segmentation/ml/train.py#L47) | Corrects variance explained for the number of segments, so more clusters are not rewarded by default. |
@@ -41,6 +41,10 @@ Each skill links to the line where it is implemented. Links are located by searc
 | **Rule survival across seasons** | [`04_market_basket/ml/baskets.py`](./04_market_basket/ml/baskets.py#L236) | Recomputes every mined rule on later baskets to see whether its association still holds. |
 | **Custom checks in the audit trail** | [`platform/dsfs/leakage.py`](./platform/dsfs/leakage.py#L234) | Project-specific leakage rules recorded in the same ledger as the standard assertions. |
 | **Deterministic tie-breaking** | [`04_market_basket/ml/baskets.py`](./04_market_basket/ml/baskets.py#L39) | Explicit ordering so results do not change with Python's randomised string hashing. |
+| **Minimum lag equal to the forecast horizon** | [`12_energy_forecasting/ml/features.py`](./12_energy_forecasting/ml/features.py#L10) | Every feature must exist when a day-ahead forecast is issued; enforced by an assertion in training. |
+| **Measuring the cost of a leak** | [`12_energy_forecasting/ml/train.py`](./12_energy_forecasting/ml/train.py#L292) | Scores a deliberately leaky model the same way and reports how much it would have flattered the result. |
+| **Missing data without interpolation** | [`12_energy_forecasting/ml/data.py`](./12_energy_forecasting/ml/data.py#L48) | Hours with too few readings stay missing and are excluded from training and scoring. |
+| **Interval calibration** | [`platform/dsfs/forecasting.py`](./platform/dsfs/forecasting.py#L32) | Checks whether an 80% band actually contains 80% of outcomes, shared by both forecasting projects. |
 
 ## Reproduction skills
 
@@ -50,6 +54,7 @@ Each built project ships an agent skill at `skills/reproduce/SKILL.md` describin
 - [`03_customer_segmentation/skills/reproduce/SKILL.md`](./03_customer_segmentation/skills/reproduce/SKILL.md)
 - [`04_market_basket/skills/reproduce/SKILL.md`](./04_market_basket/skills/reproduce/SKILL.md)
 - [`06_anomaly_detection/skills/reproduce/SKILL.md`](./06_anomaly_detection/skills/reproduce/SKILL.md)
+- [`12_energy_forecasting/skills/reproduce/SKILL.md`](./12_energy_forecasting/skills/reproduce/SKILL.md)
 - [`15_spy_forecasting/skills/reproduce/SKILL.md`](./15_spy_forecasting/skills/reproduce/SKILL.md)
 
 ---

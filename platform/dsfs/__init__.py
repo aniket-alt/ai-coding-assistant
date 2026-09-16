@@ -13,6 +13,7 @@ from .datasets import fetch, fetch_via, stamp_frame, cache_dir
 from .crispdm import CrispDmReport, Phase, Finding, PHASE_ORDER
 from .metrics import RunRecord, ModelScore, SplitInfo, capture_env
 from . import leakage
+from . import forecasting
 from .leakage import LeakageError, reset_ledger, ledger, require
 
 __all__ = [
@@ -20,6 +21,6 @@ __all__ = [
     "fetch", "fetch_via", "stamp_frame", "cache_dir",
     "CrispDmReport", "Phase", "Finding", "PHASE_ORDER",
     "RunRecord", "ModelScore", "SplitInfo", "capture_env",
-    "leakage", "LeakageError", "reset_ledger", "ledger", "require",
+    "leakage", "forecasting", "LeakageError", "reset_ledger", "ledger", "require",
     "__version__",
 ]

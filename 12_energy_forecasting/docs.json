@@ -1,0 +1,35 @@
+{
+  "entity": "Forecaster",
+  "metric_columns": [
+    {"key": "pinball", "label": "Pinball loss (kW)", "fmt": "f4"},
+    {"key": "skill_vs_yesterday_pct", "label": "Skill vs yesterday", "fmt": "pct_raw"},
+    {"key": "coverage_80", "label": "80% coverage", "fmt": "pct"},
+    {"key": "wape_pct", "label": "WAPE", "fmt": "pct_raw"}
+  ],
+  "reproduce": [
+    "python ml/train.py",
+    "python -m uvicorn main:app --app-dir server --port 8012",
+    "npm run dev -w 12_energy_forecasting/client"
+  ],
+  "non_goals": [
+    "Grid-level or multi-household forecasting. This is one home, which is far noisier than an aggregate.",
+    "Intraday updating. The forecast is issued once, a day ahead."
+  ],
+  "risks": [
+    "No weather data. Heating and lighting follow temperature and daylight, which the model can only infer from the calendar.",
+    "One household over four years; occupants' routines change and the model assumes the recent past resembles the near future.",
+    "Hours with fewer than 45 recorded minutes are dropped, so the longest outages are simply not scored."
+  ],
+  "lessons": [
+    "A lag shorter than the forecast horizon is the easiest leak to introduce in time-series work, and here it would have flattered the result substantially.",
+    "Averaging the same hour over several weeks is a far stronger baseline than repeating yesterday.",
+    "Unlike daily stock returns, household load is genuinely forecastable a day ahead, and learned models beat the baselines by a significant margin.",
+    "The best point forecaster was not the best-calibrated one; coverage has to be reported beside loss."
+  ],
+  "references": [
+    "Hong, T., & Fan, S. (2016). Probabilistic electric load forecasting: A tutorial review. International Journal of Forecasting, 32(3), 914–938.",
+    "Koenker, R., & Bassett, G. (1978). Regression quantiles. Econometrica, 46(1), 33–50.",
+    "Hyndman, R. J., & Athanasopoulos, G. (2021). Forecasting: Principles and Practice (3rd ed.). OTexts.",
+    "Ke, G. et al. (2017). LightGBM: A highly efficient gradient boosting decision tree. Advances in Neural Information Processing Systems 30."
+  ]
+}

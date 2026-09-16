@@ -1,0 +1,3317 @@
+{
+  "project_slug": "12_energy_forecasting",
+  "project_title": "Energy Demand Forecasting",
+  "task": "probabilistic day-ahead load forecasting",
+  "primary_metric": "pinball",
+  "higher_is_better": false,
+  "provenance": {
+    "slug": "uci-household-power",
+    "name": "Individual Household Electric Power Consumption (UCI)",
+    "source_url": "https://archive.ics.uci.edu/static/public/235/individual+household+electric+power+consumption.zip",
+    "license": "Creative Commons Attribution 4.0 (CC BY 4.0)",
+    "citation": "Hebrail, G., & Berard, A. (2006). Individual Household Electric Power Consumption [Dataset]. UCI Machine Learning Repository. https://doi.org/10.24432/C58K54",
+    "retrieved_at": "2026-09-16T23:48:19Z",
+    "sha256": "9f84b46ade8a2d8e1286ec4b2b6c2987a45a755c59f263be3b3b3d10dfbda3ff",
+    "n_rows": 2075259,
+    "n_cols": 7,
+    "bytes_on_disk": 20640916,
+    "synthetic": false,
+    "notes": "One household in Sceaux, France, sampled every minute from December 2006 to November 2010.",
+    "extra": {
+      "hours_after_aggregation": 34587,
+      "hours_missing": 436
+    }
+  },
+  "split": {
+    "strategy": "walk-forward, 18 refits every 60 days, day-ahead",
+    "n_train": 8760,
+    "n_test": 25458,
+    "n_val": 0,
+    "train_end": "2007-12-16 17:00:00",
+    "test_start": "2007-12-16 18:00:00",
+    "embargo": "24 h horizon; no lag shorter than the horizon",
+    "notes": "Hours with no recorded load are neither trained on nor scored."
+  },
+  "models": [
+    {
+      "name": "Same hour yesterday",
+      "family": "baseline",
+      "metrics": {
+        "pinball": 0.21538608203770257,
+        "coverage_80": 0.839539633906827,
+        "coverage_error": 0.03953963390682691,
+        "interval_width": 2.3946033643648366,
+        "mae_kw": 0.6078714685562734,
+        "wape_pct": 56.27205007795396,
+        "skill_vs_yesterday_pct": 0.0
+      },
+      "params": {
+        "refits": 18
+      },
+      "fit_seconds": 0.1,
+      "predict_ms_per_1k": 0.0,
+      "notes": "Repeats the load 24 hours earlier."
+    },
+    {
+      "name": "Same hour last week",
+      "family": "baseline",
+      "metrics": {
+        "pinball": 0.20961798448576444,
+        "coverage_80": 0.8336082960169692,
+        "coverage_error": 0.03360829601696913,
+        "interval_width": 2.2952810832861705,
+        "mae_kw": 0.5948813751753734,
+        "wape_pct": 55.069527467403724,
+        "skill_vs_yesterday_pct": 2.6780270560511243
+      },
+      "params": {
+        "refits": 18
+      },
+      "fit_seconds": 0.1,
+      "predict_ms_per_1k": 0.0,
+      "notes": "Repeats the load 168 hours earlier."
+    },
+    {
+      "name": "Four-week hourly average",
+      "family": "baseline",
+      "metrics": {
+        "pinball": 0.1750014848218747,
+        "coverage_80": 0.8395789142902035,
+        "coverage_error": 0.03957891429020344,
+        "interval_width": 1.9097693234762136,
+        "mae_kw": 0.5088050033256376,
+        "wape_pct": 47.10124114733519,
+        "skill_vs_yesterday_pct": 18.749863888029072
+      },
+      "params": {
+        "refits": 18
+      },
+      "fit_seconds": 0.1,
+      "predict_ms_per_1k": 0.0,
+      "notes": "Mean of the same hour over the previous four weeks."
+    },
+    {
+      "name": "Ridge + residual quantiles",
+      "family": "linear",
+      "metrics": {
+        "pinball": 0.1615695037031051,
+        "coverage_80": 0.838675465472543,
+        "coverage_error": 0.03867546547254297,
+        "interval_width": 1.752126872398162,
+        "mae_kw": 0.4825690871327371,
+        "wape_pct": 44.672522468772584,
+        "skill_vs_yesterday_pct": 24.986098370635233
+      },
+      "params": {
+        "refits": 18
+      },
+      "fit_seconds": 1.2,
+      "predict_ms_per_1k": 0.0,
+      "notes": "Imputer and scaler fitted per fold inside the pipeline."
+    },
+    {
+      "name": "LightGBM quantile",
+      "family": "gbdt",
+      "metrics": {
+        "pinball": 0.14284761454448175,
+        "coverage_80": 0.7751198051692985,
+        "coverage_error": 0.024880194830701585,
+        "interval_width": 1.377240412545197,
+        "mae_kw": 0.4500816373721896,
+        "wape_pct": 41.66508505083873,
+        "skill_vs_yesterday_pct": 33.67834486191323
+      },
+      "params": {
+        "refits": 18
+      },
+      "fit_seconds": 84.5,
+      "predict_ms_per_1k": 0.0,
+      "notes": "Three boosters on the pinball objective."
+    },
+    {
+      "name": "Four-week average + Student-t",
+      "family": "volatility",
+      "metrics": {
+        "pinball": 0.18301851824666007,
+        "coverage_80": 0.877170241181554,
+        "coverage_error": 0.07717024118155391,
+        "interval_width": 2.3989021654081726,
+        "mae_kw": 0.5122520896489969,
+        "wape_pct": 47.42034580061297,
+        "skill_vs_yesterday_pct": 15.027695143912167
+      },
+      "params": {
+        "refits": 18
+      },
+      "fit_seconds": 0.1,
+      "predict_ms_per_1k": 0.0,
+      "notes": "Four-week mean with a t(4) interval scaled by last week's variability."
+    }
+  ],
+  "baseline": {},
+  "audit": {
+    "critical": 0,
+    "warnings": 0,
+    "total": 0,
+    "runtime_assertions": [
+      {
+        "name": "assert_lags_respect_horizon",
+        "passed": true,
+        "detail": "8 lags checked against a 24-hour horizon; shortest is 24 hours; 0 shorter than the horizon.",
+        "params": {
+          "lags": [
+            24,
+            25,
+            48,
+            72,
+            168,
+            336,
+            504,
+            672
+          ],
+          "horizon": 24,
+          "violations": []
+        },
+        "at": "2026-09-16T23:48:26Z"
+      },
+      {
+        "name": "assert_no_lookahead",
+        "passed": true,
+        "detail": "600 feature values across 30 target hours recomputed from data available at the forecast origin; 0 differed.",
+        "params": {
+          "targets_checked": 30,
+          "values_compared": 600,
+          "mismatches": 0,
+          "examples": []
+        },
+        "at": "2026-09-16T23:48:26Z"
+      },
+      {
+        "name": "assert_temporal_split",
+        "passed": true,
+        "detail": "Last training timestamp 2007-12-16 17:00:00 precedes first test timestamp 2007-12-16 18:00:00 by 0 days 01:00:00; no embargo required.",
+        "params": {
+          "train_end": "2007-12-16 17:00:00",
+          "test_start": "2007-12-16 18:00:00",
+          "gap": "0 days 01:00:00",
+          "embargo_required": "",
+          "chronologically_ordered": true
+        },
+        "at": "2026-09-16T23:48:26Z"
+      },
+      {
+        "name": "assert_no_target_leak",
+        "passed": true,
+        "detail": "20 numeric features correlated against the target; strongest was same_hour_4wk_mean at |r|=0.5275 (threshold 0.995).",
+        "params": {
+          "features_checked": 20,
+          "max_abs_correlation": 0.5275,
+          "max_correlation_feature": "same_hour_4wk_mean",
+          "threshold": 0.995,
+          "leaked_features": []
+        },
+        "at": "2026-09-16T23:48:26Z"
+      }
+    ],
+    "assertions_passed": 4,
+    "assertions_run": 4
+  },
+  "env": {
+    "python": "3.11.6",
+    "platform": "Windows 10",
+    "machine": "AMD64",
+    "numpy": "2.4.6",
+    "pandas": "3.0.5",
+    "sklearn": "1.9.1",
+    "git_commit": "39e3212"
+  },
+  "created_at": "2026-09-16T23:48:26Z",
+  "duration_seconds": 190.0,
+  "extra": {
+    "facts": {
+      "minutes": 2075259,
+      "missing_minutes": 25979,
+      "hours": 34587,
+      "missing_hours": 436,
+      "longest_gap_hours": 121,
+      "start": "2006-12-16 18:00:00",
+      "end": "2010-11-26 20:00:00"
+    },
+    "summary": {
+      "mean_kw": 1.0916107761526015,
+      "median_kw": 0.8026666666666666,
+      "p99_kw": 3.926683333333333,
+      "winter_to_summer_ratio": 1.9511204590907292,
+      "daily_autocorrelation": 0.43490193092069923,
+      "weekly_autocorrelation": 0.4479106655691314,
+      "zero_share": 0.0
+    },
+    "profiles": {
+      "by_hour": [
+        {
+          "hour": 0,
+          "weekday_kw": 0.569,
+          "weekend_kw": 0.89
+        },
+        {
+          "hour": 1,
+          "weekday_kw": 0.468,
+          "weekend_kw": 0.721
+        },
+        {
+          "hour": 2,
+          "weekday_kw": 0.435,
+          "weekend_kw": 0.596
+        },
+        {
+          "hour": 3,
+          "weekday_kw": 0.412,
+          "weekend_kw": 0.529
+        },
+        {
+          "hour": 4,
+          "weekday_kw": 0.426,
+          "weekend_kw": 0.49
+        },
+        {
+          "hour": 5,
+          "weekday_kw": 0.431,
+          "weekend_kw": 0.512
+        },
+        {
+          "hour": 6,
+          "weekday_kw": 0.875,
+          "weekend_kw": 0.579
+        },
+        {
+          "hour": 7,
+          "weekday_kw": 1.715,
+          "weekend_kw": 0.961
+        },
+        {
+          "hour": 8,
+          "weekday_kw": 1.58,
+          "weekend_kw": 1.158
+        },
+        {
+          "hour": 9,
+          "weekday_kw": 1.367,
+          "weekend_kw": 1.241
+        },
+        {
+          "hour": 10,
+          "weekday_kw": 1.218,
+          "weekend_kw": 1.37
+        },
+        {
+          "hour": 11,
+          "weekday_kw": 1.16,
+          "weekend_kw": 1.463
+        },
+        {
+          "hour": 12,
+          "weekday_kw": 1.109,
+          "weekend_kw": 1.457
+        },
+        {
+          "hour": 13,
+          "weekday_kw": 1.011,
+          "weekend_kw": 1.486
+        },
+        {
+          "hour": 14,
+          "weekday_kw": 0.911,
+          "weekend_kw": 1.522
+        },
+        {
+          "hour": 15,
+          "weekday_kw": 0.842,
+          "weekend_kw": 1.369
+        },
+        {
+          "hour": 16,
+          "weekday_kw": 0.803,
+          "weekend_kw": 1.32
+        },
+        {
+          "hour": 17,
+          "weekday_kw": 0.886,
+          "weekend_kw": 1.481
+        },
+        {
+          "hour": 18,
+          "weekday_kw": 1.143,
+          "weekend_kw": 1.794
+        },
+        {
+          "hour": 19,
+          "weekday_kw": 1.609,
+          "weekend_kw": 2.048
+        },
+        {
+          "hour": 20,
+          "weekday_kw": 1.841,
+          "weekend_kw": 2.047
+        },
+        {
+          "hour": 21,
+          "weekday_kw": 1.856,
+          "weekend_kw": 1.934
+        },
+        {
+          "hour": 22,
+          "weekday_kw": 1.371,
+          "weekend_kw": 1.517
+        },
+        {
+          "hour": 23,
+          "weekday_kw": 0.811,
+          "weekend_kw": 1.132
+        }
+      ],
+      "by_month": [
+        {
+          "month": "Jan",
+          "kw": 1.462
+        },
+        {
+          "month": "Feb",
+          "kw": 1.301
+        },
+        {
+          "month": "Mar",
+          "kw": 1.231
+        },
+        {
+          "month": "Apr",
+          "kw": 1.047
+        },
+        {
+          "month": "May",
+          "kw": 1.03
+        },
+        {
+          "month": "Jun",
+          "kw": 0.909
+        },
+        {
+          "month": "Jul",
+          "kw": 0.7
+        },
+        {
+          "month": "Aug",
+          "kw": 0.573
+        },
+        {
+          "month": "Sep",
+          "kw": 0.976
+        },
+        {
+          "month": "Oct",
+          "kw": 1.137
+        },
+        {
+          "month": "Nov",
+          "kw": 1.292
+        },
+        {
+          "month": "Dec",
+          "kw": 1.489
+        }
+      ]
+    },
+    "significance_vs_yesterday": {
+      "Same hour last week": {
+        "mean_diff": -0.005768097551938118,
+        "ci_low": -0.008832418900417676,
+        "ci_high": -0.0028669150542164758,
+        "verdict": "better",
+        "significant": true,
+        "better_than_reference": true
+      },
+      "Four-week hourly average": {
+        "mean_diff": -0.0403845972158279,
+        "ci_low": -0.04297178163818548,
+        "ci_high": -0.037933455086489265,
+        "verdict": "better",
+        "significant": true,
+        "better_than_reference": true
+      },
+      "Ridge + residual quantiles": {
+        "mean_diff": -0.053816578334597465,
+        "ci_low": -0.05589348615581975,
+        "ci_high": -0.051828767586903815,
+        "verdict": "better",
+        "significant": true,
+        "better_than_reference": true
+      },
+      "LightGBM quantile": {
+        "mean_diff": -0.07253846749322082,
+        "ci_low": -0.07477526349383401,
+        "ci_high": -0.07044764855136616,
+        "verdict": "better",
+        "significant": true,
+        "better_than_reference": true
+      },
+      "Four-week average + Student-t": {
+        "mean_diff": -0.03236756379104251,
+        "ci_low": -0.0348817997235144,
+        "ci_high": -0.030009258036400293,
+        "verdict": "better",
+        "significant": true,
+        "better_than_reference": true
+      }
+    },
+    "leakage_demo": {
+      "honest_pinball": 0.14284761454448175,
+      "leaky_pinball": 0.11042808364357189,
+      "flattery_pct": 22.69518535839088,
+      "leaky_lags": [
+        1,
+        2,
+        3
+      ],
+      "leaky_coverage_80": 0.7732343467672245
+    },
+    "recent_window": [
+      {
+        "time": "2010-11-12 21:00:00",
+        "actual": 1.115,
+        "q10": 0.711,
+        "q50": 1.816,
+        "q90": 3.037,
+        "yesterday": 0.878
+      },
+      {
+        "time": "2010-11-12 22:00:00",
+        "actual": 0.321,
+        "q10": 0.507,
+        "q50": 1.358,
+        "q90": 2.273,
+        "yesterday": 0.483
+      },
+      {
+        "time": "2010-11-12 23:00:00",
+        "actual": 0.64,
+        "q10": 0.313,
+        "q50": 0.687,
+        "q90": 1.526,
+        "yesterday": 0.28
+      },
+      {
+        "time": "2010-11-13 00:00:00",
+        "actual": 0.691,
+        "q10": 0.319,
+        "q50": 0.352,
+        "q90": 1.846,
+        "yesterday": 0.88
+      },
+      {
+        "time": "2010-11-13 01:00:00",
+        "actual": 0.848,
+        "q10": 0.297,
+        "q50": 0.348,
+        "q90": 1.112,
+        "yesterday": 0.266
+      },
+      {
+        "time": "2010-11-13 02:00:00",
+        "actual": 0.309,
+        "q10": 0.3,
+        "q50": 0.337,
+        "q90": 1.036,
+        "yesterday": 0.349
+      },
+      {
+        "time": "2010-11-13 03:00:00",
+        "actual": 0.284,
+        "q10": 0.31,
+        "q50": 0.342,
+        "q90": 0.924,
+        "yesterday": 0.319
+      },
+      {
+        "time": "2010-11-13 04:00:00",
+        "actual": 0.349,
+        "q10": 0.293,
+        "q50": 0.321,
+        "q90": 0.916,
+        "yesterday": 0.278
+      },
+      {
+        "time": "2010-11-13 05:00:00",
+        "actual": 0.371,
+        "q10": 0.286,
+        "q50": 0.32,
+        "q90": 0.841,
+        "yesterday": 0.288
+      },
+      {
+        "time": "2010-11-13 06:00:00",
+        "actual": 0.585,
+        "q10": 0.334,
+        "q50": 0.588,
+        "q90": 1.133,
+        "yesterday": 0.655
+      },
+      {
+        "time": "2010-11-13 07:00:00",
+        "actual": 2.133,
+        "q10": 0.937,
+        "q50": 1.97,
+        "q90": 2.735,
+        "yesterday": 2.693
+      },
+      {
+        "time": "2010-11-13 08:00:00",
+        "actual": 1.496,
+        "q10": 0.953,
+        "q50": 1.718,
+        "q90": 2.513,
+        "yesterday": 2.375
+      },
+      {
+        "time": "2010-11-13 09:00:00",
+        "actual": 0.729,
+        "q10": 0.564,
+        "q50": 1.376,
+        "q90": 2.147,
+        "yesterday": 1.554
+      },
+      {
+        "time": "2010-11-13 10:00:00",
+        "actual": 0.422,
+        "q10": 0.732,
+        "q50": 1.502,
+        "q90": 2.348,
+        "yesterday": 1.863
+      },
+      {
+        "time": "2010-11-13 11:00:00",
+        "actual": 1.149,
+        "q10": 0.851,
+        "q50": 1.872,
+        "q90": 3.003,
+        "yesterday": 1.41
+      },
+      {
+        "time": "2010-11-13 12:00:00",
+        "actual": 1.145,
+        "q10": 0.497,
+        "q50": 1.523,
+        "q90": 2.775,
+        "yesterday": 1.434
+      },
+      {
+        "time": "2010-11-13 13:00:00",
+        "actual": 2.062,
+        "q10": 0.449,
+        "q50": 1.428,
+        "q90": 2.569,
+        "yesterday": 0.801
+      },
+      {
+        "time": "2010-11-13 14:00:00",
+        "actual": 2.098,
+        "q10": 0.419,
+        "q50": 1.576,
+        "q90": 2.7,
+        "yesterday": 1.32
+      },
+      {
+        "time": "2010-11-13 15:00:00",
+        "actual": 2.196,
+        "q10": 0.604,
+        "q50": 1.824,
+        "q90": 2.811,
+        "yesterday": 1.789
+      },
+      {
+        "time": "2010-11-13 16:00:00",
+        "actual": 3.221,
+        "q10": 0.596,
+        "q50": 1.798,
+        "q90": 3.024,
+        "yesterday": 1.36
+      },
+      {
+        "time": "2010-11-13 17:00:00",
+        "actual": 2.762,
+        "q10": 0.77,
+        "q50": 1.89,
+        "q90": 3.246,
+        "yesterday": 2.455
+      },
+      {
+        "time": "2010-11-13 18:00:00",
+        "actual": 1.715,
+        "q10": 0.887,
+        "q50": 2.137,
+        "q90": 3.935,
+        "yesterday": 2.28
+      },
+      {
+        "time": "2010-11-13 19:00:00",
+        "actual": 2.292,
+        "q10": 0.824,
+        "q50": 2.069,
+        "q90": 3.59,
+        "yesterday": 2.391
+      },
+      {
+        "time": "2010-11-13 20:00:00",
+        "actual": 1.713,
+        "q10": 0.846,
+        "q50": 2.03,
+        "q90": 3.643,
+        "yesterday": 1.752
+      },
+      {
+        "time": "2010-11-13 21:00:00",
+        "actual": 1.706,
+        "q10": 0.556,
+        "q50": 1.628,
+        "q90": 3.423,
+        "yesterday": 1.114
+      },
+      {
+        "time": "2010-11-13 22:00:00",
+        "actual": 1.699,
+        "q10": 0.399,
+        "q50": 1.371,
+        "q90": 2.845,
+        "yesterday": 0.319
+      },
+      {
+        "time": "2010-11-13 23:00:00",
+        "actual": 1.744,
+        "q10": 0.396,
+        "q50": 1.308,
+        "q90": 2.841,
+        "yesterday": 0.639
+      },
+      {
+        "time": "2010-11-14 00:00:00",
+        "actual": 1.845,
+        "q10": 0.357,
+        "q50": 0.75,
+        "q90": 2.219,
+        "yesterday": 0.69
+      },
+      {
+        "time": "2010-11-14 01:00:00",
+        "actual": 1.568,
+        "q10": 0.326,
+        "q50": 0.744,
+        "q90": 2.008,
+        "yesterday": 0.847
+      },
+      {
+        "time": "2010-11-14 02:00:00",
+        "actual": 1.002,
+        "q10": 0.37,
+        "q50": 0.679,
+        "q90": 1.891,
+        "yesterday": 0.308
+      },
+      {
+        "time": "2010-11-14 03:00:00",
+        "actual": 0.598,
+        "q10": 0.332,
+        "q50": 0.63,
+        "q90": 1.632,
+        "yesterday": 0.283
+      },
+      {
+        "time": "2010-11-14 04:00:00",
+        "actual": 0.337,
+        "q10": 0.317,
+        "q50": 0.434,
+        "q90": 1.237,
+        "yesterday": 0.348
+      },
+      {
+        "time": "2010-11-14 05:00:00",
+        "actual": 0.365,
+        "q10": 0.334,
+        "q50": 0.583,
+        "q90": 1.599,
+        "yesterday": 0.37
+      },
+      {
+        "time": "2010-11-14 06:00:00",
+        "actual": 0.287,
+        "q10": 0.352,
+        "q50": 0.804,
+        "q90": 1.808,
+        "yesterday": 0.584
+      },
+      {
+        "time": "2010-11-14 07:00:00",
+        "actual": 0.306,
+        "q10": 0.326,
+        "q50": 0.569,
+        "q90": 1.389,
+        "yesterday": 2.131
+      },
+      {
+        "time": "2010-11-14 08:00:00",
+        "actual": 0.528,
+        "q10": 0.344,
+        "q50": 0.674,
+        "q90": 1.676,
+        "yesterday": 1.495
+      },
+      {
+        "time": "2010-11-14 09:00:00",
+        "actual": 1.121,
+        "q10": 0.405,
+        "q50": 1.046,
+        "q90": 1.81,
+        "yesterday": 0.728
+      },
+      {
+        "time": "2010-11-14 10:00:00",
+        "actual": 1.138,
+        "q10": 0.442,
+        "q50": 1.358,
+        "q90": 2.358,
+        "yesterday": 0.421
+      },
+      {
+        "time": "2010-11-14 11:00:00",
+        "actual": 1.027,
+        "q10": 0.461,
+        "q50": 1.691,
+        "q90": 2.651,
+        "yesterday": 1.148
+      },
+      {
+        "time": "2010-11-14 12:00:00",
+        "actual": 1.378,
+        "q10": 0.47,
+        "q50": 1.798,
+        "q90": 2.966,
+        "yesterday": 1.144
+      },
+      {
+        "time": "2010-11-14 13:00:00",
+        "actual": 1.28,
+        "q10": 0.43,
+        "q50": 1.656,
+        "q90": 2.801,
+        "yesterday": 2.061
+      },
+      {
+        "time": "2010-11-14 14:00:00",
+        "actual": 1.489,
+        "q10": 0.717,
+        "q50": 1.929,
+        "q90": 3.088,
+        "yesterday": 2.097
+      },
+      {
+        "time": "2010-11-14 15:00:00",
+        "actual": 4.157,
+        "q10": 0.541,
+        "q50": 1.661,
+        "q90": 2.617,
+        "yesterday": 2.195
+      },
+      {
+        "time": "2010-11-14 16:00:00",
+        "actual": 2.837,
+        "q10": 0.586,
+        "q50": 1.601,
+        "q90": 2.788,
+        "yesterday": 3.22
+      },
+      {
+        "time": "2010-11-14 17:00:00",
+        "actual": 2.359,
+        "q10": 0.647,
+        "q50": 1.803,
+        "q90": 2.822,
+        "yesterday": 2.76
+      },
+      {
+        "time": "2010-11-14 18:00:00",
+        "actual": 2.385,
+        "q10": 0.718,
+        "q50": 2.086,
+        "q90": 3.188,
+        "yesterday": 1.714
+      },
+      {
+        "time": "2010-11-14 19:00:00",
+        "actual": 1.489,
+        "q10": 0.906,
+        "q50": 2.413,
+        "q90": 3.55,
+        "yesterday": 2.291
+      },
+      {
+        "time": "2010-11-14 20:00:00",
+        "actual": 2.631,
+        "q10": 0.822,
+        "q50": 2.187,
+        "q90": 3.519,
+        "yesterday": 1.712
+      },
+      {
+        "time": "2010-11-14 21:00:00",
+        "actual": 2.552,
+        "q10": 0.693,
+        "q50": 1.854,
+        "q90": 3.209,
+        "yesterday": 1.704
+      },
+      {
+        "time": "2010-11-14 22:00:00",
+        "actual": 0.906,
+        "q10": 0.481,
+        "q50": 1.378,
+        "q90": 2.802,
+        "yesterday": 1.697
+      },
+      {
+        "time": "2010-11-14 23:00:00",
+        "actual": 0.388,
+        "q10": 0.382,
+        "q50": 1.109,
+        "q90": 2.561,
+        "yesterday": 1.742
+      },
+      {
+        "time": "2010-11-15 00:00:00",
+        "actual": 0.281,
+        "q10": 0.315,
+        "q50": 0.379,
+        "q90": 1.222,
+        "yesterday": 1.844
+      },
+      {
+        "time": "2010-11-15 01:00:00",
+        "actual": 0.346,
+        "q10": 0.295,
+        "q50": 0.345,
+        "q90": 1.021,
+        "yesterday": 1.566
+      },
+      {
+        "time": "2010-11-15 02:00:00",
+        "actual": 0.328,
+        "q10": 0.307,
+        "q50": 0.346,
+        "q90": 0.95,
+        "yesterday": 1.001
+      },
+      {
+        "time": "2010-11-15 03:00:00",
+        "actual": 0.582,
+        "q10": 0.312,
+        "q50": 0.338,
+        "q90": 0.968,
+        "yesterday": 0.597
+      },
+      {
+        "time": "2010-11-15 04:00:00",
+        "actual": 0.601,
+        "q10": 0.29,
+        "q50": 0.318,
+        "q90": 0.829,
+        "yesterday": 0.336
+      },
+      {
+        "time": "2010-11-15 05:00:00",
+        "actual": 0.353,
+        "q10": 0.296,
+        "q50": 0.329,
+        "q90": 0.841,
+        "yesterday": 0.364
+      },
+      {
+        "time": "2010-11-15 06:00:00",
+        "actual": 0.871,
+        "q10": 0.348,
+        "q50": 0.722,
+        "q90": 1.203,
+        "yesterday": 0.286
+      },
+      {
+        "time": "2010-11-15 07:00:00",
+        "actual": 2.628,
+        "q10": 0.793,
+        "q50": 1.928,
+        "q90": 2.802,
+        "yesterday": 0.305
+      },
+      {
+        "time": "2010-11-15 08:00:00",
+        "actual": 1.582,
+        "q10": 0.811,
+        "q50": 1.705,
+        "q90": 2.518,
+        "yesterday": 0.527
+      },
+      {
+        "time": "2010-11-15 09:00:00",
+        "actual": 1.383,
+        "q10": 0.669,
+        "q50": 1.565,
+        "q90": 2.469,
+        "yesterday": 1.12
+      },
+      {
+        "time": "2010-11-15 10:00:00",
+        "actual": 1.309,
+        "q10": 0.559,
+        "q50": 1.494,
+        "q90": 2.157,
+        "yesterday": 1.137
+      },
+      {
+        "time": "2010-11-15 11:00:00",
+        "actual": 1.38,
+        "q10": 0.469,
+        "q50": 1.469,
+        "q90": 2.003,
+        "yesterday": 1.026
+      },
+      {
+        "time": "2010-11-15 12:00:00",
+        "actual": 3.321,
+        "q10": 0.529,
+        "q50": 1.493,
+        "q90": 2.284,
+        "yesterday": 1.377
+      },
+      {
+        "time": "2010-11-15 13:00:00",
+        "actual": 2.809,
+        "q10": 0.509,
+        "q50": 1.483,
+        "q90": 2.519,
+        "yesterday": 1.278
+      },
+      {
+        "time": "2010-11-15 14:00:00",
+        "actual": 0.43,
+        "q10": 0.437,
+        "q50": 1.271,
+        "q90": 2.085,
+        "yesterday": 1.488
+      },
+      {
+        "time": "2010-11-15 15:00:00",
+        "actual": 0.387,
+        "q10": 0.331,
+        "q50": 0.941,
+        "q90": 2.029,
+        "yesterday": 4.155
+      },
+      {
+        "time": "2010-11-15 16:00:00",
+        "actual": 0.515,
+        "q10": 0.419,
+        "q50": 0.936,
+        "q90": 1.798,
+        "yesterday": 2.835
+      },
+      {
+        "time": "2010-11-15 17:00:00",
+        "actual": 0.874,
+        "q10": 0.454,
+        "q50": 1.019,
+        "q90": 1.991,
+        "yesterday": 2.358
+      },
+      {
+        "time": "2010-11-15 18:00:00",
+        "actual": 1.307,
+        "q10": 0.879,
+        "q50": 1.872,
+        "q90": 2.805,
+        "yesterday": 2.383
+      },
+      {
+        "time": "2010-11-15 19:00:00",
+        "actual": 1.578,
+        "q10": 1.037,
+        "q50": 2.245,
+        "q90": 3.118,
+        "yesterday": 1.488
+      },
+      {
+        "time": "2010-11-15 20:00:00",
+        "actual": 2.993,
+        "q10": 0.962,
+        "q50": 2.217,
+        "q90": 3.156,
+        "yesterday": 2.63
+      },
+      {
+        "time": "2010-11-15 21:00:00",
+        "actual": 1.509,
+        "q10": 1.073,
+        "q50": 2.053,
+        "q90": 3.056,
+        "yesterday": 2.551
+      },
+      {
+        "time": "2010-11-15 22:00:00",
+        "actual": 1.25,
+        "q10": 0.629,
+        "q50": 1.407,
+        "q90": 2.349,
+        "yesterday": 0.905
+      },
+      {
+        "time": "2010-11-15 23:00:00",
+        "actual": 0.506,
+        "q10": 0.363,
+        "q50": 0.788,
+        "q90": 1.817,
+        "yesterday": 0.387
+      },
+      {
+        "time": "2010-11-16 00:00:00",
+        "actual": 0.324,
+        "q10": 0.327,
+        "q50": 0.38,
+        "q90": 1.538,
+        "yesterday": 0.28
+      },
+      {
+        "time": "2010-11-16 01:00:00",
+        "actual": 0.292,
+        "q10": 0.292,
+        "q50": 0.377,
+        "q90": 1.054,
+        "yesterday": 0.345
+      },
+      {
+        "time": "2010-11-16 02:00:00",
+        "actual": 1.027,
+        "q10": 0.308,
+        "q50": 0.367,
+        "q90": 0.8,
+        "yesterday": 0.327
+      },
+      {
+        "time": "2010-11-16 03:00:00",
+        "actual": 0.301,
+        "q10": 0.288,
+        "q50": 0.347,
+        "q90": 0.831,
+        "yesterday": 0.581
+      },
+      {
+        "time": "2010-11-16 04:00:00",
+        "actual": 0.279,
+        "q10": 0.344,
+        "q50": 0.37,
+        "q90": 0.932,
+        "yesterday": 0.599
+      },
+      {
+        "time": "2010-11-16 05:00:00",
+        "actual": 0.338,
+        "q10": 0.31,
+        "q50": 0.374,
+        "q90": 0.793,
+        "yesterday": 0.352
+      },
+      {
+        "time": "2010-11-16 06:00:00",
+        "actual": 1.222,
+        "q10": 0.418,
+        "q50": 0.925,
+        "q90": 1.384,
+        "yesterday": 0.87
+      },
+      {
+        "time": "2010-11-16 07:00:00",
+        "actual": 2.455,
+        "q10": 1.015,
+        "q50": 2.011,
+        "q90": 2.568,
+        "yesterday": 2.626
+      },
+      {
+        "time": "2010-11-16 08:00:00",
+        "actual": 1.683,
+        "q10": 0.887,
+        "q50": 1.703,
+        "q90": 2.212,
+        "yesterday": 1.581
+      },
+      {
+        "time": "2010-11-16 09:00:00",
+        "actual": 1.581,
+        "q10": 0.95,
+        "q50": 1.542,
+        "q90": 2.06,
+        "yesterday": 1.381
+      },
+      {
+        "time": "2010-11-16 10:00:00",
+        "actual": 1.463,
+        "q10": 0.474,
+        "q50": 1.176,
+        "q90": 1.736,
+        "yesterday": 1.308
+      },
+      {
+        "time": "2010-11-16 11:00:00",
+        "actual": 0.906,
+        "q10": 0.619,
+        "q50": 1.561,
+        "q90": 2.309,
+        "yesterday": 1.379
+      },
+      {
+        "time": "2010-11-16 12:00:00",
+        "actual": 0.371,
+        "q10": 0.43,
+        "q50": 1.364,
+        "q90": 1.877,
+        "yesterday": 3.32
+      },
+      {
+        "time": "2010-11-16 13:00:00",
+        "actual": 0.366,
+        "q10": 0.372,
+        "q50": 0.812,
+        "q90": 1.695,
+        "yesterday": 2.808
+      },
+      {
+        "time": "2010-11-16 14:00:00",
+        "actual": 0.282,
+        "q10": 0.345,
+        "q50": 0.627,
+        "q90": 1.497,
+        "yesterday": 0.428
+      },
+      {
+        "time": "2010-11-16 15:00:00",
+        "actual": 0.315,
+        "q10": 0.351,
+        "q50": 0.535,
+        "q90": 1.478,
+        "yesterday": 0.386
+      },
+      {
+        "time": "2010-11-16 16:00:00",
+        "actual": 0.539,
+        "q10": 0.377,
+        "q50": 0.63,
+        "q90": 1.6,
+        "yesterday": 0.514
+      },
+      {
+        "time": "2010-11-16 17:00:00",
+        "actual": 1.406,
+        "q10": 0.482,
+        "q50": 1.533,
+        "q90": 2.413,
+        "yesterday": 0.873
+      },
+      {
+        "time": "2010-11-16 18:00:00",
+        "actual": 2.063,
+        "q10": 0.837,
+        "q50": 1.765,
+        "q90": 3.133,
+        "yesterday": 1.306
+      },
+      {
+        "time": "2010-11-16 19:00:00",
+        "actual": 1.987,
+        "q10": 0.944,
+        "q50": 2.098,
+        "q90": 3.153,
+        "yesterday": 1.577
+      },
+      {
+        "time": "2010-11-16 20:00:00",
+        "actual": 2.177,
+        "q10": 1.168,
+        "q50": 2.155,
+        "q90": 3.407,
+        "yesterday": 2.992
+      },
+      {
+        "time": "2010-11-16 21:00:00",
+        "actual": 2.53,
+        "q10": 0.972,
+        "q50": 2.141,
+        "q90": 3.316,
+        "yesterday": 1.507
+      },
+      {
+        "time": "2010-11-16 22:00:00",
+        "actual": 0.751,
+        "q10": 0.65,
+        "q50": 1.549,
+        "q90": 2.551,
+        "yesterday": 1.248
+      },
+      {
+        "time": "2010-11-16 23:00:00",
+        "actual": 0.506,
+        "q10": 0.438,
+        "q50": 1.158,
+        "q90": 2.121,
+        "yesterday": 0.504
+      },
+      {
+        "time": "2010-11-17 00:00:00",
+        "actual": 0.368,
+        "q10": 0.304,
+        "q50": 0.375,
+        "q90": 1.335,
+        "yesterday": 0.323
+      },
+      {
+        "time": "2010-11-17 01:00:00",
+        "actual": 0.294,
+        "q10": 0.292,
+        "q50": 0.348,
+        "q90": 0.979,
+        "yesterday": 0.291
+      },
+      {
+        "time": "2010-11-17 02:00:00",
+        "actual": 0.328,
+        "q10": 0.301,
+        "q50": 0.355,
+        "q90": 1.022,
+        "yesterday": 1.026
+      },
+      {
+        "time": "2010-11-17 03:00:00",
+        "actual": 0.326,
+        "q10": 0.294,
+        "q50": 0.37,
+        "q90": 0.961,
+        "yesterday": 0.299
+      },
+      {
+        "time": "2010-11-17 04:00:00",
+        "actual": 0.589,
+        "q10": 0.28,
+        "q50": 0.325,
+        "q90": 0.876,
+        "yesterday": 0.278
+      },
+      {
+        "time": "2010-11-17 05:00:00",
+        "actual": 0.742,
+        "q10": 0.289,
+        "q50": 0.34,
+        "q90": 0.814,
+        "yesterday": 0.336
+      },
+      {
+        "time": "2010-11-17 06:00:00",
+        "actual": 0.926,
+        "q10": 0.393,
+        "q50": 0.815,
+        "q90": 1.377,
+        "yesterday": 1.221
+      },
+      {
+        "time": "2010-11-17 07:00:00",
+        "actual": 2.757,
+        "q10": 1.352,
+        "q50": 2.258,
+        "q90": 2.839,
+        "yesterday": 2.454
+      },
+      {
+        "time": "2010-11-17 08:00:00",
+        "actual": 1.454,
+        "q10": 1.378,
+        "q50": 1.882,
+        "q90": 2.62,
+        "yesterday": 1.682
+      },
+      {
+        "time": "2010-11-17 09:00:00",
+        "actual": 1.349,
+        "q10": 1.16,
+        "q50": 1.699,
+        "q90": 2.474,
+        "yesterday": 1.579
+      },
+      {
+        "time": "2010-11-17 10:00:00",
+        "actual": 1.4,
+        "q10": 0.866,
+        "q50": 1.65,
+        "q90": 2.624,
+        "yesterday": 1.462
+      },
+      {
+        "time": "2010-11-17 11:00:00",
+        "actual": 1.412,
+        "q10": 0.704,
+        "q50": 1.506,
+        "q90": 2.739,
+        "yesterday": 0.904
+      },
+      {
+        "time": "2010-11-17 12:00:00",
+        "actual": 1.515,
+        "q10": 0.397,
+        "q50": 1.328,
+        "q90": 1.97,
+        "yesterday": 0.369
+      },
+      {
+        "time": "2010-11-17 13:00:00",
+        "actual": 0.69,
+        "q10": 0.401,
+        "q50": 1.191,
+        "q90": 2.013,
+        "yesterday": 0.365
+      },
+      {
+        "time": "2010-11-17 14:00:00",
+        "actual": 0.28,
+        "q10": 0.327,
+        "q50": 0.862,
+        "q90": 1.88,
+        "yesterday": 0.281
+      },
+      {
+        "time": "2010-11-17 15:00:00",
+        "actual": 0.46,
+        "q10": 0.367,
+        "q50": 0.809,
+        "q90": 1.894,
+        "yesterday": 0.313
+      },
+      {
+        "time": "2010-11-17 16:00:00",
+        "actual": 0.8,
+        "q10": 0.397,
+        "q50": 0.924,
+        "q90": 1.911,
+        "yesterday": 0.538
+      },
+      {
+        "time": "2010-11-17 17:00:00",
+        "actual": 1.046,
+        "q10": 0.436,
+        "q50": 0.997,
+        "q90": 1.953,
+        "yesterday": 1.404
+      },
+      {
+        "time": "2010-11-17 18:00:00",
+        "actual": 1.63,
+        "q10": 0.654,
+        "q50": 1.403,
+        "q90": 2.637,
+        "yesterday": 2.062
+      },
+      {
+        "time": "2010-11-17 19:00:00",
+        "actual": 2.327,
+        "q10": 0.754,
+        "q50": 1.648,
+        "q90": 2.647,
+        "yesterday": 1.986
+      },
+      {
+        "time": "2010-11-17 20:00:00",
+        "actual": 2.245,
+        "q10": 0.888,
+        "q50": 1.939,
+        "q90": 3.063,
+        "yesterday": 2.176
+      },
+      {
+        "time": "2010-11-17 21:00:00",
+        "actual": 1.738,
+        "q10": 1.081,
+        "q50": 2.254,
+        "q90": 3.356,
+        "yesterday": 2.529
+      },
+      {
+        "time": "2010-11-17 22:00:00",
+        "actual": 1.06,
+        "q10": 0.515,
+        "q50": 1.329,
+        "q90": 2.153,
+        "yesterday": 0.749
+      },
+      {
+        "time": "2010-11-17 23:00:00",
+        "actual": 0.633,
+        "q10": 0.381,
+        "q50": 0.847,
+        "q90": 1.525,
+        "yesterday": 0.505
+      },
+      {
+        "time": "2010-11-18 00:00:00",
+        "actual": 0.442,
+        "q10": 0.308,
+        "q50": 0.367,
+        "q90": 1.039,
+        "yesterday": 0.366
+      },
+      {
+        "time": "2010-11-18 01:00:00",
+        "actual": 0.391,
+        "q10": 0.298,
+        "q50": 0.339,
+        "q90": 0.794,
+        "yesterday": 0.293
+      },
+      {
+        "time": "2010-11-18 02:00:00",
+        "actual": 0.514,
+        "q10": 0.299,
+        "q50": 0.331,
+        "q90": 0.856,
+        "yesterday": 0.327
+      },
+      {
+        "time": "2010-11-18 03:00:00",
+        "actual": 1.019,
+        "q10": 0.3,
+        "q50": 0.324,
+        "q90": 0.802,
+        "yesterday": 0.324
+      },
+      {
+        "time": "2010-11-18 04:00:00",
+        "actual": 0.46,
+        "q10": 0.303,
+        "q50": 0.338,
+        "q90": 0.832,
+        "yesterday": 0.587
+      },
+      {
+        "time": "2010-11-18 05:00:00",
+        "actual": 0.385,
+        "q10": 0.312,
+        "q50": 0.364,
+        "q90": 0.902,
+        "yesterday": 0.741
+      },
+      {
+        "time": "2010-11-18 06:00:00",
+        "actual": 0.969,
+        "q10": 0.443,
+        "q50": 1.017,
+        "q90": 1.516,
+        "yesterday": 0.924
+      },
+      {
+        "time": "2010-11-18 07:00:00",
+        "actual": 2.687,
+        "q10": 1.054,
+        "q50": 1.965,
+        "q90": 2.763,
+        "yesterday": 2.756
+      },
+      {
+        "time": "2010-11-18 08:00:00",
+        "actual": 1.532,
+        "q10": 0.983,
+        "q50": 1.829,
+        "q90": 2.588,
+        "yesterday": 1.452
+      },
+      {
+        "time": "2010-11-18 09:00:00",
+        "actual": 1.351,
+        "q10": 0.799,
+        "q50": 1.592,
+        "q90": 2.104,
+        "yesterday": 1.348
+      },
+      {
+        "time": "2010-11-18 10:00:00",
+        "actual": 1.349,
+        "q10": 0.87,
+        "q50": 1.696,
+        "q90": 2.418,
+        "yesterday": 1.399
+      },
+      {
+        "time": "2010-11-18 11:00:00",
+        "actual": 1.344,
+        "q10": 0.605,
+        "q50": 1.62,
+        "q90": 2.554,
+        "yesterday": 1.411
+      },
+      {
+        "time": "2010-11-18 12:00:00",
+        "actual": 1.586,
+        "q10": 0.518,
+        "q50": 1.309,
+        "q90": 2.264,
+        "yesterday": 1.514
+      },
+      {
+        "time": "2010-11-18 13:00:00",
+        "actual": 0.923,
+        "q10": 0.447,
+        "q50": 1.302,
+        "q90": 2.063,
+        "yesterday": 0.689
+      },
+      {
+        "time": "2010-11-18 14:00:00",
+        "actual": 0.413,
+        "q10": 0.381,
+        "q50": 1.12,
+        "q90": 1.987,
+        "yesterday": 0.279
+      },
+      {
+        "time": "2010-11-18 15:00:00",
+        "actual": 0.326,
+        "q10": 0.444,
+        "q50": 1.474,
+        "q90": 2.613,
+        "yesterday": 0.459
+      },
+      {
+        "time": "2010-11-18 16:00:00",
+        "actual": 0.465,
+        "q10": 0.461,
+        "q50": 1.458,
+        "q90": 2.515,
+        "yesterday": 0.799
+      },
+      {
+        "time": "2010-11-18 17:00:00",
+        "actual": 0.578,
+        "q10": 0.513,
+        "q50": 1.286,
+        "q90": 2.499,
+        "yesterday": 1.045
+      },
+      {
+        "time": "2010-11-18 18:00:00",
+        "actual": 2.728,
+        "q10": 0.729,
+        "q50": 1.534,
+        "q90": 2.643,
+        "yesterday": 1.628
+      },
+      {
+        "time": "2010-11-18 19:00:00",
+        "actual": 2.574,
+        "q10": 1.24,
+        "q50": 2.159,
+        "q90": 3.519,
+        "yesterday": 2.325
+      },
+      {
+        "time": "2010-11-18 20:00:00",
+        "actual": 2.165,
+        "q10": 1.233,
+        "q50": 2.233,
+        "q90": 3.461,
+        "yesterday": 2.243
+      },
+      {
+        "time": "2010-11-18 21:00:00",
+        "actual": 1.935,
+        "q10": 1.013,
+        "q50": 1.951,
+        "q90": 3.357,
+        "yesterday": 1.737
+      },
+      {
+        "time": "2010-11-18 22:00:00",
+        "actual": 0.922,
+        "q10": 0.563,
+        "q50": 1.3,
+        "q90": 2.373,
+        "yesterday": 1.058
+      },
+      {
+        "time": "2010-11-18 23:00:00",
+        "actual": 0.479,
+        "q10": 0.345,
+        "q50": 0.696,
+        "q90": 1.71,
+        "yesterday": 0.632
+      },
+      {
+        "time": "2010-11-19 00:00:00",
+        "actual": 0.342,
+        "q10": 0.319,
+        "q50": 0.385,
+        "q90": 1.109,
+        "yesterday": 0.441
+      },
+      {
+        "time": "2010-11-19 01:00:00",
+        "actual": 0.277,
+        "q10": 0.295,
+        "q50": 0.337,
+        "q90": 0.827,
+        "yesterday": 0.389
+      },
+      {
+        "time": "2010-11-19 02:00:00",
+        "actual": 0.955,
+        "q10": 0.319,
+        "q50": 0.362,
+        "q90": 0.899,
+        "yesterday": 0.512
+      },
+      {
+        "time": "2010-11-19 03:00:00",
+        "actual": 0.315,
+        "q10": 0.3,
+        "q50": 0.344,
+        "q90": 0.977,
+        "yesterday": 1.018
+      },
+      {
+        "time": "2010-11-19 04:00:00",
+        "actual": 0.339,
+        "q10": 0.287,
+        "q50": 0.333,
+        "q90": 1.067,
+        "yesterday": 0.458
+      },
+      {
+        "time": "2010-11-19 05:00:00",
+        "actual": 0.265,
+        "q10": 0.314,
+        "q50": 0.361,
+        "q90": 1.017,
+        "yesterday": 0.384
+      },
+      {
+        "time": "2010-11-19 06:00:00",
+        "actual": 0.85,
+        "q10": 0.442,
+        "q50": 0.992,
+        "q90": 1.864,
+        "yesterday": 0.967
+      },
+      {
+        "time": "2010-11-19 07:00:00",
+        "actual": 2.203,
+        "q10": 1.498,
+        "q50": 2.508,
+        "q90": 3.066,
+        "yesterday": 2.685
+      },
+      {
+        "time": "2010-11-19 08:00:00",
+        "actual": 1.447,
+        "q10": 1.184,
+        "q50": 1.898,
+        "q90": 2.412,
+        "yesterday": 1.53
+      },
+      {
+        "time": "2010-11-19 09:00:00",
+        "actual": 1.364,
+        "q10": 1.051,
+        "q50": 1.67,
+        "q90": 2.125,
+        "yesterday": 1.35
+      },
+      {
+        "time": "2010-11-19 10:00:00",
+        "actual": 1.35,
+        "q10": 0.767,
+        "q50": 1.491,
+        "q90": 2.068,
+        "yesterday": 1.347
+      },
+      {
+        "time": "2010-11-19 11:00:00",
+        "actual": 1.395,
+        "q10": 0.556,
+        "q50": 1.437,
+        "q90": 2.02,
+        "yesterday": 1.342
+      },
+      {
+        "time": "2010-11-19 12:00:00",
+        "actual": 1.391,
+        "q10": 0.641,
+        "q50": 1.567,
+        "q90": 2.188,
+        "yesterday": 1.584
+      },
+      {
+        "time": "2010-11-19 13:00:00",
+        "actual": 1.594,
+        "q10": 0.439,
+        "q50": 1.158,
+        "q90": 1.975,
+        "yesterday": 0.922
+      },
+      {
+        "time": "2010-11-19 14:00:00",
+        "actual": 1.521,
+        "q10": 0.416,
+        "q50": 1.121,
+        "q90": 2.14,
+        "yesterday": 0.412
+      },
+      {
+        "time": "2010-11-19 15:00:00",
+        "actual": 1.623,
+        "q10": 0.477,
+        "q50": 1.24,
+        "q90": 2.128,
+        "yesterday": 0.324
+      },
+      {
+        "time": "2010-11-19 16:00:00",
+        "actual": 1.47,
+        "q10": 0.405,
+        "q50": 0.985,
+        "q90": 2.034,
+        "yesterday": 0.464
+      },
+      {
+        "time": "2010-11-19 17:00:00",
+        "actual": 0.824,
+        "q10": 0.453,
+        "q50": 1.27,
+        "q90": 2.226,
+        "yesterday": 0.577
+      },
+      {
+        "time": "2010-11-19 18:00:00",
+        "actual": 1.018,
+        "q10": 0.728,
+        "q50": 1.775,
+        "q90": 2.588,
+        "yesterday": 2.727
+      },
+      {
+        "time": "2010-11-19 19:00:00",
+        "actual": 1.25,
+        "q10": 1.011,
+        "q50": 2.189,
+        "q90": 3.256,
+        "yesterday": 2.573
+      },
+      {
+        "time": "2010-11-19 20:00:00",
+        "actual": 1.665,
+        "q10": 1.154,
+        "q50": 2.15,
+        "q90": 3.243,
+        "yesterday": 2.163
+      },
+      {
+        "time": "2010-11-19 21:00:00",
+        "actual": 1.778,
+        "q10": 1.058,
+        "q50": 2.008,
+        "q90": 3.177,
+        "yesterday": 1.934
+      },
+      {
+        "time": "2010-11-19 22:00:00",
+        "actual": 0.602,
+        "q10": 0.413,
+        "q50": 1.088,
+        "q90": 2.189,
+        "yesterday": 0.921
+      },
+      {
+        "time": "2010-11-19 23:00:00",
+        "actual": 0.334,
+        "q10": 0.358,
+        "q50": 0.719,
+        "q90": 1.718,
+        "yesterday": 0.478
+      },
+      {
+        "time": "2010-11-20 00:00:00",
+        "actual": 0.317,
+        "q10": 0.364,
+        "q50": 0.454,
+        "q90": 1.85,
+        "yesterday": 0.341
+      },
+      {
+        "time": "2010-11-20 01:00:00",
+        "actual": 0.285,
+        "q10": 0.305,
+        "q50": 0.367,
+        "q90": 1.136,
+        "yesterday": 0.276
+      },
+      {
+        "time": "2010-11-20 02:00:00",
+        "actual": 0.357,
+        "q10": 0.303,
+        "q50": 0.362,
+        "q90": 1.148,
+        "yesterday": 0.954
+      },
+      {
+        "time": "2010-11-20 03:00:00",
+        "actual": 0.31,
+        "q10": 0.31,
+        "q50": 0.375,
+        "q90": 1.171,
+        "yesterday": 0.313
+      },
+      {
+        "time": "2010-11-20 04:00:00",
+        "actual": 0.327,
+        "q10": 0.313,
+        "q50": 0.384,
+        "q90": 0.965,
+        "yesterday": 0.337
+      },
+      {
+        "time": "2010-11-20 05:00:00",
+        "actual": 0.885,
+        "q10": 0.294,
+        "q50": 0.369,
+        "q90": 0.913,
+        "yesterday": 0.264
+      },
+      {
+        "time": "2010-11-20 06:00:00",
+        "actual": 0.787,
+        "q10": 0.319,
+        "q50": 0.63,
+        "q90": 1.313,
+        "yesterday": 0.849
+      },
+      {
+        "time": "2010-11-20 07:00:00",
+        "actual": 2.634,
+        "q10": 1.395,
+        "q50": 2.301,
+        "q90": 2.864,
+        "yesterday": 2.202
+      },
+      {
+        "time": "2010-11-20 08:00:00",
+        "actual": 1.973,
+        "q10": 0.856,
+        "q50": 1.73,
+        "q90": 2.534,
+        "yesterday": 1.446
+      },
+      {
+        "time": "2010-11-20 09:00:00",
+        "actual": 1.875,
+        "q10": 0.605,
+        "q50": 1.456,
+        "q90": 2.307,
+        "yesterday": 1.363
+      },
+      {
+        "time": "2010-11-20 10:00:00",
+        "actual": 1.292,
+        "q10": 0.463,
+        "q50": 1.122,
+        "q90": 2.363,
+        "yesterday": 1.349
+      },
+      {
+        "time": "2010-11-20 11:00:00",
+        "actual": 2.691,
+        "q10": 0.767,
+        "q50": 1.848,
+        "q90": 2.864,
+        "yesterday": 1.394
+      },
+      {
+        "time": "2010-11-20 12:00:00",
+        "actual": 1.131,
+        "q10": 0.662,
+        "q50": 1.765,
+        "q90": 2.932,
+        "yesterday": 1.389
+      },
+      {
+        "time": "2010-11-20 13:00:00",
+        "actual": 1.298,
+        "q10": 0.63,
+        "q50": 1.659,
+        "q90": 2.915,
+        "yesterday": 1.593
+      },
+      {
+        "time": "2010-11-20 14:00:00",
+        "actual": 1.051,
+        "q10": 0.575,
+        "q50": 1.77,
+        "q90": 2.914,
+        "yesterday": 1.52
+      },
+      {
+        "time": "2010-11-20 15:00:00",
+        "actual": 1.258,
+        "q10": 0.638,
+        "q50": 1.755,
+        "q90": 3.102,
+        "yesterday": 1.622
+      },
+      {
+        "time": "2010-11-20 16:00:00",
+        "actual": 1.517,
+        "q10": 0.662,
+        "q50": 1.7,
+        "q90": 3.109,
+        "yesterday": 1.468
+      },
+      {
+        "time": "2010-11-20 17:00:00",
+        "actual": 1.795,
+        "q10": 0.639,
+        "q50": 1.794,
+        "q90": 3.164,
+        "yesterday": 0.823
+      },
+      {
+        "time": "2010-11-20 18:00:00",
+        "actual": 5.627,
+        "q10": 0.858,
+        "q50": 1.938,
+        "q90": 3.69,
+        "yesterday": 1.017
+      },
+      {
+        "time": "2010-11-20 19:00:00",
+        "actual": 3.26,
+        "q10": 1.019,
+        "q50": 2.342,
+        "q90": 3.844,
+        "yesterday": 1.248
+      },
+      {
+        "time": "2010-11-20 20:00:00",
+        "actual": 2.117,
+        "q10": 1.227,
+        "q50": 2.33,
+        "q90": 3.89,
+        "yesterday": 1.664
+      },
+      {
+        "time": "2010-11-20 21:00:00",
+        "actual": 1.774,
+        "q10": 1.089,
+        "q50": 2.259,
+        "q90": 3.727,
+        "yesterday": 1.777
+      },
+      {
+        "time": "2010-11-20 22:00:00",
+        "actual": 1.326,
+        "q10": 0.625,
+        "q50": 1.64,
+        "q90": 3.226,
+        "yesterday": 0.601
+      },
+      {
+        "time": "2010-11-20 23:00:00",
+        "actual": 0.729,
+        "q10": 0.586,
+        "q50": 1.464,
+        "q90": 3.079,
+        "yesterday": 0.333
+      },
+      {
+        "time": "2010-11-21 00:00:00",
+        "actual": 0.52,
+        "q10": 0.424,
+        "q50": 1.104,
+        "q90": 2.555,
+        "yesterday": 0.316
+      },
+      {
+        "time": "2010-11-21 01:00:00",
+        "actual": 0.294,
+        "q10": 0.336,
+        "q50": 0.908,
+        "q90": 2.017,
+        "yesterday": 0.284
+      },
+      {
+        "time": "2010-11-21 02:00:00",
+        "actual": 0.897,
+        "q10": 0.366,
+        "q50": 0.699,
+        "q90": 1.967,
+        "yesterday": 0.355
+      },
+      {
+        "time": "2010-11-21 03:00:00",
+        "actual": 0.33,
+        "q10": 0.378,
+        "q50": 0.753,
+        "q90": 1.908,
+        "yesterday": 0.309
+      },
+      {
+        "time": "2010-11-21 04:00:00",
+        "actual": 0.345,
+        "q10": 0.329,
+        "q50": 0.52,
+        "q90": 1.348,
+        "yesterday": 0.325
+      },
+      {
+        "time": "2010-11-21 05:00:00",
+        "actual": 0.29,
+        "q10": 0.317,
+        "q50": 0.572,
+        "q90": 1.657,
+        "yesterday": 0.884
+      },
+      {
+        "time": "2010-11-21 06:00:00",
+        "actual": 0.337,
+        "q10": 0.333,
+        "q50": 0.633,
+        "q90": 1.429,
+        "yesterday": 0.785
+      },
+      {
+        "time": "2010-11-21 07:00:00",
+        "actual": 2.071,
+        "q10": 0.308,
+        "q50": 0.522,
+        "q90": 1.58,
+        "yesterday": 2.633
+      },
+      {
+        "time": "2010-11-21 08:00:00",
+        "actual": 1.425,
+        "q10": 0.372,
+        "q50": 0.729,
+        "q90": 1.806,
+        "yesterday": 1.972
+      },
+      {
+        "time": "2010-11-21 09:00:00",
+        "actual": 1.291,
+        "q10": 0.55,
+        "q50": 1.342,
+        "q90": 2.319,
+        "yesterday": 1.874
+      },
+      {
+        "time": "2010-11-21 10:00:00",
+        "actual": 0.268,
+        "q10": 0.606,
+        "q50": 1.522,
+        "q90": 2.576,
+        "yesterday": 1.291
+      },
+      {
+        "time": "2010-11-21 11:00:00",
+        "actual": 0.299,
+        "q10": 0.574,
+        "q50": 1.716,
+        "q90": 2.799,
+        "yesterday": 2.69
+      },
+      {
+        "time": "2010-11-21 12:00:00",
+        "actual": 0.35,
+        "q10": 0.615,
+        "q50": 1.815,
+        "q90": 3.201,
+        "yesterday": 1.129
+      },
+      {
+        "time": "2010-11-21 13:00:00",
+        "actual": 0.277,
+        "q10": 0.586,
+        "q50": 1.769,
+        "q90": 3.1,
+        "yesterday": 1.297
+      },
+      {
+        "time": "2010-11-21 14:00:00",
+        "actual": 0.281,
+        "q10": 0.653,
+        "q50": 1.76,
+        "q90": 3.115,
+        "yesterday": 1.05
+      },
+      {
+        "time": "2010-11-21 15:00:00",
+        "actual": 0.297,
+        "q10": 0.601,
+        "q50": 1.743,
+        "q90": 3.209,
+        "yesterday": 1.257
+      },
+      {
+        "time": "2010-11-21 16:00:00",
+        "actual": 0.351,
+        "q10": 0.566,
+        "q50": 1.982,
+        "q90": 3.177,
+        "yesterday": 1.516
+      },
+      {
+        "time": "2010-11-21 17:00:00",
+        "actual": 0.724,
+        "q10": 0.617,
+        "q50": 1.748,
+        "q90": 3.288,
+        "yesterday": 1.794
+      },
+      {
+        "time": "2010-11-21 18:00:00",
+        "actual": 0.451,
+        "q10": 0.947,
+        "q50": 2.413,
+        "q90": 3.924,
+        "yesterday": 5.626
+      },
+      {
+        "time": "2010-11-21 19:00:00",
+        "actual": 0.295,
+        "q10": 1.032,
+        "q50": 2.495,
+        "q90": 3.661,
+        "yesterday": 3.258
+      },
+      {
+        "time": "2010-11-21 20:00:00",
+        "actual": 0.605,
+        "q10": 1.043,
+        "q50": 2.402,
+        "q90": 3.56,
+        "yesterday": 2.116
+      },
+      {
+        "time": "2010-11-21 21:00:00",
+        "actual": 1.221,
+        "q10": 0.866,
+        "q50": 2.226,
+        "q90": 3.471,
+        "yesterday": 1.773
+      },
+      {
+        "time": "2010-11-21 22:00:00",
+        "actual": 1.494,
+        "q10": 0.513,
+        "q50": 1.25,
+        "q90": 2.791,
+        "yesterday": 1.325
+      },
+      {
+        "time": "2010-11-21 23:00:00",
+        "actual": 0.303,
+        "q10": 0.405,
+        "q50": 1.002,
+        "q90": 2.498,
+        "yesterday": 0.728
+      },
+      {
+        "time": "2010-11-22 00:00:00",
+        "actual": 0.367,
+        "q10": 0.329,
+        "q50": 0.37,
+        "q90": 0.988,
+        "yesterday": 0.519
+      },
+      {
+        "time": "2010-11-22 01:00:00",
+        "actual": 0.28,
+        "q10": 0.305,
+        "q50": 0.346,
+        "q90": 0.799,
+        "yesterday": 0.293
+      },
+      {
+        "time": "2010-11-22 02:00:00",
+        "actual": 0.283,
+        "q10": 0.322,
+        "q50": 0.356,
+        "q90": 0.893,
+        "yesterday": 0.896
+      },
+      {
+        "time": "2010-11-22 03:00:00",
+        "actual": 0.275,
+        "q10": 0.323,
+        "q50": 0.349,
+        "q90": 0.88,
+        "yesterday": 0.329
+      },
+      {
+        "time": "2010-11-22 04:00:00",
+        "actual": 0.368,
+        "q10": 0.316,
+        "q50": 0.351,
+        "q90": 0.736,
+        "yesterday": 0.343
+      },
+      {
+        "time": "2010-11-22 05:00:00",
+        "actual": 0.286,
+        "q10": 0.29,
+        "q50": 0.372,
+        "q90": 0.835,
+        "yesterday": 0.289
+      },
+      {
+        "time": "2010-11-22 06:00:00",
+        "actual": 0.953,
+        "q10": 0.375,
+        "q50": 0.8,
+        "q90": 1.19,
+        "yesterday": 0.336
+      },
+      {
+        "time": "2010-11-22 07:00:00",
+        "actual": 2.137,
+        "q10": 1.464,
+        "q50": 2.376,
+        "q90": 2.897,
+        "yesterday": 2.07
+      },
+      {
+        "time": "2010-11-22 08:00:00",
+        "actual": 2.59,
+        "q10": 1.107,
+        "q50": 1.826,
+        "q90": 2.307,
+        "yesterday": 1.423
+      },
+      {
+        "time": "2010-11-22 09:00:00",
+        "actual": 1.428,
+        "q10": 0.938,
+        "q50": 1.593,
+        "q90": 2.122,
+        "yesterday": 1.289
+      },
+      {
+        "time": "2010-11-22 10:00:00",
+        "actual": 3.105,
+        "q10": 0.497,
+        "q50": 1.406,
+        "q90": 1.878,
+        "yesterday": 0.267
+      },
+      {
+        "time": "2010-11-22 11:00:00",
+        "actual": 2.639,
+        "q10": 0.366,
+        "q50": 1.378,
+        "q90": 1.953,
+        "yesterday": 0.298
+      },
+      {
+        "time": "2010-11-22 12:00:00",
+        "actual": 1.867,
+        "q10": 0.445,
+        "q50": 1.672,
+        "q90": 2.582,
+        "yesterday": 0.348
+      },
+      {
+        "time": "2010-11-22 13:00:00",
+        "actual": 1.987,
+        "q10": 0.507,
+        "q50": 1.654,
+        "q90": 2.728,
+        "yesterday": 0.276
+      },
+      {
+        "time": "2010-11-22 14:00:00",
+        "actual": 1.518,
+        "q10": 0.306,
+        "q50": 1.018,
+        "q90": 1.851,
+        "yesterday": 0.28
+      },
+      {
+        "time": "2010-11-22 15:00:00",
+        "actual": 1.387,
+        "q10": 0.317,
+        "q50": 0.823,
+        "q90": 1.841,
+        "yesterday": 0.296
+      },
+      {
+        "time": "2010-11-22 16:00:00",
+        "actual": 0.693,
+        "q10": 0.37,
+        "q50": 0.897,
+        "q90": 1.927,
+        "yesterday": 0.35
+      },
+      {
+        "time": "2010-11-22 17:00:00",
+        "actual": 0.646,
+        "q10": 0.397,
+        "q50": 0.903,
+        "q90": 1.956,
+        "yesterday": 0.723
+      },
+      {
+        "time": "2010-11-22 18:00:00",
+        "actual": 3.168,
+        "q10": 0.493,
+        "q50": 1.096,
+        "q90": 2.091,
+        "yesterday": 0.45
+      },
+      {
+        "time": "2010-11-22 19:00:00",
+        "actual": 2.59,
+        "q10": 0.534,
+        "q50": 1.359,
+        "q90": 2.437,
+        "yesterday": 0.294
+      },
+      {
+        "time": "2010-11-22 20:00:00",
+        "actual": 1.583,
+        "q10": 0.618,
+        "q50": 1.617,
+        "q90": 2.783,
+        "yesterday": 0.603
+      },
+      {
+        "time": "2010-11-22 21:00:00",
+        "actual": 2.389,
+        "q10": 0.616,
+        "q50": 1.759,
+        "q90": 2.612,
+        "yesterday": 1.22
+      },
+      {
+        "time": "2010-11-22 22:00:00",
+        "actual": 1.165,
+        "q10": 0.515,
+        "q50": 1.404,
+        "q90": 2.163,
+        "yesterday": 1.492
+      },
+      {
+        "time": "2010-11-22 23:00:00",
+        "actual": 0.323,
+        "q10": 0.342,
+        "q50": 0.692,
+        "q90": 1.744,
+        "yesterday": 0.302
+      },
+      {
+        "time": "2010-11-23 00:00:00",
+        "actual": 0.365,
+        "q10": 0.313,
+        "q50": 0.414,
+        "q90": 1.282,
+        "yesterday": 0.366
+      },
+      {
+        "time": "2010-11-23 01:00:00",
+        "actual": 0.292,
+        "q10": 0.288,
+        "q50": 0.365,
+        "q90": 1.108,
+        "yesterday": 0.279
+      },
+      {
+        "time": "2010-11-23 02:00:00",
+        "actual": 0.282,
+        "q10": 0.277,
+        "q50": 0.367,
+        "q90": 1.0,
+        "yesterday": 0.282
+      },
+      {
+        "time": "2010-11-23 03:00:00",
+        "actual": 0.274,
+        "q10": 0.282,
+        "q50": 0.355,
+        "q90": 1.019,
+        "yesterday": 0.274
+      },
+      {
+        "time": "2010-11-23 04:00:00",
+        "actual": 0.36,
+        "q10": 0.295,
+        "q50": 0.38,
+        "q90": 1.076,
+        "yesterday": 0.367
+      },
+      {
+        "time": "2010-11-23 05:00:00",
+        "actual": 0.28,
+        "q10": 0.285,
+        "q50": 0.367,
+        "q90": 1.018,
+        "yesterday": 0.285
+      },
+      {
+        "time": "2010-11-23 06:00:00",
+        "actual": 0.636,
+        "q10": 0.349,
+        "q50": 0.906,
+        "q90": 1.573,
+        "yesterday": 0.952
+      },
+      {
+        "time": "2010-11-23 07:00:00",
+        "actual": 2.549,
+        "q10": 0.84,
+        "q50": 1.955,
+        "q90": 2.386,
+        "yesterday": 2.136
+      },
+      {
+        "time": "2010-11-23 08:00:00",
+        "actual": 1.704,
+        "q10": 0.859,
+        "q50": 1.593,
+        "q90": 2.333,
+        "yesterday": 2.589
+      },
+      {
+        "time": "2010-11-23 09:00:00",
+        "actual": 1.401,
+        "q10": 0.754,
+        "q50": 1.484,
+        "q90": 2.204,
+        "yesterday": 1.426
+      },
+      {
+        "time": "2010-11-23 10:00:00",
+        "actual": 1.57,
+        "q10": 0.442,
+        "q50": 1.276,
+        "q90": 2.053,
+        "yesterday": 3.104
+      },
+      {
+        "time": "2010-11-23 11:00:00",
+        "actual": 1.704,
+        "q10": 0.514,
+        "q50": 1.39,
+        "q90": 2.256,
+        "yesterday": 2.638
+      },
+      {
+        "time": "2010-11-23 12:00:00",
+        "actual": 1.049,
+        "q10": 0.336,
+        "q50": 1.014,
+        "q90": 1.89,
+        "yesterday": 1.866
+      },
+      {
+        "time": "2010-11-23 13:00:00",
+        "actual": 0.832,
+        "q10": 0.323,
+        "q50": 0.725,
+        "q90": 1.783,
+        "yesterday": 1.985
+      },
+      {
+        "time": "2010-11-23 14:00:00",
+        "actual": 1.549,
+        "q10": 0.32,
+        "q50": 0.601,
+        "q90": 1.739,
+        "yesterday": 1.516
+      },
+      {
+        "time": "2010-11-23 15:00:00",
+        "actual": 0.4,
+        "q10": 0.323,
+        "q50": 0.661,
+        "q90": 1.711,
+        "yesterday": 1.385
+      },
+      {
+        "time": "2010-11-23 16:00:00",
+        "actual": 0.509,
+        "q10": 0.338,
+        "q50": 0.672,
+        "q90": 1.806,
+        "yesterday": 0.691
+      },
+      {
+        "time": "2010-11-23 17:00:00",
+        "actual": 0.979,
+        "q10": 0.452,
+        "q50": 1.253,
+        "q90": 2.264,
+        "yesterday": 0.644
+      },
+      {
+        "time": "2010-11-23 18:00:00",
+        "actual": 1.84,
+        "q10": 0.828,
+        "q50": 1.791,
+        "q90": 3.099,
+        "yesterday": 3.167
+      },
+      {
+        "time": "2010-11-23 19:00:00",
+        "actual": 2.221,
+        "q10": 0.812,
+        "q50": 1.854,
+        "q90": 3.19,
+        "yesterday": 2.588
+      },
+      {
+        "time": "2010-11-23 20:00:00",
+        "actual": 2.637,
+        "q10": 1.05,
+        "q50": 2.076,
+        "q90": 3.242,
+        "yesterday": 1.581
+      },
+      {
+        "time": "2010-11-23 21:00:00",
+        "actual": 1.426,
+        "q10": 1.001,
+        "q50": 2.221,
+        "q90": 3.21,
+        "yesterday": 2.387
+      },
+      {
+        "time": "2010-11-23 22:00:00",
+        "actual": 0.833,
+        "q10": 0.592,
+        "q50": 1.51,
+        "q90": 2.421,
+        "yesterday": 1.164
+      },
+      {
+        "time": "2010-11-23 23:00:00",
+        "actual": 0.6,
+        "q10": 0.393,
+        "q50": 0.941,
+        "q90": 1.757,
+        "yesterday": 0.322
+      },
+      {
+        "time": "2010-11-24 00:00:00",
+        "actual": 0.358,
+        "q10": 0.324,
+        "q50": 0.509,
+        "q90": 1.138,
+        "yesterday": 0.364
+      },
+      {
+        "time": "2010-11-24 01:00:00",
+        "actual": 0.265,
+        "q10": 0.298,
+        "q50": 0.457,
+        "q90": 0.895,
+        "yesterday": 0.291
+      },
+      {
+        "time": "2010-11-24 02:00:00",
+        "actual": 0.502,
+        "q10": 0.288,
+        "q50": 0.414,
+        "q90": 0.991,
+        "yesterday": 0.281
+      },
+      {
+        "time": "2010-11-24 03:00:00",
+        "actual": 0.751,
+        "q10": 0.284,
+        "q50": 0.441,
+        "q90": 0.85,
+        "yesterday": 0.273
+      },
+      {
+        "time": "2010-11-24 04:00:00",
+        "actual": 0.32,
+        "q10": 0.298,
+        "q50": 0.472,
+        "q90": 0.894,
+        "yesterday": 0.359
+      },
+      {
+        "time": "2010-11-24 05:00:00",
+        "actual": 0.284,
+        "q10": 0.292,
+        "q50": 0.451,
+        "q90": 0.886,
+        "yesterday": 0.279
+      },
+      {
+        "time": "2010-11-24 06:00:00",
+        "actual": 0.829,
+        "q10": 0.373,
+        "q50": 0.902,
+        "q90": 1.254,
+        "yesterday": 0.634
+      },
+      {
+        "time": "2010-11-24 07:00:00",
+        "actual": 2.85,
+        "q10": 1.463,
+        "q50": 2.424,
+        "q90": 2.783,
+        "yesterday": 2.547
+      },
+      {
+        "time": "2010-11-24 08:00:00",
+        "actual": 1.554,
+        "q10": 1.294,
+        "q50": 1.984,
+        "q90": 2.453,
+        "yesterday": 1.703
+      },
+      {
+        "time": "2010-11-24 09:00:00",
+        "actual": 1.364,
+        "q10": 1.019,
+        "q50": 1.704,
+        "q90": 2.339,
+        "yesterday": 1.399
+      },
+      {
+        "time": "2010-11-24 10:00:00",
+        "actual": 1.373,
+        "q10": 0.86,
+        "q50": 1.759,
+        "q90": 2.459,
+        "yesterday": 1.569
+      },
+      {
+        "time": "2010-11-24 11:00:00",
+        "actual": 1.392,
+        "q10": 0.753,
+        "q50": 1.785,
+        "q90": 2.451,
+        "yesterday": 1.703
+      },
+      {
+        "time": "2010-11-24 12:00:00",
+        "actual": 1.584,
+        "q10": 0.419,
+        "q50": 1.397,
+        "q90": 2.082,
+        "yesterday": 1.048
+      },
+      {
+        "time": "2010-11-24 13:00:00",
+        "actual": 1.961,
+        "q10": 0.377,
+        "q50": 1.35,
+        "q90": 2.232,
+        "yesterday": 0.831
+      },
+      {
+        "time": "2010-11-24 14:00:00",
+        "actual": 2.018,
+        "q10": 0.316,
+        "q50": 0.991,
+        "q90": 2.016,
+        "yesterday": 1.547
+      },
+      {
+        "time": "2010-11-24 15:00:00",
+        "actual": 1.502,
+        "q10": 0.351,
+        "q50": 0.8,
+        "q90": 1.873,
+        "yesterday": 0.399
+      },
+      {
+        "time": "2010-11-24 16:00:00",
+        "actual": 0.874,
+        "q10": 0.383,
+        "q50": 0.93,
+        "q90": 2.002,
+        "yesterday": 0.508
+      },
+      {
+        "time": "2010-11-24 17:00:00",
+        "actual": 1.939,
+        "q10": 0.376,
+        "q50": 1.054,
+        "q90": 2.069,
+        "yesterday": 0.977
+      },
+      {
+        "time": "2010-11-24 18:00:00",
+        "actual": 2.061,
+        "q10": 0.633,
+        "q50": 1.383,
+        "q90": 2.607,
+        "yesterday": 1.839
+      },
+      {
+        "time": "2010-11-24 19:00:00",
+        "actual": 1.498,
+        "q10": 0.714,
+        "q50": 1.939,
+        "q90": 2.871,
+        "yesterday": 2.22
+      },
+      {
+        "time": "2010-11-24 20:00:00",
+        "actual": 2.313,
+        "q10": 0.812,
+        "q50": 1.923,
+        "q90": 2.666,
+        "yesterday": 2.635
+      },
+      {
+        "time": "2010-11-24 21:00:00",
+        "actual": 1.568,
+        "q10": 0.801,
+        "q50": 1.882,
+        "q90": 2.895,
+        "yesterday": 1.425
+      },
+      {
+        "time": "2010-11-24 22:00:00",
+        "actual": 0.422,
+        "q10": 0.509,
+        "q50": 1.23,
+        "q90": 2.131,
+        "yesterday": 0.832
+      },
+      {
+        "time": "2010-11-24 23:00:00",
+        "actual": 0.353,
+        "q10": 0.345,
+        "q50": 0.806,
+        "q90": 1.719,
+        "yesterday": 0.598
+      },
+      {
+        "time": "2010-11-25 00:00:00",
+        "actual": 0.303,
+        "q10": 0.334,
+        "q50": 0.494,
+        "q90": 1.213,
+        "yesterday": 0.357
+      },
+      {
+        "time": "2010-11-25 01:00:00",
+        "actual": 0.29,
+        "q10": 0.29,
+        "q50": 0.442,
+        "q90": 0.887,
+        "yesterday": 0.264
+      },
+      {
+        "time": "2010-11-25 02:00:00",
+        "actual": 0.266,
+        "q10": 0.292,
+        "q50": 0.449,
+        "q90": 0.895,
+        "yesterday": 0.501
+      },
+      {
+        "time": "2010-11-25 03:00:00",
+        "actual": 0.336,
+        "q10": 0.292,
+        "q50": 0.442,
+        "q90": 0.952,
+        "yesterday": 0.75
+      },
+      {
+        "time": "2010-11-25 04:00:00",
+        "actual": 0.377,
+        "q10": 0.325,
+        "q50": 0.481,
+        "q90": 0.943,
+        "yesterday": 0.319
+      },
+      {
+        "time": "2010-11-25 05:00:00",
+        "actual": 0.881,
+        "q10": 0.29,
+        "q50": 0.45,
+        "q90": 0.92,
+        "yesterday": 0.283
+      },
+      {
+        "time": "2010-11-25 06:00:00",
+        "actual": 0.963,
+        "q10": 0.373,
+        "q50": 0.978,
+        "q90": 1.509,
+        "yesterday": 0.828
+      },
+      {
+        "time": "2010-11-25 07:00:00",
+        "actual": 2.627,
+        "q10": 1.27,
+        "q50": 2.428,
+        "q90": 2.682,
+        "yesterday": 2.849
+      },
+      {
+        "time": "2010-11-25 08:00:00",
+        "actual": 1.629,
+        "q10": 1.333,
+        "q50": 2.151,
+        "q90": 2.447,
+        "yesterday": 1.553
+      },
+      {
+        "time": "2010-11-25 09:00:00",
+        "actual": 1.258,
+        "q10": 0.931,
+        "q50": 1.732,
+        "q90": 2.206,
+        "yesterday": 1.363
+      },
+      {
+        "time": "2010-11-25 10:00:00",
+        "actual": 0.645,
+        "q10": 1.061,
+        "q50": 1.883,
+        "q90": 2.626,
+        "yesterday": 1.371
+      },
+      {
+        "time": "2010-11-25 11:00:00",
+        "actual": 1.028,
+        "q10": 0.875,
+        "q50": 1.918,
+        "q90": 2.386,
+        "yesterday": 1.391
+      },
+      {
+        "time": "2010-11-25 12:00:00",
+        "actual": 0.5,
+        "q10": 0.663,
+        "q50": 1.678,
+        "q90": 2.303,
+        "yesterday": 1.582
+      },
+      {
+        "time": "2010-11-25 13:00:00",
+        "actual": 0.356,
+        "q10": 0.415,
+        "q50": 1.392,
+        "q90": 2.026,
+        "yesterday": 1.96
+      },
+      {
+        "time": "2010-11-25 14:00:00",
+        "actual": 0.301,
+        "q10": 0.463,
+        "q50": 1.398,
+        "q90": 2.082,
+        "yesterday": 2.016
+      },
+      {
+        "time": "2010-11-25 15:00:00",
+        "actual": 0.333,
+        "q10": 0.494,
+        "q50": 1.456,
+        "q90": 2.37,
+        "yesterday": 1.501
+      },
+      {
+        "time": "2010-11-25 16:00:00",
+        "actual": 0.542,
+        "q10": 0.436,
+        "q50": 1.216,
+        "q90": 2.543,
+        "yesterday": 0.873
+      },
+      {
+        "time": "2010-11-25 17:00:00",
+        "actual": 1.48,
+        "q10": 0.481,
+        "q50": 1.238,
+        "q90": 2.569,
+        "yesterday": 1.938
+      },
+      {
+        "time": "2010-11-25 18:00:00",
+        "actual": 2.212,
+        "q10": 1.098,
+        "q50": 2.088,
+        "q90": 3.176,
+        "yesterday": 2.06
+      },
+      {
+        "time": "2010-11-25 19:00:00",
+        "actual": 2.33,
+        "q10": 1.123,
+        "q50": 2.517,
+        "q90": 3.304,
+        "yesterday": 1.497
+      },
+      {
+        "time": "2010-11-25 20:00:00",
+        "actual": 1.648,
+        "q10": 1.185,
+        "q50": 2.408,
+        "q90": 3.483,
+        "yesterday": 2.312
+      },
+      {
+        "time": "2010-11-25 21:00:00",
+        "actual": 1.343,
+        "q10": 0.918,
+        "q50": 2.207,
+        "q90": 3.078,
+        "yesterday": 1.567
+      },
+      {
+        "time": "2010-11-25 22:00:00",
+        "actual": 1.248,
+        "q10": 0.497,
+        "q50": 1.227,
+        "q90": 2.059,
+        "yesterday": 0.421
+      },
+      {
+        "time": "2010-11-25 23:00:00",
+        "actual": 0.957,
+        "q10": 0.323,
+        "q50": 0.586,
+        "q90": 1.552,
+        "yesterday": 0.352
+      },
+      {
+        "time": "2010-11-26 00:00:00",
+        "actual": 0.294,
+        "q10": 0.312,
+        "q50": 0.4,
+        "q90": 1.104,
+        "yesterday": 0.302
+      },
+      {
+        "time": "2010-11-26 01:00:00",
+        "actual": 0.281,
+        "q10": 0.283,
+        "q50": 0.388,
+        "q90": 0.929,
+        "yesterday": 0.288
+      },
+      {
+        "time": "2010-11-26 02:00:00",
+        "actual": 0.273,
+        "q10": 0.286,
+        "q50": 0.39,
+        "q90": 0.981,
+        "yesterday": 0.265
+      },
+      {
+        "time": "2010-11-26 03:00:00",
+        "actual": 0.298,
+        "q10": 0.284,
+        "q50": 0.387,
+        "q90": 1.01,
+        "yesterday": 0.334
+      },
+      {
+        "time": "2010-11-26 04:00:00",
+        "actual": 0.314,
+        "q10": 0.313,
+        "q50": 0.417,
+        "q90": 0.973,
+        "yesterday": 0.376
+      },
+      {
+        "time": "2010-11-26 05:00:00",
+        "actual": 0.283,
+        "q10": 0.287,
+        "q50": 0.385,
+        "q90": 0.965,
+        "yesterday": 0.879
+      },
+      {
+        "time": "2010-11-26 06:00:00",
+        "actual": 1.009,
+        "q10": 0.41,
+        "q50": 0.875,
+        "q90": 1.57,
+        "yesterday": 0.962
+      },
+      {
+        "time": "2010-11-26 07:00:00",
+        "actual": 2.884,
+        "q10": 1.508,
+        "q50": 2.54,
+        "q90": 3.064,
+        "yesterday": 2.626
+      },
+      {
+        "time": "2010-11-26 08:00:00",
+        "actual": 1.999,
+        "q10": 1.085,
+        "q50": 1.914,
+        "q90": 2.337,
+        "yesterday": 1.628
+      },
+      {
+        "time": "2010-11-26 09:00:00",
+        "actual": 1.85,
+        "q10": 0.855,
+        "q50": 1.563,
+        "q90": 2.145,
+        "yesterday": 1.256
+      },
+      {
+        "time": "2010-11-26 10:00:00",
+        "actual": 1.353,
+        "q10": 0.671,
+        "q50": 1.485,
+        "q90": 2.018,
+        "yesterday": 0.644
+      },
+      {
+        "time": "2010-11-26 11:00:00",
+        "actual": 1.339,
+        "q10": 0.546,
+        "q50": 1.526,
+        "q90": 2.023,
+        "yesterday": 1.027
+      },
+      {
+        "time": "2010-11-26 12:00:00",
+        "actual": 1.49,
+        "q10": 0.545,
+        "q50": 1.392,
+        "q90": 2.321,
+        "yesterday": 0.498
+      },
+      {
+        "time": "2010-11-26 13:00:00",
+        "actual": 1.613,
+        "q10": 0.463,
+        "q50": 1.31,
+        "q90": 2.182,
+        "yesterday": 0.355
+      },
+      {
+        "time": "2010-11-26 14:00:00",
+        "actual": 1.408,
+        "q10": 0.431,
+        "q50": 1.332,
+        "q90": 2.273,
+        "yesterday": 0.299
+      },
+      {
+        "time": "2010-11-26 15:00:00",
+        "actual": 0.876,
+        "q10": 0.514,
+        "q50": 1.298,
+        "q90": 2.407,
+        "yesterday": 0.332
+      },
+      {
+        "time": "2010-11-26 16:00:00",
+        "actual": 1.068,
+        "q10": 0.431,
+        "q50": 1.152,
+        "q90": 2.127,
+        "yesterday": 0.541
+      },
+      {
+        "time": "2010-11-26 17:00:00",
+        "actual": 1.726,
+        "q10": 0.484,
+        "q50": 1.305,
+        "q90": 2.313,
+        "yesterday": 1.479
+      },
+      {
+        "time": "2010-11-26 18:00:00",
+        "actual": 1.573,
+        "q10": 0.659,
+        "q50": 1.564,
+        "q90": 2.877,
+        "yesterday": 2.21
+      },
+      {
+        "time": "2010-11-26 19:00:00",
+        "actual": 1.659,
+        "q10": 0.99,
+        "q50": 2.086,
+        "q90": 3.18,
+        "yesterday": 2.329
+      },
+      {
+        "time": "2010-11-26 20:00:00",
+        "actual": 1.164,
+        "q10": 1.197,
+        "q50": 2.231,
+        "q90": 3.252,
+        "yesterday": 1.647
+      }
+    ],
+    "recent_model": "LightGBM quantile",
+    "next_day": [
+      {
+        "time": "2010-11-26 21:00:00",
+        "q10": 0.786,
+        "q50": 1.903,
+        "q90": 3.032
+      },
+      {
+        "time": "2010-11-26 22:00:00",
+        "q10": 0.398,
+        "q50": 1.046,
+        "q90": 2.086
+      },
+      {
+        "time": "2010-11-26 23:00:00",
+        "q10": 0.353,
+        "q50": 0.68,
+        "q90": 1.879
+      },
+      {
+        "time": "2010-11-27 00:00:00",
+        "q10": 0.309,
+        "q50": 0.405,
+        "q90": 1.551
+      },
+      {
+        "time": "2010-11-27 01:00:00",
+        "q10": 0.292,
+        "q50": 0.366,
+        "q90": 1.313
+      },
+      {
+        "time": "2010-11-27 02:00:00",
+        "q10": 0.288,
+        "q50": 0.368,
+        "q90": 1.156
+      },
+      {
+        "time": "2010-11-27 03:00:00",
+        "q10": 0.284,
+        "q50": 0.382,
+        "q90": 0.988
+      },
+      {
+        "time": "2010-11-27 04:00:00",
+        "q10": 0.3,
+        "q50": 0.395,
+        "q90": 0.992
+      },
+      {
+        "time": "2010-11-27 05:00:00",
+        "q10": 0.286,
+        "q50": 0.394,
+        "q90": 1.035
+      },
+      {
+        "time": "2010-11-27 06:00:00",
+        "q10": 0.332,
+        "q50": 0.713,
+        "q90": 1.401
+      },
+      {
+        "time": "2010-11-27 07:00:00",
+        "q10": 1.344,
+        "q50": 2.407,
+        "q90": 2.851
+      },
+      {
+        "time": "2010-11-27 08:00:00",
+        "q10": 1.093,
+        "q50": 1.932,
+        "q90": 2.472
+      },
+      {
+        "time": "2010-11-27 09:00:00",
+        "q10": 0.74,
+        "q50": 1.539,
+        "q90": 2.331
+      },
+      {
+        "time": "2010-11-27 10:00:00",
+        "q10": 0.487,
+        "q50": 1.345,
+        "q90": 2.622
+      },
+      {
+        "time": "2010-11-27 11:00:00",
+        "q10": 0.748,
+        "q50": 1.82,
+        "q90": 2.973
+      },
+      {
+        "time": "2010-11-27 12:00:00",
+        "q10": 0.456,
+        "q50": 1.454,
+        "q90": 2.782
+      },
+      {
+        "time": "2010-11-27 13:00:00",
+        "q10": 0.54,
+        "q50": 1.527,
+        "q90": 2.806
+      },
+      {
+        "time": "2010-11-27 14:00:00",
+        "q10": 0.472,
+        "q50": 1.516,
+        "q90": 2.957
+      },
+      {
+        "time": "2010-11-27 15:00:00",
+        "q10": 0.579,
+        "q50": 1.706,
+        "q90": 3.013
+      },
+      {
+        "time": "2010-11-27 16:00:00",
+        "q10": 0.69,
+        "q50": 1.657,
+        "q90": 3.274
+      },
+      {
+        "time": "2010-11-27 17:00:00",
+        "q10": 0.931,
+        "q50": 2.094,
+        "q90": 3.596
+      },
+      {
+        "time": "2010-11-27 18:00:00",
+        "q10": 1.037,
+        "q50": 2.384,
+        "q90": 3.733
+      },
+      {
+        "time": "2010-11-27 19:00:00",
+        "q10": 1.117,
+        "q50": 2.275,
+        "q90": 3.676
+      },
+      {
+        "time": "2010-11-27 20:00:00",
+        "q10": 0.962,
+        "q50": 2.147,
+        "q90": 3.751
+      }
+    ]
+  },
+  "best_model": "LightGBM quantile",
+  "best_score": 0.14284761454448175,
+  "lift_over_baseline": null
+}

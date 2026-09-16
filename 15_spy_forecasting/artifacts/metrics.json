@@ -10,7 +10,7 @@
     "source_url": "https://finance.yahoo.com/quote/SPY/history",
     "license": "Yahoo Finance terms of use \u2014 personal and research use",
     "citation": "Yahoo Finance (2026). Historical daily price data for SPY, ^VIX and ^TNX, 2015-01-01 to 2026-09-01. Retrieved via the yfinance library.",
-    "retrieved_at": "2026-09-14T06:44:22Z",
+    "retrieved_at": "2026-09-16T23:44:50Z",
     "sha256": "1e37e3dd2c6da9f77b12695e298b45196868bb004833daa20cbf95679d3309ab",
     "n_rows": 2931,
     "n_cols": 7,
@@ -49,7 +49,7 @@
       "params": {
         "refits": 32
       },
-      "fit_seconds": 0.02,
+      "fit_seconds": 0.01,
       "predict_ms_per_1k": 0.0,
       "notes": "Predicts no move; interval from trailing realised volatility."
     },
@@ -72,7 +72,7 @@
       "params": {
         "refits": 32
       },
-      "fit_seconds": 0.02,
+      "fit_seconds": 0.01,
       "predict_ms_per_1k": 0.0,
       "notes": "Predicts the trailing mean return; same volatility interval."
     },
@@ -95,7 +95,7 @@
       "params": {
         "refits": 32
       },
-      "fit_seconds": 0.02,
+      "fit_seconds": 0.01,
       "predict_ms_per_1k": 0.0,
       "notes": "Trailing 500-day empirical quantiles; no distributional assumption."
     },
@@ -118,7 +118,7 @@
       "params": {
         "refits": 32
       },
-      "fit_seconds": 0.27,
+      "fit_seconds": 0.13,
       "predict_ms_per_1k": 0.0,
       "notes": "Scaler fitted per fold inside the pipeline; intervals from in-fold residuals."
     },
@@ -141,7 +141,7 @@
       "params": {
         "refits": 32
       },
-      "fit_seconds": 93.31,
+      "fit_seconds": 43.21,
       "predict_ms_per_1k": 0.0,
       "notes": "Three boosters trained directly on the pinball objective."
     },
@@ -164,7 +164,7 @@
       "params": {
         "refits": 32
       },
-      "fit_seconds": 0.1,
+      "fit_seconds": 0.02,
       "predict_ms_per_1k": 0.0,
       "notes": "Zero drift; interval from EWMA volatility with t(4) quantiles for fat tails."
     }
@@ -196,7 +196,7 @@
           "values_compared": 780,
           "mismatches": 0
         },
-        "at": "2026-09-14T06:44:23Z"
+        "at": "2026-09-16T23:44:50Z"
       },
       {
         "name": "assert_no_target_leak",
@@ -209,7 +209,7 @@
           "threshold": 0.995,
           "leaked_features": []
         },
-        "at": "2026-09-14T06:44:23Z"
+        "at": "2026-09-16T23:44:50Z"
       }
     ],
     "assertions_passed": 2,
@@ -222,10 +222,10 @@
     "numpy": "2.4.6",
     "pandas": "3.0.5",
     "sklearn": "1.9.1",
-    "git_commit": "e7b6737"
+    "git_commit": "39e3212"
   },
-  "created_at": "2026-09-14T06:44:23Z",
-  "duration_seconds": 95.0,
+  "created_at": "2026-09-16T23:44:50Z",
+  "duration_seconds": 44.1,
   "extra": {
     "horizon": 1,
     "n_folds": 32,
