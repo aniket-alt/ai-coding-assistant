@@ -20,7 +20,8 @@ from dsfs import leakage  # noqa: E402
 
 
 def main() -> int:
-    projects = sorted(p for p in REPO.iterdir() if p.is_dir() and p.name[:2].isdigit())
+    projects = sorted((p for p in REPO.iterdir() if p.is_dir() and p.name[:2].isdigit()),
+                      key=lambda q: q.name)
     total_critical = 0
     for proj in projects:
         findings = leakage.audit_source(proj, temporal_modules=("train", "data", "features"))

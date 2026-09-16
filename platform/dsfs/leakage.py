@@ -205,7 +205,7 @@ def audit_source(
     skip_set = set(skip)
     findings: list[Finding] = []
 
-    for py in sorted(root.rglob("*.py")):
+    for py in sorted(root.rglob("*.py"), key=lambda q: q.as_posix()):
         if any(part in skip_set for part in py.parts):
             continue
         try:

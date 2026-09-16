@@ -28,8 +28,9 @@ SOURCE_AUDIT = REPO / "docs" / "source_repo_audit.json"
 
 def discover() -> list[docs.Project]:
     roots = sorted(
-        p for p in REPO.iterdir()
-        if p.is_dir() and p.name[:2].isdigit() and (p / "artifacts" / "metrics.json").exists()
+        (p for p in REPO.iterdir()
+        if p.is_dir() and p.name[:2].isdigit() and (p / "artifacts" / "metrics.json").exists()),
+        key=lambda q: q.name,
     )
     return [docs.load_project(r) for r in roots]
 

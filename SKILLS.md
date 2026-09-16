@@ -10,7 +10,7 @@ Each skill links to the line where it is implemented. Links are located by searc
 | **Runtime leakage assertions with a ledger** | [`platform/dsfs/leakage.py`](./platform/dsfs/leakage.py#L99) | Each check records what it measured; deleting a check deletes its evidence. |
 | **Static leakage audit (AST)** | [`platform/dsfs/leakage.py`](./platform/dsfs/leakage.py#L196) | Flags fitting on held-out data, shuffled time splits and unseeded estimators. |
 | **Temporal split with embargo** | [`platform/dsfs/leakage.py`](./platform/dsfs/leakage.py#L337) | Guarantees training ends before testing starts, with a gap against boundary bleed. |
-| **Generated documentation with drift check** | [`platform/dsfs/docs.py`](./platform/dsfs/docs.py#L979) | Papers, abstracts and result tables are regenerated from artifacts; CI fails if they drift. |
+| **Generated documentation with drift check** | [`platform/dsfs/docs.py`](./platform/dsfs/docs.py#L982) | Papers, abstracts and result tables are regenerated from artifacts; CI fails if they drift. |
 | **Rendered-output verification** | [`scripts/capture_screenshots.py`](./scripts/capture_screenshots.py#L74) | Screenshots are only saved as evidence after the view is confirmed to show its expected content. |
 | **Excluding post-event fields** | [`01_nyc_taxi_prediction/ml/data.py`](./01_nyc_taxi_prediction/ml/data.py#L71) | Meter distance, fare and arrival time are unknowable at booking, so the model may not use them. |
 | **Data cleaning with an audit trail** | [`01_nyc_taxi_prediction/ml/data.py`](./01_nyc_taxi_prediction/ml/data.py#L111) | Each filter records how many rows it removed and why. |

@@ -161,7 +161,10 @@ def scan_components(root: Path, dirs: tuple[str, ...]) -> list[Component]:
         base = root / d
         if not base.exists():
             continue
-        for f in sorted(base.rglob("*")):
+        # Sort on the POSIX string, not the Path: Windows compares paths
+        # case-insensitively and Linux does not, which reordered these tables
+        # between a local run and CI.
+        for f in sorted(base.rglob("*"), key=lambda q: q.as_posix()):
             if (f.suffix not in SOURCE_EXT or "node_modules" in f.parts
                     or "__pycache__" in f.parts):
                 continue

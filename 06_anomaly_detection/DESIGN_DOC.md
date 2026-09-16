@@ -51,8 +51,8 @@ Training is the only writer of results. The API serves the artifacts it wrote, a
 | `server/inference.py` | 140 | Scores a transaction and, more usefully, says where that score sits. A raw suspicion score is close to meaningless on its own: what an analyst needs to know is whether this… |
 | `server/main.py` | 84 | Only the fraud-specific endpoints live here; health, meta, metrics, CRISP-DM, provenance and audit arrive from the platform factory. |
 | `client/src/App.tsx` | 293 | The only project-specific view is TransactionScorer. Metrics, the detector tournament, the CRISP-DM walkthrough, the audit and every chart come from @dsfs/ui unchanged -- which… |
-| `client/src/main.tsx` | 10 | — |
 | `client/src/TransactionScorer.tsx` | 208 | Scores real held-out transactions. The true label travels with each sample, so the view can show when the model gets one wrong -- which it does, for about a third of the fraud.… |
+| `client/src/main.tsx` | 10 | — |
 
 Everything else — the FastAPI factory, dataset cache, provenance, CRISP-DM report, metrics record, leakage auditor and the six shared UI components — comes from `platform/`.
 
