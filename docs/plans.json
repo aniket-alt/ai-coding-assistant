@@ -1,0 +1,18 @@
+[
+  {"number": "00", "slug": "00_task_workspace", "title": "Task Workspace", "dataset": "none — full-stack application"},
+  {"number": "01", "slug": "01_nyc_taxi_prediction", "title": "NYC Taxi Trip Duration", "dataset": "NYC TLC Yellow Taxi, January 2024"},
+  {"number": "02", "slug": "02_nano_llm", "title": "Nano LLM Transformer", "dataset": "TinyStories (Hugging Face)"},
+  {"number": "03", "slug": "03_customer_segmentation", "title": "Customer Segmentation", "dataset": "UCI Online Retail II"},
+  {"number": "04", "slug": "04_market_basket", "title": "Market Basket Mining", "dataset": "UCI Online Retail II invoices"},
+  {"number": "05", "slug": "05_skills_lab", "title": "Data Science Skills Lab", "dataset": "several OpenML datasets"},
+  {"number": "06", "slug": "06_anomaly_detection", "title": "Credit Card Fraud Detection", "dataset": "ULB credit card fraud (OpenML 1597)"},
+  {"number": "07", "slug": "07_automl_stacking", "title": "AutoML Stacking", "dataset": "Adult census (OpenML 1590)"},
+  {"number": "08", "slug": "08_visual_foundations", "title": "Data Science Visual Foundations", "dataset": "none — interactive simulations"},
+  {"number": "09", "slug": "09_flowforge_dag", "title": "FlowForge DAG Engine", "dataset": "none — TypeScript engine"},
+  {"number": "10", "slug": "10_crispdm_curriculum", "title": "CRISP-DM Curriculum", "dataset": "Adult census (OpenML 1590)"},
+  {"number": "11", "slug": "11_portfolio_audit", "title": "Portfolio Audit", "dataset": "this repository's own artifacts"},
+  {"number": "12", "slug": "12_energy_forecasting", "title": "Energy Demand Forecasting", "dataset": "UCI Individual Household Electric Power Consumption"},
+  {"number": "13", "slug": "13_mlops_governance", "title": "MLOps & Governance Platform", "dataset": "NYC TLC Yellow Taxi (shared cache with 01)"},
+  {"number": "14", "slug": "14_multimodal_automl", "title": "Multimodal AutoML", "dataset": "to be confirmed — needs a public image/text/tabular set"},
+  {"number": "15", "slug": "15_spy_forecasting", "title": "SPY Probabilistic Forecasting", "dataset": "SPY, VIX, 10-year yield daily, Yahoo Finance"}
+]

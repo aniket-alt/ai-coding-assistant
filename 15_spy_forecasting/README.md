@@ -76,7 +76,8 @@ model beats a random walk at all.
 
 Across 32 walk-forward folds, 1,981 out-of-sample forecast days:
 
-| # | Model | Pinball | 80% coverage | Hit rate | R² | Sharpe |
+<!-- dsfs:leaderboard -->
+| # | Model | Pinball loss | 80% coverage | Hit rate | R² on returns | Sharpe |
 |---|---|---|---|---|---|---|
 | 1 | **Historical drift** 🏆 *(baseline)* | 0.002660 | 78.7% | 55.3% | −0.0005 | 0.75 |
 | 2 | Random walk (zero) *(baseline)* | 0.002667 | 78.4% | 50.0% | −0.0022 | 0.00 |
@@ -84,6 +85,9 @@ Across 32 walk-forward folds, 1,981 out-of-sample forecast days:
 | 4 | EWMA vol + Student-t | 0.002698 | 86.4% | 50.0% | −0.0022 | 0.00 |
 | 5 | Empirical quantiles *(baseline)* | 0.002804 | 78.5% | 54.7% | −0.0038 | 0.67 |
 | 6 | Ridge + residual quantiles | 0.002895 | 73.9% | 51.7% | −0.0522 | 0.60 |
+
+Ranked by pinball loss (lower is better). Split: walk-forward, 32 quarterly refits, purged; 1,981 evaluation rows. Generated from `artifacts/metrics.json`.
+<!-- /dsfs:leaderboard -->
 
 **Read that table honestly and three things follow.**
 
@@ -180,23 +184,23 @@ their targets overlap the test block.
 
 ### Assertions that ran
 
-```
-assert_no_lookahead     780 feature values across 30 dates recomputed on
-                        truncated history; 0 differed
-assert_no_target_leak   26 features correlated against the target; strongest
-                        was ret_lag2 at |r| = 0.0909 (threshold 0.995)
-```
+<!-- dsfs:assertions -->
+| Assertion | Result | What it measured |
+|---|---|---|
+| `assert_no_lookahead` | ✅ passed | 780 feature values across 30 dates recomputed on truncated history; 0 differed from the full-history value. |
+| `assert_no_target_leak` | ✅ passed | 26 numeric features correlated against the target; strongest was ret_lag2 at |r|=0.0909 (threshold 0.995). |
 
-Both figures come from `artifacts/metrics.json`, where the assertion ledger
-wrote them during the run.
+Recorded by the assertion ledger while training ran; generated from `artifacts/metrics.json`.
+<!-- /dsfs:assertions -->
 
 > **This project found a bug in the shared auditor.** `assert_no_target_leak`
 > rebuilt the target with a `RangeIndex` while this project's features carry a
 > `DatetimeIndex`. Pandas aligned on index, found no overlap, and returned
 > `NaN` for every correlation — so the check *passed without measuring
 > anything*. A silent false pass is worse than no check. Fixed in
-> `platform/dsfs/leakage.py`, with a regression test that plants a perfectly
-> correlated feature on a `DatetimeIndex` frame and confirms it is caught.
+> `platform/dsfs/leakage.py`, with a regression test in
+> `platform/tests/test_leakage.py` that plants a perfectly correlated feature on
+> a `DatetimeIndex` frame and confirms it is caught.
 
 ---
 

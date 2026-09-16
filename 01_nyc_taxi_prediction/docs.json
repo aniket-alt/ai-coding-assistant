@@ -1,0 +1,36 @@
+{
+  "entity": "Model",
+  "metric_columns": [
+    {"key": "rmse", "label": "RMSE (min)", "fmt": "f3"},
+    {"key": "mae", "label": "MAE (min)", "fmt": "f3"},
+    {"key": "r2", "label": "R²", "fmt": "f3"},
+    {"key": "within_5min", "label": "Within 5 min", "fmt": "pct_raw"}
+  ],
+  "reproduce": [
+    "python ml/data.py",
+    "python ml/build_zone_map.py",
+    "python ml/train.py",
+    "python -m uvicorn main:app --app-dir server --port 8001",
+    "npm run dev -w 01_nyc_taxi_prediction/client"
+  ],
+  "non_goals": [
+    "Live traffic or routing data. The estimate uses only what a booking knows, by design.",
+    "Fare prediction. Duration is the target; fare is one of the excluded post-trip fields."
+  ],
+  "risks": [
+    "One month of data. Seasonality across the year (summer traffic, holidays) is not represented.",
+    "Distance is reconstructed per zone pair, so trips inside a large zone share one estimate of distance.",
+    "The interval assumes roughly normal residuals; long delays such as accidents are heavier-tailed than that."
+  ],
+  "lessons": [
+    "The fields that would make this model look best are exactly the ones a booking cannot know. Excluding them costs score and buys a model that can run.",
+    "A lookup table of historical route durations is the right baseline to beat. Beating a global median proves very little.",
+    "Target encoding is only safe out-of-fold. Computed in-sample, every row contributes to its own feature."
+  ],
+  "references": [
+    "Chapman, P., Clinton, J., Kerber, R., Khabaza, T., Reinartz, T., Shearer, C., & Wirth, R. (2000). CRISP-DM 1.0: Step-by-step data mining guide. SPSS Inc.",
+    "Ke, G., Meng, Q., Finley, T., Wang, T., Chen, W., Ma, W., Ye, Q., & Liu, T.-Y. (2017). LightGBM: A highly efficient gradient boosting decision tree. Advances in Neural Information Processing Systems 30.",
+    "Micci-Barreca, D. (2001). A preprocessing scheme for high-cardinality categorical attributes in classification and prediction problems. ACM SIGKDD Explorations Newsletter, 3(1), 27–32.",
+    "Pedregosa, F. et al. (2011). Scikit-learn: Machine learning in Python. Journal of Machine Learning Research, 12, 2825–2830."
+  ]
+}

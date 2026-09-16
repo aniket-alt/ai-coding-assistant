@@ -1,0 +1,43 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  python:
+    name: platform tests, leakage audit, document drift
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install platform kernel
+        run: pip install -e platform pytest
+      - name: Platform tests
+        run: pytest platform/tests -q
+      - name: Static leakage audit (fails on any critical finding)
+        run: python scripts/run_audit.py
+      - name: Generated documents match artifacts
+        run: python scripts/generate_docs.py --check
+
+  web:
+    name: type-check shared UI and project clients
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install workspaces
+        run: npm ci
+      - name: Type-check @dsfs/ui
+        run: npx tsc --noEmit -p platform/web
+      - name: Type-check project clients
+        run: |
+          for c in */client; do
+            echo "== $c"
+            npx tsc --noEmit -p "$c"
+          done

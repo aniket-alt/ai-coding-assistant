@@ -76,17 +76,19 @@ it measured — not a hand-written list of checks someone intended to run.
 
 ## Results
 
-| # | Model | RMSE (min) | MAE | R² | Within 5 min |
+<!-- dsfs:leaderboard -->
+| # | Model | RMSE (min) | MAE (min) | R² | Within 5 min |
 |---|---|---|---|---|---|
-| 1 | **LightGBM** 🏆 | **5.345** | 3.329 | 0.778 | 81.4% |
+| 1 | **LightGBM** 🏆 | 5.345 | 3.329 | 0.778 | 81.4% |
 | 2 | XGBoost | 5.349 | 3.340 | 0.777 | 81.2% |
 | 3 | HistGradientBoosting | 5.542 | 3.450 | 0.761 | 80.1% |
 | 4 | Random forest | 5.689 | 3.467 | 0.748 | 80.4% |
 | 5 | Ridge regression | 6.392 | 4.086 | 0.682 | 73.3% |
-| 6 | *Zone-pair lookup* (baseline) | 7.511 | 4.346 | 0.561 | 74.4% |
-| 7 | *Global median* (baseline) | 11.772 | 7.530 | −0.078 | 48.9% |
+| 6 | Zone-pair lookup *(baseline)* | 7.511 | 4.345 | 0.561 | 74.4% |
+| 7 | Global median *(baseline)* | 11.772 | 7.530 | −0.078 | 48.9% |
 
-Evaluated on 121,130 held-out trips from days the model never saw.
+Ranked by rmse (min) (lower is better). Split: chronological with 1-day embargo; 121,130 evaluation rows. Generated from `artifacts/metrics.json`.
+<!-- /dsfs:leaderboard -->
 
 **28.8% better than the lookup baseline** is the honest headline — it measures
 what machine learning adds over the obvious non-ML solution. The 54.6%
@@ -146,13 +148,15 @@ so a zone pair seen twice does not receive a confident encoding.
 
 Three checks execute inside `ml/train.py` and halt it on failure:
 
-```
-assert_temporal_split   train ends 2024-01-24 23:59:55, test starts
-                        2024-01-26 00:00:01, gap 1 day; embargo 12h required
-assert_disjoint         456,487 train and 121,130 test indices; 0 shared
-assert_no_target_leak   22 features checked; strongest |r| = 0.7821
-                        (zp_median_distance), threshold 0.995
-```
+<!-- dsfs:assertions -->
+| Assertion | Result | What it measured |
+|---|---|---|
+| `assert_temporal_split` | ✅ passed | Last training timestamp 2024-01-24 23:59:55 precedes first test timestamp 2024-01-26 00:00:01 by 1 days 00:00:06; embargo of 12h required. |
+| `assert_disjoint` | ✅ passed | 456,487 training and 121,130 test row indices compared; 0 appear in both. |
+| `assert_no_target_leak` | ✅ passed | 22 numeric features correlated against the target; strongest was zp_median_distance at |r|=0.7821 (threshold 0.995). |
+
+Recorded by the assertion ledger while training ran; generated from `artifacts/metrics.json`.
+<!-- /dsfs:assertions -->
 
 These are recorded by an assertion ledger, so removing a check removes its
 evidence from the audit rather than leaving the claim behind.

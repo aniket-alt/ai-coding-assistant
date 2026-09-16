@@ -1,0 +1,38 @@
+{
+  "entity": "Model",
+  "metric_columns": [
+    {"key": "pinball", "label": "Pinball loss", "fmt": "f6"},
+    {"key": "coverage_80", "label": "80% coverage", "fmt": "pct"},
+    {"key": "hit_rate", "label": "Hit rate", "fmt": "pct"},
+    {"key": "r2", "label": "R² on returns", "fmt": "signed4"},
+    {"key": "sharpe", "label": "Sharpe", "fmt": "f2"}
+  ],
+  "reproduce": [
+    "python ml/data.py",
+    "python ml/train.py --horizon 1",
+    "python -m uvicorn main:app --app-dir server --port 8015",
+    "npm run dev -w 15_spy_forecasting/client"
+  ],
+  "non_goals": [
+    "A trading system. The backtest exists to calibrate expectations, not to recommend positions.",
+    "Intraday or multi-asset forecasting."
+  ],
+  "risks": [
+    "Yahoo Finance data is adjusted retroactively for splits and dividends, so a later download can differ slightly.",
+    "One asset over one period that was mostly a bull market. Results may not hold in a long bear market.",
+    "The backtest charges a flat execution cost and ignores slippage in fast markets."
+  ],
+  "lessons": [
+    "Forecasting prices instead of returns produces an impressive-looking and worthless result.",
+    "A random walk is a strong baseline for daily equity returns. Beating it is the whole question.",
+    "A reported winner means little without a significance test, because the gaps between good forecasters are tiny.",
+    "The predictable part of daily returns is their spread, not their direction."
+  ],
+  "references": [
+    "Koenker, R., & Bassett, G. (1978). Regression quantiles. Econometrica, 46(1), 33–50.",
+    "Efron, B., & Tibshirani, R. J. (1993). An Introduction to the Bootstrap. Chapman & Hall.",
+    "López de Prado, M. (2018). Advances in Financial Machine Learning. Wiley.",
+    "Parkinson, M. (1980). The extreme value method for estimating the variance of the rate of return. Journal of Business, 53(1), 61–65.",
+    "Ke, G. et al. (2017). LightGBM: A highly efficient gradient boosting decision tree. Advances in Neural Information Processing Systems 30."
+  ]
+}

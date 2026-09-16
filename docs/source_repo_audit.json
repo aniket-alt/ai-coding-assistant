@@ -1,0 +1,42 @@
+{
+  "label": "dlmastery/data_science_examples",
+  "critical": 1,
+  "warnings": 4,
+  "findings": [
+    {
+      "severity": "CRITICAL",
+      "rule": "fit-on-test",
+      "message": ".fit_transform() called on `df` -- a transformer or model is being fitted on held-out or full data.",
+      "file": "03_customer_segmentation_clustering/ml/autoresearch_clustering.py",
+      "line": 201
+    },
+    {
+      "severity": "WARNING",
+      "rule": "unseeded",
+      "message": "XGBRegressor() has no random_state -- results are not reproducible.",
+      "file": "01_nyc_taxi_trip_prediction/ml/train.py",
+      "line": 113
+    },
+    {
+      "severity": "WARNING",
+      "rule": "unseeded",
+      "message": "XGBRegressor() has no random_state -- results are not reproducible.",
+      "file": "01_nyc_taxi_trip_prediction/server/inference.py",
+      "line": 28
+    },
+    {
+      "severity": "WARNING",
+      "rule": "fit-before-split",
+      "message": "`.fit()` on line 28 precedes the train/test split on line 64; verify the transformer is not fitted on all rows.",
+      "file": "07_automl_autogluon/ml/autogluon_stacking.py",
+      "line": 28
+    },
+    {
+      "severity": "WARNING",
+      "rule": "fit-before-split",
+      "message": "`.fit()` on line 92 precedes the train/test split on line 103; verify the transformer is not fitted on all rows.",
+      "file": "10_crispdm_masters_curriculum/backend/main.py",
+      "line": 92
+    }
+  ]
+}

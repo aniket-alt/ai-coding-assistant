@@ -77,18 +77,20 @@ The assertions that actually ran, with the values they measured.
 
 ## Results
 
-| # | Detector | Avg precision | ROC-AUC | Caught in 100 | Accuracy |
-|---|---|---|---|---|---|
-| 1 | **Logistic regression** 🏆 | **0.7547** | 0.9776 | 70.4% | 99.951% |
-| 2 | LightGBM | 0.6826 | 0.9039 | 64.8% | 99.937% |
-| 3 | LightGBM *(class-reweighted)* | 0.0337 | 0.9112 | 0.8% | 99.779% |
-| 4 | Isolation Forest *(unsupervised)* | 0.0326 | 0.9399 | 0.0% | 99.777% |
-| 5 | Elliptic Envelope *(unsupervised)* | 0.0190 | 0.9292 | 0.8% | 99.779% |
-| 6 | *Rank by amount* (baseline) | 0.0017 | 0.4273 | 0.0% | 99.777% |
-| 7 | *Predict all legitimate* (baseline) | 0.0012 | 0.5000 | 0.0% | 99.777% |
-| 8 | Local Outlier Factor *(unsupervised)* | 0.0007 | 0.1712 | 0.0% | 99.777% |
+<!-- dsfs:leaderboard -->
+| # | Detector | Avg precision | ROC-AUC | Fraud caught in 100 alerts | Precision in 100 alerts | Accuracy |
+|---|---|---|---|---|---|---|
+| 1 | **Logistic regression** 🏆 | 0.7547 | 0.9776 | 70.4% | 88.0% | 99.951% |
+| 2 | LightGBM | 0.6826 | 0.9039 | 64.8% | 81.0% | 99.938% |
+| 3 | LightGBM (class-reweighted) | 0.0337 | 0.9112 | 0.8% | 1.0% | 99.779% |
+| 4 | Isolation Forest | 0.0326 | 0.9399 | 0.0% | 0.0% | 99.777% |
+| 5 | Elliptic Envelope | 0.0190 | 0.9292 | 0.8% | 1.0% | 99.779% |
+| 6 | Rank by amount *(baseline)* | 0.0017 | 0.4273 | 0.0% | 0.0% | 99.777% |
+| 7 | Predict all legitimate *(baseline)* | 0.0012 | 0.5000 | 0.0% | 0.0% | 99.777% |
+| 8 | Local Outlier Factor | 0.0007 | 0.1712 | 0.0% | 0.0% | 99.777% |
 
-Evaluated on 100,915 held-out transactions containing 125 frauds.
+Ranked by avg precision (higher is better). Split: chronological with 1-hour embargo; 100,915 evaluation rows. Generated from `artifacts/metrics.json`.
+<!-- /dsfs:leaderboard -->
 
 **Read the last two columns together.** Average precision spans three orders of
 magnitude across these detectors. Accuracy spans 0.17 percentage points.
@@ -159,15 +161,15 @@ frame up front, it cannot see the test window.
 
 Three assertions execute inside `ml/train.py` and halt it on failure:
 
-```
-assert_temporal_split   train ends 09:59:57, test starts 11:00:00,
-                        gap 1:00:03; embargo 30min required
-assert_disjoint         175,582 train and 100,915 test indices; 0 shared
-assert_no_target_leak   30 features checked; strongest |r| = 0.4096 (V17)
-```
+<!-- dsfs:assertions -->
+| Assertion | Result | What it measured |
+|---|---|---|
+| `assert_temporal_split` | ✅ passed | Last training timestamp 1 days 09:59:57 precedes first test timestamp 1 days 11:00:00 by 0 days 01:00:03; embargo of 30min required. |
+| `assert_disjoint` | ✅ passed | 175,582 training and 100,915 test row indices compared; 0 appear in both. |
+| `assert_no_target_leak` | ✅ passed | 30 numeric features correlated against the target; strongest was V17 at |r|=0.4096 (threshold 0.995). |
 
-Those figures are copied from `artifacts/metrics.json`, where the assertion
-ledger wrote them during the run.
+Recorded by the assertion ledger while training ran; generated from `artifacts/metrics.json`.
+<!-- /dsfs:assertions -->
 
 The API serves whichever model actually won the tournament, rather than a
 hardcoded estimator — otherwise the leaderboard could crown a model the

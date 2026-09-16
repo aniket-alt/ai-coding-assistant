@@ -188,8 +188,11 @@ def main() -> None:
     X_test, y_test = test[feature_cols], test["Class"].to_numpy()
 
     gap = leakage.assert_temporal_split(
-        pd.to_datetime(train["Time"], unit="s"),
-        pd.to_datetime(test["Time"], unit="s"),
+        # Time is seconds elapsed since the first transaction; the calendar
+        # origin is not published, so it stays a duration rather than being
+        # given an invented date.
+        pd.to_timedelta(train["Time"], unit="s"),
+        pd.to_timedelta(test["Time"], unit="s"),
         embargo="30min",
     )
     leakage.assert_disjoint(train.index, test.index)

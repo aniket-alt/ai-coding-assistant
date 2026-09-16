@@ -24,8 +24,8 @@ So this repository enforces it structurally rather than by good intentions:
 | Guarantee | How it is enforced |
 |---|---|
 | Data is real and citable | Every dataset carries a **provenance receipt** — source URL, licence, SHA-256, row count — generated at download time and rendered in the app's own UI |
-| Documentation cannot drift | `paper.md`, `abstract.md`, the README tables and the live API **all read the same `metrics.json`** the training run wrote. Nothing is hand-typed |
-| Leakage is caught, not asserted | An AST pass plus **runtime assertions that raise during training** — a critical finding fails CI |
+| Documentation cannot drift | Each project's paper, abstract, article, design doc, audit report and README result tables are **generated from the `metrics.json` its training run wrote**, and CI fails if any of them drifts. Figures quoted in README prose are written by hand and checked against the same file |
+| Leakage is caught, not asserted | **Runtime assertions that halt training** and record what they measured, plus a static AST audit that **fails CI** on any critical finding |
 | Synthetic data must confess | If a project ever generates data, the provenance badge says so in red, in the UI, on the page |
 
 If a project can't honour these, that's reported rather than hidden.
@@ -79,8 +79,10 @@ platform/
 │   ├── datasets.py          content-addressed cache; download once, offline after
 │   ├── crispdm.py           CRISP-DM as a data structure the training code fills
 │   ├── metrics.py           RunRecord — the single source of truth for numbers
-│   ├── leakage.py           AST audit + runtime assertions that raise
-│   └── app.py               FastAPI factory: 8 standard endpoints per project
+│   ├── leakage.py           AST audit + runtime assertions with a ledger
+│   ├── docs.py              papers, design docs and tables generated from artifacts
+│   ├── app.py               FastAPI factory: 8 standard endpoints per project
+│   └── (tests/)             pytest suite, run in CI
 └── web/                     React + TypeScript kernel (@dsfs/ui)
     ├── styles/tokens.css    design system + colourblind-validated palette
     ├── types.ts             TS mirrors of the Python dataclasses
@@ -150,8 +152,17 @@ received identical bytes.
 | [`SKILLS.md`](./SKILLS.md) | Data science skills catalogue and where each is demonstrated |
 | [`AUDIT_REPORT.md`](./AUDIT_REPORT.md) | Portfolio-wide leakage and reproducibility audit |
 
-Each project additionally carries its own `README.md`, `DESIGN_DOC.md`,
-`paper.md`, `abstract.md`, `article.md`, `audit_report.md` and screenshot tour.
+Each built project carries its own `README.md`, `DESIGN_DOC.md`, `paper.md`,
+`abstract.md`, `article.md`, `audit_report.md`, `skills/reproduce/SKILL.md` and
+a screenshot tour in light and dark themes.
+
+Regenerate or verify every derived document with:
+
+```bash
+python scripts/generate_docs.py           # write
+python scripts/generate_docs.py --check   # CI: fail if anything drifted
+python scripts/run_audit.py               # CI: fail on critical leakage findings
+```
 
 ---
 

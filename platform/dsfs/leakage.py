@@ -316,6 +316,24 @@ def assert_disjoint(train_idx: Sequence, test_idx: Sequence) -> None:
         )
 
 
+def _as_time(values) -> "pd.Series":
+    """
+    Timestamps stay timestamps; elapsed durations stay durations.
+
+    Some datasets record time as an offset from an unknown origin (seconds
+    since the first transaction, say). Forcing those through to_datetime
+    invents a calendar date -- 1970-01-02 -- that then appears in reports as
+    if it were real. Timedeltas compare and subtract the same way, so they are
+    preserved as-is.
+    """
+    import pandas as pd
+
+    s = pd.Series(list(values))
+    if pd.api.types.is_timedelta64_dtype(s):
+        return s
+    return pd.to_datetime(s)
+
+
 def assert_temporal_split(train_times, test_times, *, embargo: str | None = None) -> dict:
     """
     Every training timestamp must precede every test timestamp. Optionally
@@ -323,8 +341,8 @@ def assert_temporal_split(train_times, test_times, *, embargo: str | None = None
     """
     import pandas as pd
 
-    tr = pd.to_datetime(pd.Series(list(train_times))).max()
-    te = pd.to_datetime(pd.Series(list(test_times))).min()
+    tr = _as_time(train_times).max()
+    te = _as_time(test_times).min()
     gap = te - tr
     ordered = tr < te
     embargo_ok = embargo is None or gap >= pd.Timedelta(embargo)
