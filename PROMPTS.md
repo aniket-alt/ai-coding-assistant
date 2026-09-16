@@ -269,6 +269,55 @@ its artifacts, fills the result tables in each README, and fails in `--check`
 mode if anything drifts. Also: platform tests, a correction to how elapsed time
 is reported in Project 06, and this file.
 
+### 18. Interruption
+
+```text
+Sorry, unknowingly I hit close.
+```
+
+**Produced:** confirmation that nothing was lost, and a finding from the
+interrupted CI check: the repository was private, so graders would have seen a
+404.
+
+### 19. Visibility fixed
+
+```text
+try now
+```
+
+**Produced:** the first CI run, which failed. Windows and Linux sort file paths
+differently, so generated documents differed between the local machine and CI.
+Paths now sort identically everywhere, and CI passed.
+[`799695b`](https://github.com/aniket-alt/ai-coding-assistant/commit/799695b)
+
+---
+
+## Session 4 — projects 03, 04 and 12
+
+### 20. Next batch
+
+```text
+Go ahead
+```
+
+**Produced:** three projects, each confirmed by CI on GitHub before the next
+began.
+
+- **03 Customer Segmentation.** Segments are judged on the following year's
+  behaviour, and the decades-old RFM scoring rule beat every clustering
+  algorithm. Also fixed: charts drawn mid-animation misaligned their bars.
+  [`3d7f8d5`](https://github.com/aniket-alt/ai-coding-assistant/commit/3d7f8d5)
+- **04 Market Basket Mining.** Rules are judged on the following Christmas
+  season, and plain item co-occurrence beat every mined rule set. Also fixed:
+  results that changed between identical runs because of Python's randomised
+  string hashing, and a leaderboard crash on metrics some models lack.
+  [`39e3212`](https://github.com/aniket-alt/ai-coding-assistant/commit/39e3212)
+- **12 Energy Demand Forecasting.** Day-ahead forecasts with every lag at least
+  the horizon, plus a measured leak: a too-recent lag would have claimed a much
+  better score. Forecast evaluation moved into the shared platform, leaving
+  project 15's results byte-identical.
+  [`2c4a097`](https://github.com/aniket-alt/ai-coding-assistant/commit/2c4a097)
+
 ---
 
 ## What made prompting work
