@@ -24,7 +24,11 @@ def main() -> int:
                       key=lambda q: q.name)
     total_critical = 0
     for proj in projects:
-        findings = leakage.audit_source(proj, temporal_modules=("train", "data", "features"))
+        # leak_corpus holds project 11's deliberately leaky benchmark scripts;
+        # auditing them here would fail CI on leaks planted on purpose.
+        findings = leakage.audit_source(
+            proj, temporal_modules=("train", "data", "features"),
+            skip=("node_modules", ".venv", "__pycache__", "dist", "leak_corpus"))
         crit = [f for f in findings if f.severity == "CRITICAL"]
         warn = [f for f in findings if f.severity == "WARNING"]
         total_critical += len(crit)

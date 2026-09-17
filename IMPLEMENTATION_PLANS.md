@@ -18,7 +18,7 @@ done, and for the rest they are intentions, not claims.
 | 08 | Data Science Visual Foundations | ⬜ planned | none — interactive simulations |
 | 09 | FlowForge DAG Engine | ⬜ planned | none — TypeScript engine |
 | 10 | CRISP-DM Curriculum | ⬜ planned | Adult census (OpenML 1590) |
-| 11 | Portfolio Audit | ⬜ planned | this repository's own artifacts |
+| 11 | [Portfolio Audit](./11_portfolio_audit) | ✅ built | this repository's own artifacts |
 | 12 | [Energy Demand Forecasting](./12_energy_forecasting) | ✅ built | UCI Individual Household Electric Power Consumption |
 | 13 | MLOps & Governance Platform | ⬜ planned | NYC TLC Yellow Taxi (shared cache with 01) |
 | 14 | Multimodal AutoML | ⬜ planned | to be confirmed — needs a public image/text/tabular set |

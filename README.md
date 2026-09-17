@@ -49,7 +49,7 @@ Ports are assigned so every project can run simultaneously.
 | 08 | DS Visual Foundations | Interactive maths simulators | — | 8008 | 5108 | ⬜ |
 | 09 | FlowForge DAG Engine | Advanced TypeScript, Kahn's algorithm | — | 8009 | 5109 | ⬜ |
 | 10 | CRISP-DM Curriculum | Seven-phase analytics, LSH | US Census | 8010 | 5110 | ⬜ |
-| 11 | Enterprise DS Audit | Quality & leakage scorecard | this repo | 8011 | 5111 | ⬜ |
+| 11 | [**Portfolio Audit**](./11_portfolio_audit) | Benchmark of the leakage auditor itself | Fraud data with planted leaks | 8011 | 5111 | ✅ |
 | 12 | [**Energy Demand Forecasting**](./12_energy_forecasting) | Day-ahead quantiles, measured leak | UCI household power (2.08M minutes) | 8012 | 5112 | ✅ |
 | 13 | CRISP-DM Audit Platform | Governance, explainability | NYC TLC | 8013 | 5113 | ⬜ |
 | 14 | Multimodal AutoML | Vision–language–tabular fusion | multiple | 8014 | 5114 | ⬜ |

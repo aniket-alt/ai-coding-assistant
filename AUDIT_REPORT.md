@@ -8,6 +8,7 @@ Every row below is read from a project's `artifacts/metrics.json`. Projects that
 | [03 Customer Segmentation](./03_customer_segmentation/audit_report.md) | Online Retail II (UCI) | yes | 0 | 0 | 3/3 passed |
 | [04 Market Basket Mining](./04_market_basket/audit_report.md) | Online Retail II (UCI) | yes | 0 | 0 | 4/4 passed |
 | [06 Credit Card Fraud Detection](./06_anomaly_detection/audit_report.md) | Credit Card Fraud Detection (ULB) | yes | 0 | 0 | 3/3 passed |
+| [11 Portfolio Audit](./11_portfolio_audit/audit_report.md) | Credit Card Fraud Detection (ULB) | yes | 0 | 0 | 3/3 passed |
 | [12 Energy Demand Forecasting](./12_energy_forecasting/audit_report.md) | Individual Household Electric Power Consumption (UCI) | yes | 0 | 0 | 4/4 passed |
 | [15 SPY Probabilistic Forecasting](./15_spy_forecasting/audit_report.md) | SPY Daily Bars with VIX and 10-Year Yield | yes | 0 | 0 | 2/2 passed |
 
@@ -51,6 +52,16 @@ Recorded by the assertion ledger while training ran; generated from `artifacts/m
 | `assert_temporal_split` | ✅ passed | Last training timestamp 1 days 09:59:57 precedes first test timestamp 1 days 11:00:00 by 0 days 01:00:03; embargo of 30min required. |
 | `assert_disjoint` | ✅ passed | 175,582 training and 100,915 test row indices compared; 0 appear in both. |
 | `assert_no_target_leak` | ✅ passed | 30 numeric features correlated against the target; strongest was V17 at |r|=0.4096 (threshold 0.995). |
+
+Recorded by the assertion ledger while training ran; generated from `artifacts/metrics.json`.
+
+### 11 · Portfolio Audit
+
+| Assertion | Result | What it measured |
+|---|---|---|
+| `assert_leaks_differ_from_template` | ✅ passed | 11 leak variants compared with the clean template; 0 identical. |
+| `assert_all_variants_executed` | ✅ passed | 14 variants executed; 0 failed for reasons other than a leakage check. |
+| `assert_controls_are_clean` | ✅ passed | 3 controls scored within 0.0036 average precision of the template and raised 0 runtime checks. |
 
 Recorded by the assertion ledger while training ran; generated from `artifacts/metrics.json`.
 

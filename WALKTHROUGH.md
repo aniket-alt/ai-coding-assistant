@@ -144,6 +144,28 @@ Which handful of transactions should an analyst look at today? Best: **Logistic 
 
 ![Credit Card Fraud Detection](./06_anomaly_detection/screenshots/01_transaction_scorer.png)
 
+## 11 · Portfolio Audit
+
+How much should anyone trust this portfolio's leakage audit? Best: **Static + runtime** (balanced accuracy 0.727). [README](./11_portfolio_audit/README.md) · [paper](./11_portfolio_audit/paper.md) · [design doc](./11_portfolio_audit/DESIGN_DOC.md)
+
+| File | Lines | What it does |
+|---|---:|---|
+| [`ml/mutations.py`](./11_portfolio_audit/ml/mutations.py) | 169 | Project 11 -- a benchmark for the portfolio's own leakage auditor. |
+| [`ml/train.py`](./11_portfolio_audit/ml/train.py) | 380 | Project 11 -- benchmark the portfolio's leakage auditor, then audit the portfolio. |
+| [`server/inference.py`](./11_portfolio_audit/server/inference.py) | 45 | The benchmark results and the portfolio snapshot are read from metrics.json. Variant source code is read from the committed corpus, but only for ids the benchmark itself… |
+| [`server/main.py`](./11_portfolio_audit/server/main.py) | 58 | Project 11 -- FastAPI application. |
+| [`client/src/App.tsx`](./11_portfolio_audit/client/src/App.tsx) | 135 | LeakBenchmark is the project-specific view. The detector tournament uses the shared leaderboard, and the portfolio table renders each project's audit state exactly as its… |
+| [`client/src/LeakBenchmark.tsx`](./11_portfolio_audit/client/src/LeakBenchmark.tsx) | 124 | Every planted leak and clean control, with what each detector concluded and how much the leak inflated the reported score. Selecting a row shows the variant's source, so a… |
+| [`client/src/main.tsx`](./11_portfolio_audit/client/src/main.tsx) | 10 |  |
+
+| Method | Endpoint | Purpose |
+|---|---|---|
+| GET | `/api/benchmark` | Every planted leak and control, with both detectors' verdicts and the score inflation. |
+| GET | `/api/corpus/{variant_id}` | The source of one benchmark variant, so what was planted can be checked. |
+| GET | `/api/portfolio` | Audit state of every other built project, read from its artifacts at training time. |
+
+![Portfolio Audit](./11_portfolio_audit/screenshots/01_leak_benchmark.png)
+
 ## 12 · Energy Demand Forecasting
 
 How much electricity will this home use in each hour of tomorrow? Best: **LightGBM quantile** (pinball loss (kw) 0.1428). [README](./12_energy_forecasting/README.md) · [paper](./12_energy_forecasting/paper.md) · [design doc](./12_energy_forecasting/DESIGN_DOC.md)

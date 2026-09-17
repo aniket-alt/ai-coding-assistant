@@ -1,0 +1,169 @@
+{
+  "project_slug": "11_portfolio_audit",
+  "project_title": "Portfolio Audit",
+  "business_question": "How much should anyone trust this portfolio's leakage audit, and which leaks would it miss?",
+  "phases": [
+    {
+      "name": "business_understanding",
+      "title": "1. Business Understanding",
+      "objective": "Measure the auditor instead of trusting it.",
+      "narrative": "Every project in this portfolio reports a passing leakage audit. That claim is only as good as the auditor, and an auditor that has never been tested against known leaks proves nothing by passing.\n\nSo this project builds a benchmark: 11 copies of a real training script, each with one deliberately planted leak, and 3 clean controls. Both detectors \u2014 the static code audit and the runtime assertions \u2014 are run against every copy and scored like any classifier.\n\nEach copy is also run with the assertions switched off, to measure how much its leak inflates the reported score. A missed leak that changes nothing is a curiosity; a missed leak that doubles a headline number is a serious gap.",
+      "findings": [
+        {
+          "label": "Planted leaks",
+          "value": "11",
+          "detail": ""
+        },
+        {
+          "label": "Clean controls",
+          "value": "3",
+          "detail": ""
+        },
+        {
+          "label": "Primary metric",
+          "value": "Balanced accuracy",
+          "detail": ""
+        }
+      ],
+      "figures": [],
+      "code_refs": [
+        "ml/mutations.py:VARIANTS",
+        "ml/train.py:score_detector"
+      ],
+      "gate_passed": true,
+      "gate_notes": "Leak catalogue, controls and scoring fixed before any detector was run."
+    },
+    {
+      "name": "data_understanding",
+      "title": "2. Data Understanding",
+      "objective": "Build a catalogue of leaks that covers the ways real projects go wrong.",
+      "narrative": "The leaks fall into four families, each a mistake that appears in real work:\n\n| Variant | Family | What goes wrong |\n|---|---|---|\n| Clean template | control | Chronological split with a one-hour gap; scaler fitted on training rows. |\n| Clean, scaler inside a pipeline | control | The same model with scaling wrapped in a Pipeline. |\n| Clean, unshuffled train_test_split | control | train_test_split with shuffle=False on time-sorted rows is a legitimate chronological split. |\n| Scaler fitted on every row | preprocessing | The scaler sees test rows before the split, so test statistics shape training. |\n| Scaler fitted on every row, innocuous name | preprocessing | The same leak with the full frame stored under an unremarkable variable name. |\n| Scaler fitted on the test set | preprocessing | Scaling parameters are learned from held-out rows. |\n| Shuffled split on time-ordered data | split | A random split scatters later transactions into training. |\n| Train and test windows overlap | split | The test window starts five hours before training ends. |\n| Test rows copied into training | split | A third of the test rows, including their labels, are appended to training. |\n| The label used as a feature | target | The fraud flag itself is left among the inputs. |\n| A noisy copy of the label | target | A feature built from the label plus noise: correlated, but not perfectly. |\n| Rolling fraud rate centred on each row | target | A centred window averages labels from transactions that happen later. |\n| Target encoding computed on all rows | target | The fraud rate per amount band is computed before the split, test labels included. |\n| Hyperparameter chosen on the test set | evaluation | Several models are scored on the test set and only the best score is reported. |\n\nThe controls matter as much as the leaks. A detector that fires on a legitimate unshuffled split or a scaler inside a pipeline would bury real warnings in false alarms.\n\nEvery variant runs on the real ULB credit card data (284,807 transactions). The leaks are constructed; the data is not.",
+      "findings": [
+        {
+          "label": "Variants",
+          "value": "14",
+          "detail": ""
+        },
+        {
+          "label": "Leak families",
+          "value": "4",
+          "detail": ""
+        },
+        {
+          "label": "Transactions per run",
+          "value": "284,807",
+          "detail": ""
+        }
+      ],
+      "figures": [],
+      "code_refs": [
+        "ml/mutations.py:TEMPLATE"
+      ],
+      "gate_passed": true,
+      "gate_notes": "14 variants across 4 leak families plus controls."
+    },
+    {
+      "name": "data_preparation",
+      "title": "3. Data Preparation",
+      "objective": "Establish a clean reference score and confirm the controls really are clean.",
+      "narrative": "The clean template scores an average precision of **0.7017** on its held-out window. Each control stays within 0.0036 of it and trips no runtime check, which is the evidence that the controls are genuinely leak-free rather than assumed to be.\n\nEvery variant is executed twice. With the assertions live, a leak is detected if one of them raises. With the assertions disabled, the variant runs to completion and its score is recorded, so the inflation each leak causes can be measured against the template.\n\nThe variants' own assertions are kept out of this project's audit ledger, so the benchmark cannot be mistaken for evidence about this project.",
+      "findings": [
+        {
+          "label": "Clean average precision",
+          "value": "0.7017",
+          "detail": ""
+        },
+        {
+          "label": "Largest control drift",
+          "value": "0.0036",
+          "detail": ""
+        }
+      ],
+      "figures": [],
+      "code_refs": [
+        "ml/train.py:execute",
+        "ml/train.py:LiveChecks"
+      ],
+      "gate_passed": true,
+      "gate_notes": "Controls verified clean by score and by assertion."
+    },
+    {
+      "name": "modeling",
+      "title": "4. Modeling",
+      "objective": "Score each detector, and both together, against two baselines.",
+      "narrative": "Flagging everything finds every leak and condemns every clean script; flagging nothing does the reverse. Both score exactly 0.5 balanced accuracy, which is the floor a real detector has to clear.\n\nThe two detectors look for different things. The static audit reads code for patterns such as a fit on a variable named like test data. The runtime assertions inspect what the code actually produced: whether the splits overlap, whether time runs forward, whether any feature is nearly the label.",
+      "findings": [
+        {
+          "label": "Best detector",
+          "value": "Static + runtime",
+          "detail": ""
+        },
+        {
+          "label": "Leaks caught together",
+          "value": "5 of 11",
+          "detail": ""
+        },
+        {
+          "label": "Damage caught together",
+          "value": "60%",
+          "detail": ""
+        }
+      ],
+      "figures": [],
+      "code_refs": [
+        "ml/train.py:score_detector"
+      ],
+      "gate_passed": true,
+      "gate_notes": "5 detectors scored."
+    },
+    {
+      "name": "evaluation",
+      "title": "5. Evaluation",
+      "objective": "State plainly what the audit can and cannot see.",
+      "narrative": "Together the two detectors catch **5 of 11 planted leaks** with 0% false alarms on clean scripts. Weighted by how much each leak inflates the score, they catch 60% of the damage.\n\n**What they miss matters.** The costliest undetected leak is *a noisy copy of the label*, which moves average precision from 0.7017 to 0.8602. It passes because no feature is perfectly correlated with the label and the split itself is clean \u2014 the leak lives in how a feature was computed, which neither detector inspects.\n\nThe consequence for the rest of this portfolio is concrete: a passing audit rules out split mistakes and blatant label leaks, and says little about target encodings, label-derived features or tuning on the test set. Those are guarded in each project by design \u2014 out-of-fold encoders, walk-forward refits, baselines \u2014 not by the auditor, and should be read that way.",
+      "findings": [
+        {
+          "label": "Leaks missed",
+          "value": "6",
+          "detail": ""
+        },
+        {
+          "label": "Costliest miss",
+          "value": "A noisy copy of the label",
+          "detail": ""
+        },
+        {
+          "label": "False alarms on controls",
+          "value": "0%",
+          "detail": ""
+        }
+      ],
+      "figures": [],
+      "code_refs": [
+        "ml/mutations.py",
+        "platform/dsfs/leakage.py"
+      ],
+      "gate_passed": true,
+      "gate_notes": "The auditor's blind spots are published with its results."
+    },
+    {
+      "name": "deployment",
+      "title": "6. Deployment",
+      "objective": "Publish the benchmark beside the portfolio's audit results.",
+      "narrative": "`GET /api/benchmark` returns every variant with both detectors' verdicts and its score inflation, `GET /api/corpus/{id}` returns a variant's source so any reader can check what was planted, and `GET /api/portfolio` returns every other project's audit state.",
+      "findings": [
+        {
+          "label": "Serving port",
+          "value": "8,011",
+          "detail": ""
+        }
+      ],
+      "figures": [],
+      "code_refs": [
+        "server/main.py"
+      ],
+      "gate_passed": true,
+      "gate_notes": "Corpus committed so the benchmark is inspectable."
+    }
+  ]
+}

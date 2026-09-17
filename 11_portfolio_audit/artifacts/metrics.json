@@ -1,0 +1,485 @@
+{
+  "project_slug": "11_portfolio_audit",
+  "project_title": "Portfolio Audit",
+  "task": "leakage detector benchmark",
+  "primary_metric": "balanced_accuracy",
+  "higher_is_better": true,
+  "provenance": {
+    "slug": "ulb-creditcard-fraud",
+    "name": "Credit Card Fraud Detection (ULB)",
+    "source_url": "https://openml.org/data/v1/download/1673544/creditcard.arff",
+    "license": "Public (Open Database License) \u2014 OpenML dataset 1597",
+    "citation": "Dal Pozzolo, A., Caelen, O., Johnson, R. A., & Bontempi, G. (2015). Calibrating probability with undersampling for unbalanced classification. IEEE Symposium Series on Computational Intelligence. Universit\u00e9 Libre de Bruxelles, MLG.",
+    "retrieved_at": "2026-09-17T05:10:54Z",
+    "sha256": "fdaf12730dc1fc426f318b71349f24f5c5fd00aa1152940be7e7509ae3d89d2a",
+    "n_rows": 284807,
+    "n_cols": 31,
+    "bytes_on_disk": 150829308,
+    "synthetic": false,
+    "notes": "284,807 transactions by European cardholders over two days in September 2013; 492 fraudulent (0.172%). V1..V28 are PCA components published in place of the original features for confidentiality.",
+    "extra": {
+      "benchmark": "leaks are planted deliberately by this project; the data itself is real",
+      "variants": 14
+    }
+  },
+  "split": {
+    "strategy": "planted-leak benchmark",
+    "n_train": 0,
+    "n_test": 14,
+    "n_val": 0,
+    "train_end": "",
+    "test_start": "",
+    "embargo": "",
+    "notes": "11 leaks and 3 clean controls."
+  },
+  "models": [
+    {
+      "name": "Flag everything",
+      "family": "baseline",
+      "metrics": {
+        "balanced_accuracy": 0.5,
+        "recall_pct": 100.0,
+        "false_positive_rate_pct": 100.0,
+        "precision_pct": 78.57142857142857,
+        "damage_caught_pct": 100.0,
+        "leaks_caught": 11.0
+      },
+      "params": {},
+      "fit_seconds": 0.0,
+      "predict_ms_per_1k": 0.0,
+      "notes": ""
+    },
+    {
+      "name": "Flag nothing",
+      "family": "baseline",
+      "metrics": {
+        "balanced_accuracy": 0.5,
+        "recall_pct": 0.0,
+        "false_positive_rate_pct": 0.0,
+        "precision_pct": 0.0,
+        "damage_caught_pct": 0.0,
+        "leaks_caught": 0.0
+      },
+      "params": {},
+      "fit_seconds": 0.0,
+      "predict_ms_per_1k": 0.0,
+      "notes": ""
+    },
+    {
+      "name": "Static code audit",
+      "family": "static",
+      "metrics": {
+        "balanced_accuracy": 0.5909090909090909,
+        "recall_pct": 18.181818181818183,
+        "false_positive_rate_pct": 0.0,
+        "precision_pct": 100.0,
+        "damage_caught_pct": 9.42077076191298,
+        "leaks_caught": 2.0
+      },
+      "params": {},
+      "fit_seconds": 0.0,
+      "predict_ms_per_1k": 0.0,
+      "notes": ""
+    },
+    {
+      "name": "Runtime assertions",
+      "family": "runtime",
+      "metrics": {
+        "balanced_accuracy": 0.6818181818181819,
+        "recall_pct": 36.36363636363637,
+        "false_positive_rate_pct": 0.0,
+        "precision_pct": 100.0,
+        "damage_caught_pct": 60.369084107648284,
+        "leaks_caught": 4.0
+      },
+      "params": {},
+      "fit_seconds": 0.0,
+      "predict_ms_per_1k": 0.0,
+      "notes": ""
+    },
+    {
+      "name": "Static + runtime",
+      "family": "combined",
+      "metrics": {
+        "balanced_accuracy": 0.7272727272727273,
+        "recall_pct": 45.45454545454545,
+        "false_positive_rate_pct": 0.0,
+        "precision_pct": 100.0,
+        "damage_caught_pct": 60.369084107648284,
+        "leaks_caught": 5.0
+      },
+      "params": {},
+      "fit_seconds": 0.0,
+      "predict_ms_per_1k": 0.0,
+      "notes": ""
+    }
+  ],
+  "baseline": {},
+  "audit": {
+    "critical": 0,
+    "warnings": 0,
+    "total": 0,
+    "runtime_assertions": [
+      {
+        "name": "assert_leaks_differ_from_template",
+        "passed": true,
+        "detail": "11 leak variants compared with the clean template; 0 identical.",
+        "params": {
+          "leak_variants": 11,
+          "identical": []
+        },
+        "at": "2026-09-17T05:10:55Z"
+      },
+      {
+        "name": "assert_all_variants_executed",
+        "passed": true,
+        "detail": "14 variants executed; 0 failed for reasons other than a leakage check.",
+        "params": {
+          "variants": 14,
+          "failures": []
+        },
+        "at": "2026-09-17T05:11:28Z"
+      },
+      {
+        "name": "assert_controls_are_clean",
+        "passed": true,
+        "detail": "3 controls scored within 0.0036 average precision of the template and raised 0 runtime checks.",
+        "params": {
+          "max_ap_difference": 0.003636,
+          "runtime_flags_on_controls": 0
+        },
+        "at": "2026-09-17T05:11:28Z"
+      }
+    ],
+    "assertions_passed": 3,
+    "assertions_run": 3
+  },
+  "env": {
+    "python": "3.11.6",
+    "platform": "Windows 10",
+    "machine": "AMD64",
+    "numpy": "2.4.6",
+    "pandas": "3.0.5",
+    "sklearn": "1.9.1",
+    "git_commit": "b6a62b4"
+  },
+  "created_at": "2026-09-17T05:11:28Z",
+  "duration_seconds": 34.3,
+  "extra": {
+    "clean_average_precision": 0.7017217914389567,
+    "variants": [
+      {
+        "id": "control_template",
+        "title": "Clean template",
+        "kind": "control",
+        "category": "control",
+        "explanation": "Chronological split with a one-hour gap; scaler fitted on training rows.",
+        "average_precision": 0.7017,
+        "inflation": 0.0,
+        "static_detected": false,
+        "static_rules": [],
+        "runtime_detected": false,
+        "runtime_check": null
+      },
+      {
+        "id": "control_pipeline",
+        "title": "Clean, scaler inside a pipeline",
+        "kind": "control",
+        "category": "control",
+        "explanation": "The same model with scaling wrapped in a Pipeline.",
+        "average_precision": 0.7017,
+        "inflation": 0.0,
+        "static_detected": false,
+        "static_rules": [],
+        "runtime_detected": false,
+        "runtime_check": null
+      },
+      {
+        "id": "control_ordered_split",
+        "title": "Clean, unshuffled train_test_split",
+        "kind": "control",
+        "category": "control",
+        "explanation": "train_test_split with shuffle=False on time-sorted rows is a legitimate chronological split.",
+        "average_precision": 0.7054,
+        "inflation": 0.0036,
+        "static_detected": false,
+        "static_rules": [],
+        "runtime_detected": false,
+        "runtime_check": null
+      },
+      {
+        "id": "scaler_on_all_rows",
+        "title": "Scaler fitted on every row",
+        "kind": "leak",
+        "category": "preprocessing",
+        "explanation": "The scaler sees test rows before the split, so test statistics shape training.",
+        "average_precision": 0.6861,
+        "inflation": -0.0156,
+        "static_detected": false,
+        "static_rules": [],
+        "runtime_detected": false,
+        "runtime_check": null
+      },
+      {
+        "id": "scaler_on_all_rows_renamed",
+        "title": "Scaler fitted on every row, innocuous name",
+        "kind": "leak",
+        "category": "preprocessing",
+        "explanation": "The same leak with the full frame stored under an unremarkable variable name.",
+        "average_precision": 0.6861,
+        "inflation": -0.0156,
+        "static_detected": false,
+        "static_rules": [],
+        "runtime_detected": false,
+        "runtime_check": null
+      },
+      {
+        "id": "scaler_on_test",
+        "title": "Scaler fitted on the test set",
+        "kind": "leak",
+        "category": "preprocessing",
+        "explanation": "Scaling parameters are learned from held-out rows.",
+        "average_precision": 0.6848,
+        "inflation": -0.017,
+        "static_detected": true,
+        "static_rules": [
+          "fit-on-test"
+        ],
+        "runtime_detected": false,
+        "runtime_check": null
+      },
+      {
+        "id": "shuffled_split",
+        "title": "Shuffled split on time-ordered data",
+        "kind": "leak",
+        "category": "split",
+        "explanation": "A random split scatters later transactions into training.",
+        "average_precision": 0.7626,
+        "inflation": 0.0609,
+        "static_detected": true,
+        "static_rules": [
+          "temporal-shuffle"
+        ],
+        "runtime_detected": true,
+        "runtime_check": "Temporal lookahead"
+      },
+      {
+        "id": "overlapping_windows",
+        "title": "Train and test windows overlap",
+        "kind": "leak",
+        "category": "split",
+        "explanation": "The test window starts five hours before training ends.",
+        "average_precision": 0.6938,
+        "inflation": -0.0079,
+        "static_detected": false,
+        "static_rules": [],
+        "runtime_detected": true,
+        "runtime_check": "Temporal lookahead"
+      },
+      {
+        "id": "test_rows_copied_into_train",
+        "title": "Test rows copied into training",
+        "kind": "leak",
+        "category": "split",
+        "explanation": "A third of the test rows, including their labels, are appended to training.",
+        "average_precision": 0.7328,
+        "inflation": 0.0311,
+        "static_detected": false,
+        "static_rules": [],
+        "runtime_detected": true,
+        "runtime_check": "Temporal lookahead"
+      },
+      {
+        "id": "label_as_feature",
+        "title": "The label used as a feature",
+        "kind": "leak",
+        "category": "target",
+        "explanation": "The fraud flag itself is left among the inputs.",
+        "average_precision": 1.0,
+        "inflation": 0.2983,
+        "static_detected": false,
+        "static_rules": [],
+        "runtime_detected": true,
+        "runtime_check": "Target leakage"
+      },
+      {
+        "id": "noisy_label_proxy",
+        "title": "A noisy copy of the label",
+        "kind": "leak",
+        "category": "target",
+        "explanation": "A feature built from the label plus noise: correlated, but not perfectly.",
+        "average_precision": 0.8602,
+        "inflation": 0.1585,
+        "static_detected": false,
+        "static_rules": [],
+        "runtime_detected": false,
+        "runtime_check": null
+      },
+      {
+        "id": "future_fraud_rate",
+        "title": "Rolling fraud rate centred on each row",
+        "kind": "leak",
+        "category": "target",
+        "explanation": "A centred window averages labels from transactions that happen later.",
+        "average_precision": 0.7181,
+        "inflation": 0.0164,
+        "static_detected": false,
+        "static_rules": [],
+        "runtime_detected": false,
+        "runtime_check": null
+      },
+      {
+        "id": "in_sample_target_encoding",
+        "title": "Target encoding computed on all rows",
+        "kind": "leak",
+        "category": "target",
+        "explanation": "The fraud rate per amount band is computed before the split, test labels included.",
+        "average_precision": 0.7099,
+        "inflation": 0.0082,
+        "static_detected": false,
+        "static_rules": [],
+        "runtime_detected": false,
+        "runtime_check": null
+      },
+      {
+        "id": "tuned_on_test",
+        "title": "Hyperparameter chosen on the test set",
+        "kind": "leak",
+        "category": "evaluation",
+        "explanation": "Several models are scored on the test set and only the best score is reported.",
+        "average_precision": 0.7749,
+        "inflation": 0.0732,
+        "static_detected": false,
+        "static_rules": [],
+        "runtime_detected": false,
+        "runtime_check": null
+      }
+    ],
+    "portfolio": [
+      {
+        "project": "01_nyc_taxi_prediction",
+        "title": "NYC Taxi Trip Duration Prediction",
+        "task": "regression",
+        "dataset": "NYC TLC Yellow Taxi Trip Records \u2014 January 2024",
+        "rows": 2964624,
+        "real_data": true,
+        "models": 7,
+        "best_model": "LightGBM",
+        "assertions_passed": 3,
+        "assertions_run": 3,
+        "critical": 0,
+        "warnings": 0,
+        "assertions": [
+          "assert_temporal_split",
+          "assert_disjoint",
+          "assert_no_target_leak"
+        ],
+        "trained_at": "2026-09-14T06:46:26Z"
+      },
+      {
+        "project": "03_customer_segmentation",
+        "title": "Customer Segmentation",
+        "task": "customer segmentation (clustering)",
+        "dataset": "Online Retail II (UCI)",
+        "rows": 1067371,
+        "real_data": true,
+        "models": 11,
+        "best_model": "RFM scoring rule",
+        "assertions_passed": 3,
+        "assertions_run": 3,
+        "critical": 0,
+        "warnings": 0,
+        "assertions": [
+          "assert_temporal_split",
+          "assert_disjoint",
+          "assert_no_target_leak"
+        ],
+        "trained_at": "2026-09-16T23:17:48Z"
+      },
+      {
+        "project": "04_market_basket",
+        "title": "Market Basket Mining",
+        "task": "association rule mining and recommendation",
+        "dataset": "Online Retail II (UCI)",
+        "rows": 1067371,
+        "real_data": true,
+        "models": 7,
+        "best_model": "Item co-occurrence",
+        "assertions_passed": 4,
+        "assertions_run": 4,
+        "critical": 0,
+        "warnings": 0,
+        "assertions": [
+          "assert_temporal_split",
+          "assert_disjoint",
+          "assert_no_shared_invoices",
+          "assert_hidden_item_not_visible"
+        ],
+        "trained_at": "2026-09-16T23:40:24Z"
+      },
+      {
+        "project": "06_anomaly_detection",
+        "title": "Credit Card Fraud Detection",
+        "task": "anomaly detection",
+        "dataset": "Credit Card Fraud Detection (ULB)",
+        "rows": 284807,
+        "real_data": true,
+        "models": 8,
+        "best_model": "Logistic regression",
+        "assertions_passed": 3,
+        "assertions_run": 3,
+        "critical": 0,
+        "warnings": 0,
+        "assertions": [
+          "assert_temporal_split",
+          "assert_disjoint",
+          "assert_no_target_leak"
+        ],
+        "trained_at": "2026-09-16T22:29:59Z"
+      },
+      {
+        "project": "12_energy_forecasting",
+        "title": "Energy Demand Forecasting",
+        "task": "probabilistic day-ahead load forecasting",
+        "dataset": "Individual Household Electric Power Consumption (UCI)",
+        "rows": 2075259,
+        "real_data": true,
+        "models": 6,
+        "best_model": "LightGBM quantile",
+        "assertions_passed": 4,
+        "assertions_run": 4,
+        "critical": 0,
+        "warnings": 0,
+        "assertions": [
+          "assert_lags_respect_horizon",
+          "assert_no_lookahead",
+          "assert_temporal_split",
+          "assert_no_target_leak"
+        ],
+        "trained_at": "2026-09-16T23:48:26Z"
+      },
+      {
+        "project": "15_spy_forecasting",
+        "title": "SPY Probabilistic Return Forecasting",
+        "task": "probabilistic time series forecasting",
+        "dataset": "SPY Daily Bars with VIX and 10-Year Yield",
+        "rows": 2931,
+        "real_data": true,
+        "models": 6,
+        "best_model": "Historical drift",
+        "assertions_passed": 2,
+        "assertions_run": 2,
+        "critical": 0,
+        "warnings": 0,
+        "assertions": [
+          "assert_no_lookahead",
+          "assert_no_target_leak"
+        ],
+        "trained_at": "2026-09-16T23:44:50Z"
+      }
+    ]
+  },
+  "best_model": "Static + runtime",
+  "best_score": 0.7272727272727273,
+  "lift_over_baseline": null
+}

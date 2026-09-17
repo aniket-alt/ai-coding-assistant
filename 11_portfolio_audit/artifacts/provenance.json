@@ -1,0 +1,18 @@
+{
+  "slug": "ulb-creditcard-fraud",
+  "name": "Credit Card Fraud Detection (ULB)",
+  "source_url": "https://openml.org/data/v1/download/1673544/creditcard.arff",
+  "license": "Public (Open Database License) \u2014 OpenML dataset 1597",
+  "citation": "Dal Pozzolo, A., Caelen, O., Johnson, R. A., & Bontempi, G. (2015). Calibrating probability with undersampling for unbalanced classification. IEEE Symposium Series on Computational Intelligence. Universit\u00e9 Libre de Bruxelles, MLG.",
+  "retrieved_at": "2026-09-17T05:10:54Z",
+  "sha256": "fdaf12730dc1fc426f318b71349f24f5c5fd00aa1152940be7e7509ae3d89d2a",
+  "n_rows": 284807,
+  "n_cols": 31,
+  "bytes_on_disk": 150829308,
+  "synthetic": false,
+  "notes": "284,807 transactions by European cardholders over two days in September 2013; 492 fraudulent (0.172%). V1..V28 are PCA components published in place of the original features for confidentiality.",
+  "extra": {
+    "benchmark": "leaks are planted deliberately by this project; the data itself is real",
+    "variants": 14
+  }
+}

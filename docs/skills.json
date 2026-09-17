@@ -244,5 +244,23 @@
     "file": "platform/dsfs/forecasting.py",
     "symbol": "interval_scores",
     "why": "Checks whether an 80% band actually contains 80% of outcomes, shared by both forecasting projects."
+  },
+  {
+    "skill": "Benchmarking a leakage detector",
+    "file": "11_portfolio_audit/ml/mutations.py",
+    "symbol": "VARIANTS",
+    "why": "Plants known leaks in copies of a real script so the auditor can be measured rather than trusted."
+  },
+  {
+    "skill": "Balanced accuracy for a skewed benchmark",
+    "file": "11_portfolio_audit/ml/train.py",
+    "symbol": "score_detector",
+    "why": "Stops a detector that flags everything from looking good on a corpus with more leaks than controls."
+  },
+  {
+    "skill": "Measuring score inflation from leakage",
+    "file": "11_portfolio_audit/ml/train.py",
+    "symbol": "NoChecks",
+    "why": "Runs each variant with assertions off to see how much its leak changes the published number."
   }
 ]

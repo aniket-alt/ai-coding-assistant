@@ -45,6 +45,9 @@ Each skill links to the line where it is implemented. Links are located by searc
 | **Measuring the cost of a leak** | [`12_energy_forecasting/ml/train.py`](./12_energy_forecasting/ml/train.py#L292) | Scores a deliberately leaky model the same way and reports how much it would have flattered the result. |
 | **Missing data without interpolation** | [`12_energy_forecasting/ml/data.py`](./12_energy_forecasting/ml/data.py#L48) | Hours with too few readings stay missing and are excluded from training and scoring. |
 | **Interval calibration** | [`platform/dsfs/forecasting.py`](./platform/dsfs/forecasting.py#L32) | Checks whether an 80% band actually contains 80% of outcomes, shared by both forecasting projects. |
+| **Benchmarking a leakage detector** | [`11_portfolio_audit/ml/mutations.py`](./11_portfolio_audit/ml/mutations.py#L89) | Plants known leaks in copies of a real script so the auditor can be measured rather than trusted. |
+| **Balanced accuracy for a skewed benchmark** | [`11_portfolio_audit/ml/train.py`](./11_portfolio_audit/ml/train.py#L65) | Stops a detector that flags everything from looking good on a corpus with more leaks than controls. |
+| **Measuring score inflation from leakage** | [`11_portfolio_audit/ml/train.py`](./11_portfolio_audit/ml/train.py#L48) | Runs each variant with assertions off to see how much its leak changes the published number. |
 
 ## Reproduction skills
 
@@ -54,6 +57,7 @@ Each built project ships an agent skill at `skills/reproduce/SKILL.md` describin
 - [`03_customer_segmentation/skills/reproduce/SKILL.md`](./03_customer_segmentation/skills/reproduce/SKILL.md)
 - [`04_market_basket/skills/reproduce/SKILL.md`](./04_market_basket/skills/reproduce/SKILL.md)
 - [`06_anomaly_detection/skills/reproduce/SKILL.md`](./06_anomaly_detection/skills/reproduce/SKILL.md)
+- [`11_portfolio_audit/skills/reproduce/SKILL.md`](./11_portfolio_audit/skills/reproduce/SKILL.md)
 - [`12_energy_forecasting/skills/reproduce/SKILL.md`](./12_energy_forecasting/skills/reproduce/SKILL.md)
 - [`15_spy_forecasting/skills/reproduce/SKILL.md`](./15_spy_forecasting/skills/reproduce/SKILL.md)
 

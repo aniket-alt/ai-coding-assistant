@@ -1,0 +1,36 @@
+{
+  "entity": "Detector",
+  "metric_columns": [
+    {"key": "balanced_accuracy", "label": "Balanced accuracy", "fmt": "f3"},
+    {"key": "recall_pct", "label": "Leaks caught", "fmt": "pct_raw"},
+    {"key": "false_positive_rate_pct", "label": "False alarms", "fmt": "pct_raw"},
+    {"key": "damage_caught_pct", "label": "Damage caught", "fmt": "pct_raw"}
+  ],
+  "reproduce": [
+    "python ml/train.py",
+    "python -m uvicorn main:app --app-dir server --port 8011",
+    "npm run dev -w 11_portfolio_audit/client"
+  ],
+  "non_goals": [
+    "Proving any project leak-free. A benchmark can only show which known leak patterns are detected.",
+    "Replacing code review. The detectors are a floor, not a certificate."
+  ],
+  "risks": [
+    "The corpus holds one example of each leak on one dataset and one model; detection could differ on other code shapes.",
+    "Score inflation is measured on a single split, so small inflations are within run-to-run noise.",
+    "The portfolio snapshot reflects artifacts at the moment this project was trained, not live state."
+  ],
+  "lessons": [
+    "An auditor that has never been tested against planted leaks proves nothing by passing.",
+    "The costliest missed leak was a feature built from the label with noise added, which no correlation threshold near one can catch.",
+    "Name-based static rules miss the same leak once a variable is renamed.",
+    "Some leaks lower a score rather than raise it, so inflation alone is not a safe proxy for whether a leak exists.",
+    "A passing audit in this portfolio rules out split mistakes and blatant label leaks; the subtler cases are guarded by design, not by the auditor."
+  ],
+  "references": [
+    "Kaufman, S., Rosset, S., Perlich, C., & Stitelman, O. (2012). Leakage in data mining: Formulation, detection, and avoidance. ACM Transactions on Knowledge Discovery from Data, 6(4).",
+    "Kapoor, S., & Narayanan, A. (2023). Leakage and the reproducibility crisis in machine-learning-based science. Patterns, 4(9).",
+    "Jia, Y., & Harman, M. (2011). An analysis and survey of the development of mutation testing. IEEE Transactions on Software Engineering, 37(5), 649–678.",
+    "Brodersen, K. H., Ong, C. S., Stephan, K. E., & Buhmann, J. M. (2010). The balanced accuracy and its posterior distribution. International Conference on Pattern Recognition."
+  ]
+}
