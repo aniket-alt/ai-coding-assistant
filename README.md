@@ -48,10 +48,10 @@ Ports are assigned so every project can run simultaneously.
 | 07 | AutoML Stacking | Multi-level stacking, ensembling | Adult / Covertype | 8007 | 5107 | ⬜ |
 | 08 | DS Visual Foundations | Interactive maths simulators | — | 8008 | 5108 | ⬜ |
 | 09 | FlowForge DAG Engine | Advanced TypeScript, Kahn's algorithm | — | 8009 | 5109 | ⬜ |
-| 10 | CRISP-DM Curriculum | Seven-phase analytics, LSH | US Census | 8010 | 5110 | ⬜ |
+| 10 | [**CRISP-DM Curriculum**](./10_crispdm_curriculum) | Seven lessons, fairness through unawareness tested, LSH | Adult census (48,842 people) | 8010 | 5110 | ✅ |
 | 11 | [**Portfolio Audit**](./11_portfolio_audit) | Benchmark of the leakage auditor itself | Fraud data with planted leaks | 8011 | 5111 | ✅ |
 | 12 | [**Energy Demand Forecasting**](./12_energy_forecasting) | Day-ahead quantiles, measured leak | UCI household power (2.08M minutes) | 8012 | 5112 | ✅ |
-| 13 | CRISP-DM Audit Platform | Governance, explainability | NYC TLC | 8013 | 5113 | ⬜ |
+| 13 | [**MLOps & Governance**](./13_mlops_governance) | Retraining policies, drift, SHAP, load test | NYC TLC (23.4M trips, Jan–Jul 2024) | 8013 | 5113 | ✅ |
 | 14 | Multimodal AutoML | Vision–language–tabular fusion | multiple | 8014 | 5114 | ⬜ |
 | 15 | [**SPY Forecasting**](./15_spy_forecasting) | Probabilistic returns, walk-forward, purged | SPY/VIX/TNX daily, 2015–2026 | 8015 | 5115 | ✅ |
 

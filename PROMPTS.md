@@ -320,6 +320,53 @@ began.
 
 ---
 
+## Session 5 — projects 11, 13 and 10
+
+### 21. Retry
+
+```text
+try again
+```
+
+A dropped connection had interrupted the previous batch; work resumed from the
+last verified step.
+
+### 22. Status
+
+```text
+Where are we now?
+```
+
+### 23. Next batch
+
+```text
+Carry on with the next batch
+```
+
+**Produced:** three projects, each checked locally with the full test, audit,
+documentation and type-check suite before pushing.
+
+- **11 Portfolio Audit.** A benchmark of the repository's own leakage auditor on
+  fourteen planted variants. Static and runtime checks together caught five of
+  eleven leaks with no false alarms; the misses are reported with how much each
+  inflated the score.
+  [`ada6490`](https://github.com/aniket-alt/ai-coding-assistant/commit/ada6490)
+- **13 MLOps & Governance.** Retraining policies judged month by month on
+  unseen months. Retraining on all history won, and the drift alarm never fired
+  even though never retraining was clearly worse. Reviewing the screenshots
+  caught chart colours that did not match the leaderboard, which led to stable
+  per-model colours in the shared components, and a "Retrains" column that
+  counted the initial fit.
+  [`3ee3e28`](https://github.com/aniket-alt/ai-coding-assistant/commit/3ee3e28)
+- **10 CRISP-DM Curriculum.** Seven lessons on the Adult census. Removing sex
+  and race barely changed disparate impact, because the remaining features
+  predict sex almost perfectly. Checking the README against the artifacts
+  corrected an assumed claim about the outliers, and the repository audit
+  learned that a cross-sectional project can declare it has no time order.
+  [`06afa32`](https://github.com/aniket-alt/ai-coding-assistant/commit/06afa32)
+
+---
+
 ## What made prompting work
 
 **Review before build.** Prompts 12 and 13 asked for the design before the code

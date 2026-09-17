@@ -8,8 +8,10 @@ Every row below is read from a project's `artifacts/metrics.json`. Projects that
 | [03 Customer Segmentation](./03_customer_segmentation/audit_report.md) | Online Retail II (UCI) | yes | 0 | 0 | 3/3 passed |
 | [04 Market Basket Mining](./04_market_basket/audit_report.md) | Online Retail II (UCI) | yes | 0 | 0 | 4/4 passed |
 | [06 Credit Card Fraud Detection](./06_anomaly_detection/audit_report.md) | Credit Card Fraud Detection (ULB) | yes | 0 | 0 | 3/3 passed |
+| [10 CRISP-DM Curriculum](./10_crispdm_curriculum/audit_report.md) | Adult Census Income (UCI, via OpenML 1590) | yes | 0 | 0 | 3/3 passed |
 | [11 Portfolio Audit](./11_portfolio_audit/audit_report.md) | Credit Card Fraud Detection (ULB) | yes | 0 | 0 | 3/3 passed |
 | [12 Energy Demand Forecasting](./12_energy_forecasting/audit_report.md) | Individual Household Electric Power Consumption (UCI) | yes | 0 | 0 | 4/4 passed |
+| [13 MLOps & Governance](./13_mlops_governance/audit_report.md) | NYC TLC Yellow Taxi Trip Records — January to July 2024 | yes | 0 | 0 | 3/3 passed |
 | [15 SPY Probabilistic Forecasting](./15_spy_forecasting/audit_report.md) | SPY Daily Bars with VIX and 10-Year Yield | yes | 0 | 0 | 2/2 passed |
 
 ## Runtime assertions by project
@@ -55,6 +57,16 @@ Recorded by the assertion ledger while training ran; generated from `artifacts/m
 
 Recorded by the assertion ledger while training ran; generated from `artifacts/metrics.json`.
 
+### 10 · CRISP-DM Curriculum
+
+| Assertion | Result | What it measured |
+|---|---|---|
+| `assert_disjoint` | ✅ passed | 36,631 training and 12,211 test row indices compared; 0 appear in both. |
+| `assert_no_target_leak` | ✅ passed | 85 numeric features correlated against the target; strongest was cat__marital-status_Married-civ-spouse at |r|=0.4493 (threshold 0.995). |
+| `assert_unaware_model_excludes_sensitive_attributes` | ✅ passed | 11 features in the unaware models; sensitive attributes present: []. |
+
+Recorded by the assertion ledger while training ran; generated from `artifacts/metrics.json`.
+
 ### 11 · Portfolio Audit
 
 | Assertion | Result | What it measured |
@@ -73,6 +85,16 @@ Recorded by the assertion ledger while training ran; generated from `artifacts/m
 | `assert_no_lookahead` | ✅ passed | 600 feature values across 30 target hours recomputed from data available at the forecast origin; 0 differed. |
 | `assert_temporal_split` | ✅ passed | Last training timestamp 2007-12-16 17:00:00 precedes first test timestamp 2007-12-16 18:00:00 by 0 days 01:00:00; no embargo required. |
 | `assert_no_target_leak` | ✅ passed | 20 numeric features correlated against the target; strongest was same_hour_4wk_mean at |r|=0.5275 (threshold 0.995). |
+
+Recorded by the assertion ledger while training ran; generated from `artifacts/metrics.json`.
+
+### 13 · MLOps & Governance
+
+| Assertion | Result | What it measured |
+|---|---|---|
+| `assert_temporal_split` | ✅ passed | Last training timestamp 2024-01-30 23:07:53 precedes first test timestamp 2024-02-01 00:00:03 by 1 days 00:52:10; no embargo required. |
+| `assert_no_target_leak` | ✅ passed | 22 numeric features correlated against the target; strongest was zp_median_distance at |r|=0.7821 (threshold 0.995). |
+| `assert_policies_train_only_on_finished_months` | ✅ passed | 14 model fits checked; 0 used a month at or after the month they served. |
 
 Recorded by the assertion ledger while training ran; generated from `artifacts/metrics.json`.
 

@@ -19,11 +19,11 @@ Shared by every project. A project imports it instead of re-implementing data so
 | [`platform/dsfs/provenance.py`](./platform/dsfs/provenance.py) | 100 | Thesis of this portfolio: every number in every README traces to a real, citable dataset. A `Provenance` is the receipt. Projects cannot register a dataset without one, and… |
 | [`platform/web/src/components/AppShell.tsx`](./platform/web/src/components/AppShell.tsx) | 295 | AppShell -- the frame every project's client renders inside. |
 | [`platform/web/src/components/AuditPanel.tsx`](./platform/web/src/components/AuditPanel.tsx) | 288 | AuditPanel -- the leakage audit, published in the running app. |
-| [`platform/web/src/components/Chart.tsx`](./platform/web/src/components/Chart.tsx) | 353 | Chart -- a thin wrapper over Recharts, not a charting library. |
+| [`platform/web/src/components/Chart.tsx`](./platform/web/src/components/Chart.tsx) | 355 | Chart -- a thin wrapper over Recharts, not a charting library. |
 | [`platform/web/src/components/CrispDmWalkthrough.tsx`](./platform/web/src/components/CrispDmWalkthrough.tsx) | 246 | CrispDmWalkthrough -- the six phases, driven entirely by report data. |
 | [`platform/web/src/components/MarkdownMath.tsx`](./platform/web/src/components/MarkdownMath.tsx) | 198 | MarkdownMath -- renders the narrative markdown the backend produces, including KaTeX maths. |
 | [`platform/web/src/components/MetricsPanel.tsx`](./platform/web/src/components/MetricsPanel.tsx) | 175 | MetricsPanel -- the headline summary of a training run. |
-| [`platform/web/src/components/ModelLeaderboard.tsx`](./platform/web/src/components/ModelLeaderboard.tsx) | 250 | ModelLeaderboard -- the tournament table, for any project. |
+| [`platform/web/src/components/ModelLeaderboard.tsx`](./platform/web/src/components/ModelLeaderboard.tsx) | 268 | ModelLeaderboard -- the tournament table, for any project. |
 | [`platform/web/src/components/PredictionForm.tsx`](./platform/web/src/components/PredictionForm.tsx) | 410 | PredictionForm -- schema-driven inference input. |
 | [`platform/web/src/components/ProvenanceBadge.tsx`](./platform/web/src/components/ProvenanceBadge.tsx) | 179 | ProvenanceBadge -- renders the dataset receipt. |
 | [`platform/web/src/components/StatTile.tsx`](./platform/web/src/components/StatTile.tsx) | 175 | Per the dataviz form heuristic, one number is not a chart. Hero figures use proportional figures; only aligned columns get tabular-nums. Delta direction ships with an arrow… |
@@ -59,7 +59,7 @@ How long will this cab ride take? Estimated from booking-time information only. 
 | File | Lines | What it does |
 |---|---:|---|
 | [`ml/build_zone_map.py`](./01_nyc_taxi_prediction/ml/build_zone_map.py) | 163 | Build the taxi-zone SVG map from the official TLC shapefile. |
-| [`ml/data.py`](./01_nyc_taxi_prediction/ml/data.py) | 254 | Project 01 -- NYC Taxi trip duration: data acquisition and cleaning. |
+| [`ml/data.py`](./01_nyc_taxi_prediction/ml/data.py) | 256 | Project 01 -- NYC Taxi trip duration: data acquisition and cleaning. |
 | [`ml/features.py`](./01_nyc_taxi_prediction/ml/features.py) | 268 | Every feature here must be computable at the moment a rider requests a cab. |
 | [`ml/train.py`](./01_nyc_taxi_prediction/ml/train.py) | 428 | Project 01 -- model tournament, audit, and artefact generation. |
 | [`server/inference.py`](./01_nyc_taxi_prediction/server/inference.py) | 153 | Loads the persisted model together with the encoders it was trained with, so a prediction at request time is assembled exactly as it was during training. The zone statistics… |
@@ -144,6 +144,32 @@ Which handful of transactions should an analyst look at today? Best: **Logistic 
 
 ![Credit Card Fraud Detection](./06_anomaly_detection/screenshots/01_transaction_scorer.png)
 
+## 10 · CRISP-DM Curriculum
+
+Seven lessons on the Adult census, and why leaving out sex does not make a model fair. Best: **LightGBM** (roc auc 0.9300). [README](./10_crispdm_curriculum/README.md) · [paper](./10_crispdm_curriculum/paper.md) · [design doc](./10_crispdm_curriculum/DESIGN_DOC.md)
+
+| File | Lines | What it does |
+|---|---:|---|
+| [`ml/data.py`](./10_crispdm_curriculum/ml/data.py) | 69 | 48,842 records from the 1994 US Census, extracted by Barry Becker, with the classic question of whether a person's income exceeds $50,000 a year. The dataset is also a standard… |
+| [`ml/train.py`](./10_crispdm_curriculum/ml/train.py) | 494 | Project 10 -- a CRISP-DM curriculum on the Adult census data. |
+| [`server/inference.py`](./10_crispdm_curriculum/server/inference.py) | 72 | Every lesson is read from the training run's metrics.json. Quiz questions are sent without their answers; a choice is checked on the server, so the answer cannot be read from… |
+| [`server/main.py`](./10_crispdm_curriculum/server/main.py) | 87 | Project 10 -- FastAPI application. |
+| [`client/src/App.tsx`](./10_crispdm_curriculum/client/src/App.tsx) | 225 | One tab per lesson, built from shared components reading the training run, plus the quiz. The fairness lesson is the centre of the course. |
+| [`client/src/Quiz.tsx`](./10_crispdm_curriculum/client/src/Quiz.tsx) | 76 | Questions arrive without answers. Each choice is checked by the server, whose explanation quotes figures from the training run, so the quiz teaches what this data actually showed. |
+| [`client/src/main.tsx`](./10_crispdm_curriculum/client/src/main.tsx) | 10 |  |
+
+| Method | Endpoint | Purpose |
+|---|---|---|
+| GET | `/api/eda` | Base rates by sex, race and age, missing values and data quirks. |
+| GET | `/api/unsupervised` | k-means cluster profiles and what the isolation forest flagged. |
+| GET | `/api/fairness` | Accuracy and fairness of each model, with and without sex and race. |
+| GET | `/api/rules` | Strongest association rules for high income, rechecked on test people. |
+| GET | `/api/lsh` | Recall and speed of locality-sensitive hashing against exact search. |
+| GET | `/api/quiz` | Quiz questions, without their answers. |
+| POST | `/api/quiz/{question_id}` | Check one answer; the explanation is computed from this run. |
+
+![CRISP-DM Curriculum](./10_crispdm_curriculum/screenshots/01_crispdm_walkthrough.png)
+
 ## 11 · Portfolio Audit
 
 How much should anyone trust this portfolio's leakage audit? Best: **Static + runtime** (balanced accuracy 0.727). [README](./11_portfolio_audit/README.md) · [paper](./11_portfolio_audit/paper.md) · [design doc](./11_portfolio_audit/DESIGN_DOC.md)
@@ -188,6 +214,31 @@ How much electricity will this home use in each hour of tomorrow? Best: **LightG
 | GET | `/api/calibration` | Interval coverage, significance against yesterday, and the leakage demonstration. |
 
 ![Energy Demand Forecasting](./12_energy_forecasting/screenshots/01_day_ahead_forecast.png)
+
+## 13 · MLOps & Governance
+
+How fast does a deployed model go stale, and when is retraining worth it? Best: **Retrain monthly on all history** (mean rmse (min) 6.396). [README](./13_mlops_governance/README.md) · [paper](./13_mlops_governance/paper.md) · [design doc](./13_mlops_governance/DESIGN_DOC.md)
+
+| File | Lines | What it does |
+|---|---:|---|
+| [`ml/data.py`](./13_mlops_governance/ml/data.py) | 84 | Project 13 -- seven months of real NYC taxi trips. |
+| [`ml/load_test.py`](./13_mlops_governance/ml/load_test.py) | 114 | Project 13 -- load-test the prediction API on this machine. |
+| [`ml/train.py`](./13_mlops_governance/ml/train.py) | 411 | Project 13 -- operate project 01's model through six months of real drift. |
+| [`server/inference.py`](./13_mlops_governance/server/inference.py) | 118 | Project 13 -- serving project 01's model in operation. |
+| [`server/main.py`](./13_mlops_governance/server/main.py) | 82 | Project 13 -- FastAPI application. |
+| [`client/src/App.tsx`](./13_mlops_governance/client/src/App.tsx) | 289 | Operations views for project 01's model: drift and retraining policy, explainable predictions, the model registry, load test and model card. Every figure is read from the… |
+| [`client/src/main.tsx`](./13_mlops_governance/client/src/main.tsx) | 10 |  |
+
+| Method | Endpoint | Purpose |
+|---|---|---|
+| POST | `/api/predict` | Trip duration with each feature's TreeSHAP contribution in minutes. |
+| GET | `/api/zones` | The 263 taxi zones. |
+| GET | `/api/drift` | Monthly drift against January and every policy's month-by-month error. |
+| GET | `/api/registry` | Every model version fitted, with its training window and first month in service. |
+| GET | `/api/load-test` | Latency and throughput measured against this API during training. |
+| GET | `/api/model-card` | Intended use, data, evaluation, monitoring, capacity and limitations. |
+
+![MLOps & Governance](./13_mlops_governance/screenshots/01_drift_retraining.png)
 
 ## 15 · SPY Probabilistic Forecasting
 

@@ -14,7 +14,7 @@ Each skill links to the line where it is implemented. Links are located by searc
 | **Rendered-output verification** | [`scripts/capture_screenshots.py`](./scripts/capture_screenshots.py#L44) | Screenshots are only saved as evidence after the view is confirmed to show its expected content. |
 | **Excluding post-event fields** | [`01_nyc_taxi_prediction/ml/data.py`](./01_nyc_taxi_prediction/ml/data.py#L71) | Meter distance, fare and arrival time are unknowable at booking, so the model may not use them. |
 | **Data cleaning with an audit trail** | [`01_nyc_taxi_prediction/ml/data.py`](./01_nyc_taxi_prediction/ml/data.py#L111) | Each filter records how many rows it removed and why. |
-| **Missingness as a signal** | [`01_nyc_taxi_prediction/ml/data.py`](./01_nyc_taxi_prediction/ml/data.py#L177) | Missing fields cluster by vendor, so the gap itself is kept as a feature. |
+| **Missingness as a signal** | [`01_nyc_taxi_prediction/ml/data.py`](./01_nyc_taxi_prediction/ml/data.py#L179) | Missing fields cluster by vendor, so the gap itself is kept as a feature. |
 | **Out-of-fold smoothed target encoding** | [`01_nyc_taxi_prediction/ml/features.py`](./01_nyc_taxi_prediction/ml/features.py#L133) | No row contributes to its own encoding, and rare categories shrink toward the mean. |
 | **Cyclical time features** | [`01_nyc_taxi_prediction/ml/features.py`](./01_nyc_taxi_prediction/ml/features.py#L31) | 23:00 and 00:00 end up as neighbours rather than opposite ends of a scale. |
 | **Polygon simplification** | [`01_nyc_taxi_prediction/ml/build_zone_map.py`](./01_nyc_taxi_prediction/ml/build_zone_map.py#L43) | Ramer-Douglas-Peucker turns the official shapefile into a small SVG map. |
@@ -48,6 +48,15 @@ Each skill links to the line where it is implemented. Links are located by searc
 | **Benchmarking a leakage detector** | [`11_portfolio_audit/ml/mutations.py`](./11_portfolio_audit/ml/mutations.py#L89) | Plants known leaks in copies of a real script so the auditor can be measured rather than trusted. |
 | **Balanced accuracy for a skewed benchmark** | [`11_portfolio_audit/ml/train.py`](./11_portfolio_audit/ml/train.py#L65) | Stops a detector that flags everything from looking good on a corpus with more leaks than controls. |
 | **Measuring score inflation from leakage** | [`11_portfolio_audit/ml/train.py`](./11_portfolio_audit/ml/train.py#L48) | Runs each variant with assertions off to see how much its leak changes the published number. |
+| **Population stability index for drift monitoring** | [`13_mlops_governance/ml/train.py`](./13_mlops_governance/ml/train.py#L40) | Bins a column on the reference data's quantiles and compares shares, with a floor so empty bins do not divide by zero. |
+| **Evaluating a retraining policy on unseen months** | [`13_mlops_governance/ml/train.py`](./13_mlops_governance/ml/train.py#L197) | Lets each policy choose training months from those already finished, then scores it on the next month, as a deployed model would be. |
+| **Drift-triggered retraining** | [`13_mlops_governance/ml/train.py`](./13_mlops_governance/ml/train.py#L227) | Retrains only when the latest finished month drifts past the PSI threshold, so the alarm's value can be measured against simpler policies. |
+| **Load testing a FastAPI model server** | [`13_mlops_governance/ml/load_test.py`](./13_mlops_governance/ml/load_test.py#L69) | Starts the real API, warms it up and records throughput and latency percentiles at several concurrency levels. |
+| **Per-prediction TreeSHAP contributions** | [`13_mlops_governance/server/inference.py`](./13_mlops_governance/server/inference.py#L56) | Uses LightGBM's pred_contrib so every served estimate comes with contributions that sum exactly to it. |
+| **Group fairness metrics at a threshold** | [`10_crispdm_curriculum/ml/train.py`](./10_crispdm_curriculum/ml/train.py#L51) | Reports disparate impact, equal-opportunity and false-positive gaps and selection rates, so accuracy is never read alone. |
+| **Testing fairness through unawareness** | [`10_crispdm_curriculum/ml/train.py`](./10_crispdm_curriculum/ml/train.py#L238) | Trains each model with and without sensitive attributes and asserts the unaware version truly excludes them. |
+| **Random-hyperplane LSH** | [`10_crispdm_curriculum/ml/train.py`](./10_crispdm_curriculum/ml/train.py#L67) | Approximate nearest-neighbour search whose recall and scanned fraction are measured against exact search. |
+| **Quiz answers checked on the server** | [`10_crispdm_curriculum/server/inference.py`](./10_crispdm_curriculum/server/inference.py#L68) | Questions are served without answers, and explanations quote figures from the training run. |
 
 ## Reproduction skills
 
@@ -57,8 +66,10 @@ Each built project ships an agent skill at `skills/reproduce/SKILL.md` describin
 - [`03_customer_segmentation/skills/reproduce/SKILL.md`](./03_customer_segmentation/skills/reproduce/SKILL.md)
 - [`04_market_basket/skills/reproduce/SKILL.md`](./04_market_basket/skills/reproduce/SKILL.md)
 - [`06_anomaly_detection/skills/reproduce/SKILL.md`](./06_anomaly_detection/skills/reproduce/SKILL.md)
+- [`10_crispdm_curriculum/skills/reproduce/SKILL.md`](./10_crispdm_curriculum/skills/reproduce/SKILL.md)
 - [`11_portfolio_audit/skills/reproduce/SKILL.md`](./11_portfolio_audit/skills/reproduce/SKILL.md)
 - [`12_energy_forecasting/skills/reproduce/SKILL.md`](./12_energy_forecasting/skills/reproduce/SKILL.md)
+- [`13_mlops_governance/skills/reproduce/SKILL.md`](./13_mlops_governance/skills/reproduce/SKILL.md)
 - [`15_spy_forecasting/skills/reproduce/SKILL.md`](./15_spy_forecasting/skills/reproduce/SKILL.md)
 
 ---
