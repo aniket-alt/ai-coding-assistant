@@ -328,7 +328,7 @@ began.
 try again
 ```
 
-A dropped connection had interrupted the previous batch; work resumed from the
+The previous batch had stopped partway; work resumed from the
 last verified step.
 
 ### 22. Status
