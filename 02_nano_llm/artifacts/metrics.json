@@ -1,0 +1,821 @@
+{
+  "project_slug": "02_nano_llm",
+  "project_title": "Nano LLM Transformer",
+  "task": "next-token prediction (language modelling)",
+  "primary_metric": "val_perplexity",
+  "higher_is_better": false,
+  "provenance": {
+    "slug": "tinystories-v2",
+    "name": "TinyStories V2 (GPT-4 stories), training split",
+    "source_url": "https://huggingface.co/datasets/roneneldan/TinyStories/resolve/main/TinyStoriesV2-GPT4-train.txt",
+    "license": "Community Data License Agreement \u2013 Sharing, Version 1.0 (CDLA-Sharing-1.0)",
+    "citation": "Eldan, R., & Li, Y. (2023). TinyStories: How small can language models be and still speak coherent English? arXiv:2305.07759.",
+    "retrieved_at": "2026-09-17T15:48:34Z",
+    "sha256": "6418d412de72888f52b5142c761ac21a582f7d1166f0bfbdb5f03ccfdec90443",
+    "n_rows": 0,
+    "n_cols": 0,
+    "bytes_on_disk": 2227753162,
+    "synthetic": false,
+    "notes": "Stories separated by <|endoftext|> lines.",
+    "extra": {}
+  },
+  "split": {
+    "strategy": "official TinyStories V2 split; validation stories seen in training removed",
+    "n_train": 339867310,
+    "n_test": 5578295,
+    "n_val": 0,
+    "train_end": "",
+    "test_start": "",
+    "embargo": "",
+    "notes": "Counts are tokens."
+  },
+  "models": [
+    {
+      "name": "Unigram frequencies",
+      "family": "baseline",
+      "metrics": {
+        "val_perplexity": 357.9624455936875,
+        "val_loss": 5.880428080321958,
+        "bits_per_char": 2.1338673225219242
+      },
+      "params": {},
+      "fit_seconds": 0.0,
+      "predict_ms_per_1k": 0.0,
+      "notes": "Each token's training frequency, ignoring context."
+    },
+    {
+      "name": "Bigram, interpolated",
+      "family": "baseline",
+      "metrics": {
+        "val_perplexity": 34.03749396538312,
+        "val_loss": 3.5274626807066745,
+        "bits_per_char": 1.280032209043435
+      },
+      "params": {},
+      "fit_seconds": 0.0,
+      "predict_ms_per_1k": 0.0,
+      "notes": "Previous-token statistics blended with unigram, \u03bb=0.99."
+    },
+    {
+      "name": "NanoLM, RoPE \u00b7 SwiGLU \u00b7 RMSNorm",
+      "family": "transformer",
+      "metrics": {
+        "val_perplexity": 4.028605266894854,
+        "val_loss": 1.3934202284373074,
+        "bits_per_char": 0.5056390200491341,
+        "tokens_seen_m": 196.608
+      },
+      "params": {
+        "vocab_size": 4096,
+        "context": 256,
+        "d_model": 320,
+        "n_layers": 6,
+        "n_heads": 8,
+        "position": "rope",
+        "mlp": "swiglu",
+        "norm": "rms",
+        "dropout": 0.0,
+        "parameters": 8685760,
+        "steps": 12000,
+        "batch": 64
+      },
+      "fit_seconds": 1580.5,
+      "predict_ms_per_1k": 0.0,
+      "notes": ""
+    }
+  ],
+  "baseline": {},
+  "audit": {
+    "critical": 0,
+    "warnings": 0,
+    "total": 0,
+    "runtime_assertions": [
+      {
+        "name": "assert_validation_stories_unseen",
+        "passed": true,
+        "detail": "27,630 validation stories hashed against 2,717,495 training stories; 0 also appeared in training and were removed; 0 remain.",
+        "params": {
+          "validation_stories": 27630,
+          "training_stories": 2717495,
+          "removed": 0,
+          "remaining": 0
+        },
+        "at": "2026-09-17T15:49:48Z"
+      },
+      {
+        "name": "assert_causal_mask",
+        "passed": true,
+        "detail": "Tokens 40-63 of a 64-token sequence replaced; largest change in logits at positions 0-39 was 0.00e+00 (limit 1e-4). The model cannot see the future.",
+        "params": {
+          "changed_from": 40,
+          "max_logit_change": 0.0
+        },
+        "at": "2026-09-17T16:51:55Z"
+      },
+      {
+        "name": "assert_kv_cache_matches_recompute",
+        "passed": true,
+        "detail": "Greedy 60-token continuations of 3 prompts generated with and without the KV cache; 3 of 3 identical.",
+        "params": {
+          "prompts": 3,
+          "identical": 3
+        },
+        "at": "2026-09-17T16:51:57Z"
+      }
+    ],
+    "assertions_passed": 3,
+    "assertions_run": 3
+  },
+  "env": {
+    "python": "3.11.6",
+    "platform": "Windows 10",
+    "machine": "AMD64",
+    "numpy": "2.4.6",
+    "pandas": "3.0.5",
+    "sklearn": "1.9.1",
+    "torch": "2.11.0+cu128",
+    "git_commit": "1e3bb26"
+  },
+  "created_at": "2026-09-17T15:51:08Z",
+  "duration_seconds": 3810.0,
+  "extra": {
+    "dedup": {
+      "train_stories": 2717495,
+      "train_duplicate_copies": 1,
+      "valid_stories": 27630,
+      "valid_in_train": 0,
+      "valid_scored": 27630
+    },
+    "valid_provenance": {
+      "slug": "tinystories-v2",
+      "name": "TinyStories V2 (GPT-4 stories), validation split",
+      "source_url": "https://huggingface.co/datasets/roneneldan/TinyStories/resolve/main/TinyStoriesV2-GPT4-valid.txt",
+      "license": "Community Data License Agreement \u2013 Sharing, Version 1.0 (CDLA-Sharing-1.0)",
+      "citation": "Eldan, R., & Li, Y. (2023). TinyStories: How small can language models be and still speak coherent English? arXiv:2305.07759.",
+      "retrieved_at": "2026-09-17T15:48:34Z",
+      "sha256": "6874bae9a4c1a4e7edcf0e53b86c17817e9cf881fc75ff2368da457b80c0585d",
+      "n_rows": 0,
+      "n_cols": 0,
+      "bytes_on_disk": 22502601,
+      "synthetic": false,
+      "notes": "Stories separated by <|endoftext|> lines.",
+      "extra": {}
+    },
+    "chars_per_token": 3.975722548559497,
+    "ngram": {
+      "unigram_perplexity": 357.9624455936875,
+      "bigram_perplexity": 34.03749396538312,
+      "lambda": 0.99
+    },
+    "main": {
+      "config": {
+        "vocab_size": 4096,
+        "context": 256,
+        "d_model": 320,
+        "n_layers": 6,
+        "n_heads": 8,
+        "position": "rope",
+        "mlp": "swiglu",
+        "norm": "rms",
+        "dropout": 0.0
+      },
+      "params": 8685760,
+      "curve": [
+        {
+          "step": 500,
+          "tokens_m": 8.192,
+          "train_loss": 2.3617382049560547,
+          "val_loss": 2.3092804861068728,
+          "val_perplexity": 10.067178573649754,
+          "minutes": 1.0504534683330955
+        },
+        {
+          "step": 1000,
+          "tokens_m": 16.384,
+          "train_loss": 1.9343438148498535,
+          "val_loss": 1.9505590748786927,
+          "val_perplexity": 7.032618241910399,
+          "minutes": 2.0892269999996644
+        },
+        {
+          "step": 1500,
+          "tokens_m": 24.576,
+          "train_loss": 1.855848789215088,
+          "val_loss": 1.8220806109905243,
+          "val_perplexity": 6.184713054484911,
+          "minutes": 3.146288296666656
+        },
+        {
+          "step": 2000,
+          "tokens_m": 32.768,
+          "train_loss": 1.7435061931610107,
+          "val_loss": 1.7519642007350922,
+          "val_perplexity": 5.765916978955562,
+          "minutes": 4.21784366999976
+        },
+        {
+          "step": 2500,
+          "tokens_m": 40.96,
+          "train_loss": 1.7357776165008545,
+          "val_loss": 1.6995320057868957,
+          "val_perplexity": 5.471386215379634,
+          "minutes": 5.296624989999691
+        },
+        {
+          "step": 3000,
+          "tokens_m": 49.152,
+          "train_loss": 1.6585956811904907,
+          "val_loss": 1.6624461090564728,
+          "val_perplexity": 5.272191439581981,
+          "minutes": 6.384154754999812
+        },
+        {
+          "step": 3500,
+          "tokens_m": 57.344,
+          "train_loss": 1.5881280899047852,
+          "val_loss": 1.6302459359169006,
+          "val_perplexity": 5.105130099010621,
+          "minutes": 7.481161331666226
+        },
+        {
+          "step": 4000,
+          "tokens_m": 65.536,
+          "train_loss": 1.5955283641815186,
+          "val_loss": 1.6011575198173522,
+          "val_perplexity": 4.958768977028507,
+          "minutes": 8.576531536666637
+        },
+        {
+          "step": 4500,
+          "tokens_m": 73.728,
+          "train_loss": 1.5220637321472168,
+          "val_loss": 1.5773678696155549,
+          "val_perplexity": 4.842193737620492,
+          "minutes": 9.679730596666438
+        },
+        {
+          "step": 5000,
+          "tokens_m": 81.92,
+          "train_loss": 1.5258709192276,
+          "val_loss": 1.5575378298759461,
+          "val_perplexity": 4.747118630468514,
+          "minutes": 10.781239769999713
+        },
+        {
+          "step": 5500,
+          "tokens_m": 90.112,
+          "train_loss": 1.561460018157959,
+          "val_loss": 1.5360350918769836,
+          "val_perplexity": 4.646132215559903,
+          "minutes": 11.886434558333228
+        },
+        {
+          "step": 6000,
+          "tokens_m": 98.304,
+          "train_loss": 1.4654991626739502,
+          "val_loss": 1.5175696015357971,
+          "val_perplexity": 4.561126358810534,
+          "minutes": 12.995928093333108
+        },
+        {
+          "step": 6500,
+          "tokens_m": 106.496,
+          "train_loss": 1.4991862773895264,
+          "val_loss": 1.499427261352539,
+          "val_perplexity": 4.479122968724509,
+          "minutes": 14.105085894999986
+        },
+        {
+          "step": 7000,
+          "tokens_m": 114.688,
+          "train_loss": 1.4756667613983154,
+          "val_loss": 1.4813516497612,
+          "val_perplexity": 4.398887419569541,
+          "minutes": 15.225436046666195
+        },
+        {
+          "step": 7500,
+          "tokens_m": 122.88,
+          "train_loss": 1.4487290382385254,
+          "val_loss": 1.4647945415973664,
+          "val_perplexity": 4.326654201512666,
+          "minutes": 16.35589675333322
+        },
+        {
+          "step": 8000,
+          "tokens_m": 131.072,
+          "train_loss": 1.403287649154663,
+          "val_loss": 1.4514290583133698,
+          "val_perplexity": 4.269211109564476,
+          "minutes": 17.483572466666615
+        },
+        {
+          "step": 8500,
+          "tokens_m": 139.264,
+          "train_loss": 1.4101934432983398,
+          "val_loss": 1.4374625730514525,
+          "val_perplexity": 4.209999685753666,
+          "minutes": 18.603662851666254
+        },
+        {
+          "step": 9000,
+          "tokens_m": 147.456,
+          "train_loss": 1.4355366230010986,
+          "val_loss": 1.4248002612590789,
+          "val_perplexity": 4.157027440400087,
+          "minutes": 19.715046536666343
+        },
+        {
+          "step": 9500,
+          "tokens_m": 155.648,
+          "train_loss": 1.466363787651062,
+          "val_loss": 1.4148147916793823,
+          "val_perplexity": 4.1157241290258035,
+          "minutes": 20.81763675833305
+        },
+        {
+          "step": 10000,
+          "tokens_m": 163.84,
+          "train_loss": 1.422565221786499,
+          "val_loss": 1.405738317966461,
+          "val_perplexity": 4.078536886968983,
+          "minutes": 21.940571879999577
+        },
+        {
+          "step": 10500,
+          "tokens_m": 172.032,
+          "train_loss": 1.4075794219970703,
+          "val_loss": 1.399664316177368,
+          "val_perplexity": 4.053838930270028,
+          "minutes": 23.05369549333312
+        },
+        {
+          "step": 11000,
+          "tokens_m": 180.224,
+          "train_loss": 1.3602094650268555,
+          "val_loss": 1.3971317636966705,
+          "val_perplexity": 4.043585359763916,
+          "minutes": 24.155647596666434
+        },
+        {
+          "step": 11500,
+          "tokens_m": 188.416,
+          "train_loss": 1.4258105754852295,
+          "val_loss": 1.395508120059967,
+          "val_perplexity": 4.037025345129213,
+          "minutes": 25.24188164666654
+        },
+        {
+          "step": 12000,
+          "tokens_m": 196.608,
+          "train_loss": 1.40317964553833,
+          "val_loss": 1.393887642621994,
+          "val_perplexity": 4.0304887342865,
+          "minutes": 26.341509616666492
+        }
+      ],
+      "seconds": 1580.4906315999979,
+      "tokens": 196608000,
+      "tokens_per_second": 124396.81455179861,
+      "steps": 12000,
+      "batch": 64
+    },
+    "ablations": [
+      {
+        "variant": "Reference: RoPE \u00b7 SwiGLU \u00b7 RMSNorm",
+        "change": {},
+        "seed": 1337,
+        "params": 8685760,
+        "val_loss": 1.5999853668983184,
+        "val_perplexity": 4.9529599466983045,
+        "tokens_per_second": 124490.99735039829,
+        "seconds": 394.8237306000083,
+        "curve": [
+          {
+            "step": 500,
+            "tokens_m": 8.192,
+            "train_loss": 2.3612899780273438,
+            "val_loss": 2.3134530282020567,
+            "val_perplexity": 10.109272057373438,
+            "minutes": 1.0926697749998615
+          },
+          {
+            "step": 1000,
+            "tokens_m": 16.384,
+            "train_loss": 1.9189521074295044,
+            "val_loss": 1.937283046245575,
+            "val_perplexity": 6.93987002700151,
+            "minutes": 2.1961885233332095
+          },
+          {
+            "step": 1500,
+            "tokens_m": 24.576,
+            "train_loss": 1.812309741973877,
+            "val_loss": 1.7830027663707733,
+            "val_perplexity": 5.9476891523958635,
+            "minutes": 3.2795259216669366
+          },
+          {
+            "step": 2000,
+            "tokens_m": 32.768,
+            "train_loss": 1.674523115158081,
+            "val_loss": 1.6821187007427216,
+            "val_perplexity": 5.3769360297554565,
+            "minutes": 4.374699833333337
+          },
+          {
+            "step": 2500,
+            "tokens_m": 40.96,
+            "train_loss": 1.6505465507507324,
+            "val_loss": 1.6193088042736052,
+            "val_perplexity": 5.049598848914735,
+            "minutes": 5.472848788333552
+          },
+          {
+            "step": 3000,
+            "tokens_m": 49.152,
+            "train_loss": 1.5953829288482666,
+            "val_loss": 1.6009312188625335,
+            "val_perplexity": 4.957646929839244,
+            "minutes": 6.580394851666642
+          }
+        ],
+        "loss_vs_reference": 0.0,
+        "beyond_seed_noise": false
+      },
+      {
+        "variant": "Reference, second seed",
+        "change": {},
+        "seed": 1338,
+        "params": 8685760,
+        "val_loss": 1.6059620917199018,
+        "val_perplexity": 4.9826510647897075,
+        "tokens_per_second": 124916.01521970241,
+        "seconds": 393.4803709000116,
+        "curve": [
+          {
+            "step": 500,
+            "tokens_m": 8.192,
+            "train_loss": 2.281768321990967,
+            "val_loss": 2.3181017088890075,
+            "val_perplexity": 10.156376236461826,
+            "minutes": 1.0953950216668698
+          },
+          {
+            "step": 1000,
+            "tokens_m": 16.384,
+            "train_loss": 1.865973949432373,
+            "val_loss": 1.942970383167267,
+            "val_perplexity": 6.979451856947148,
+            "minutes": 2.2193981699999616
+          },
+          {
+            "step": 1500,
+            "tokens_m": 24.576,
+            "train_loss": 1.839207410812378,
+            "val_loss": 1.788961522579193,
+            "val_perplexity": 5.9832357837347505,
+            "minutes": 3.334774584999832
+          },
+          {
+            "step": 2000,
+            "tokens_m": 32.768,
+            "train_loss": 1.7061028480529785,
+            "val_loss": 1.6879421055316925,
+            "val_perplexity": 5.408339453458979,
+            "minutes": 4.431590245000067
+          },
+          {
+            "step": 2500,
+            "tokens_m": 40.96,
+            "train_loss": 1.59356689453125,
+            "val_loss": 1.6247922122478484,
+            "val_perplexity": 5.0773639135285435,
+            "minutes": 5.499572361666651
+          },
+          {
+            "step": 3000,
+            "tokens_m": 49.152,
+            "train_loss": 1.540690302848816,
+            "val_loss": 1.6061415493488311,
+            "val_perplexity": 4.983545319773616,
+            "minutes": 6.558005318333259
+          }
+        ],
+        "loss_vs_reference": 0.005976724821583401,
+        "beyond_seed_noise": false
+      },
+      {
+        "variant": "Learned positions instead of RoPE",
+        "change": {
+          "position": "learned"
+        },
+        "seed": 1337,
+        "params": 8767680,
+        "val_loss": 1.6521996118651447,
+        "val_perplexity": 5.218445767475479,
+        "tokens_per_second": 148412.08816977136,
+        "seconds": 331.18596070000785,
+        "curve": [
+          {
+            "step": 500,
+            "tokens_m": 8.192,
+            "train_loss": 2.565030336380005,
+            "val_loss": 2.5149525952339173,
+            "val_perplexity": 12.366022556810757,
+            "minutes": 0.9208541483332131
+          },
+          {
+            "step": 1000,
+            "tokens_m": 16.384,
+            "train_loss": 2.033860921859741,
+            "val_loss": 2.038519937992096,
+            "val_perplexity": 7.679235039692879,
+            "minutes": 1.8438655850002155
+          },
+          {
+            "step": 1500,
+            "tokens_m": 24.576,
+            "train_loss": 1.8870532512664795,
+            "val_loss": 1.855849609375,
+            "val_perplexity": 6.3971310049094905,
+            "minutes": 2.761461845000061
+          },
+          {
+            "step": 2000,
+            "tokens_m": 32.768,
+            "train_loss": 1.7377769947052002,
+            "val_loss": 1.743234486579895,
+            "val_perplexity": 5.715801238199999,
+            "minutes": 3.6804645583334303
+          },
+          {
+            "step": 2500,
+            "tokens_m": 40.96,
+            "train_loss": 1.6955355405807495,
+            "val_loss": 1.6722940802574158,
+            "val_perplexity": 5.324368325593692,
+            "minutes": 4.598352113333143
+          },
+          {
+            "step": 3000,
+            "tokens_m": 49.152,
+            "train_loss": 1.650787115097046,
+            "val_loss": 1.6525796413421632,
+            "val_perplexity": 5.220429307569321,
+            "minutes": 5.51976520333313
+          }
+        ],
+        "loss_vs_reference": 0.05221424496682636,
+        "beyond_seed_noise": true
+      },
+      {
+        "variant": "GELU instead of SwiGLU",
+        "change": {
+          "mlp": "gelu"
+        },
+        "seed": 1337,
+        "params": 8687680,
+        "val_loss": 1.6386115698707164,
+        "val_perplexity": 5.148016886172127,
+        "tokens_per_second": 156793.95379240913,
+        "seconds": 313.48147559998324,
+        "curve": [
+          {
+            "step": 500,
+            "tokens_m": 8.192,
+            "train_loss": 2.46928071975708,
+            "val_loss": 2.404649155139923,
+            "val_perplexity": 11.074544153618179,
+            "minutes": 0.8777282216663783
+          },
+          {
+            "step": 1000,
+            "tokens_m": 16.384,
+            "train_loss": 1.9987587928771973,
+            "val_loss": 2.0038625383377076,
+            "val_perplexity": 7.4176518018395505,
+            "minutes": 1.7474556866664595
+          },
+          {
+            "step": 1500,
+            "tokens_m": 24.576,
+            "train_loss": 1.8663461208343506,
+            "val_loss": 1.831204011440277,
+            "val_perplexity": 6.241396849649729,
+            "minutes": 2.6208204433331654
+          },
+          {
+            "step": 2000,
+            "tokens_m": 32.768,
+            "train_loss": 1.7171623706817627,
+            "val_loss": 1.7236297523975372,
+            "val_perplexity": 5.604835752777058,
+            "minutes": 3.4867092899997565
+          },
+          {
+            "step": 2500,
+            "tokens_m": 40.96,
+            "train_loss": 1.6867401599884033,
+            "val_loss": 1.6576137673854827,
+            "val_perplexity": 5.246775867013938,
+            "minutes": 4.356400261666567
+          },
+          {
+            "step": 3000,
+            "tokens_m": 49.152,
+            "train_loss": 1.6354081630706787,
+            "val_loss": 1.6386421966552733,
+            "val_perplexity": 5.148174555790639,
+            "minutes": 5.224690573333161
+          }
+        ],
+        "loss_vs_reference": 0.03862620297239805,
+        "beyond_seed_noise": true
+      },
+      {
+        "variant": "LayerNorm instead of RMSNorm",
+        "change": {
+          "norm": "layer"
+        },
+        "seed": 1337,
+        "params": 8689920,
+        "val_loss": 1.6008560019602958,
+        "val_perplexity": 4.95727404501859,
+        "tokens_per_second": 147464.21834309478,
+        "seconds": 333.3147563000093,
+        "curve": [
+          {
+            "step": 500,
+            "tokens_m": 8.192,
+            "train_loss": 2.359997034072876,
+            "val_loss": 2.3044955849647524,
+            "val_perplexity": 10.019123181232565,
+            "minutes": 0.9302993366664547
+          },
+          {
+            "step": 1000,
+            "tokens_m": 16.384,
+            "train_loss": 1.9274519681930542,
+            "val_loss": 1.934131098985672,
+            "val_perplexity": 6.918030359506884,
+            "minutes": 1.8548405516664692
+          },
+          {
+            "step": 1500,
+            "tokens_m": 24.576,
+            "train_loss": 1.8123162984848022,
+            "val_loss": 1.783234417438507,
+            "val_perplexity": 5.9490671005339815,
+            "minutes": 2.7803404483332996
+          },
+          {
+            "step": 2000,
+            "tokens_m": 32.768,
+            "train_loss": 1.684380054473877,
+            "val_loss": 1.6823323249816895,
+            "val_perplexity": 5.378084796320615,
+            "minutes": 3.70529810666679
+          },
+          {
+            "step": 2500,
+            "tokens_m": 40.96,
+            "train_loss": 1.651764154434204,
+            "val_loss": 1.6195437824726104,
+            "val_perplexity": 5.05078553397505,
+            "minutes": 4.630268458333254
+          },
+          {
+            "step": 3000,
+            "tokens_m": 49.152,
+            "train_loss": 1.5973984003067017,
+            "val_loss": 1.6015021765232087,
+            "val_perplexity": 4.960478344564804,
+            "minutes": 5.555245358333438
+          }
+        ],
+        "loss_vs_reference": 0.0008706350619773762,
+        "beyond_seed_noise": false
+      },
+      {
+        "variant": "GPT-2 style: learned \u00b7 GELU \u00b7 LayerNorm",
+        "change": {
+          "position": "learned",
+          "mlp": "gelu",
+          "norm": "layer"
+        },
+        "seed": 1337,
+        "params": 8773760,
+        "val_loss": 1.685168428145291,
+        "val_perplexity": 5.393359249349542,
+        "tokens_per_second": 230921.32072129185,
+        "seconds": 212.85171869999613,
+        "curve": [
+          {
+            "step": 500,
+            "tokens_m": 8.192,
+            "train_loss": 2.6373724937438965,
+            "val_loss": 2.5972895097732542,
+            "val_perplexity": 13.427294117395649,
+            "minutes": 0.5859929483335388
+          },
+          {
+            "step": 1000,
+            "tokens_m": 16.384,
+            "train_loss": 2.0908985137939453,
+            "val_loss": 2.094823294878006,
+            "val_perplexity": 8.124005290024487,
+            "minutes": 1.1787800050001047
+          },
+          {
+            "step": 1500,
+            "tokens_m": 24.576,
+            "train_loss": 1.9337184429168701,
+            "val_loss": 1.900982677936554,
+            "val_perplexity": 6.69246775242829,
+            "minutes": 1.7692767116668013
+          },
+          {
+            "step": 2000,
+            "tokens_m": 32.768,
+            "train_loss": 1.77752685546875,
+            "val_loss": 1.7819306921958924,
+            "val_perplexity": 5.941316205201805,
+            "minutes": 2.3633979766668443
+          },
+          {
+            "step": 2500,
+            "tokens_m": 40.96,
+            "train_loss": 1.727013349533081,
+            "val_loss": 1.705872541666031,
+            "val_perplexity": 5.506187950218376,
+            "minutes": 2.955420378333656
+          },
+          {
+            "step": 3000,
+            "tokens_m": 49.152,
+            "train_loss": 1.6812357902526855,
+            "val_loss": 1.6850516700744629,
+            "val_perplexity": 5.392729567889217,
+            "minutes": 3.5475280049999127
+          }
+        ],
+        "loss_vs_reference": 0.08518306124697261,
+        "beyond_seed_noise": true
+      }
+    ],
+    "seed_gap": 0.005976724821583401,
+    "ablation_steps": 3000,
+    "checks": {
+      "causal_max_logit_change": 0.0,
+      "cache_identical": 3,
+      "cache_prompts": 3,
+      "timings": [
+        {
+          "cache": true,
+          "tokens": 200,
+          "ms_per_token": 4.705417999939527
+        },
+        {
+          "cache": false,
+          "tokens": 200,
+          "ms_per_token": 4.215459999977611
+        }
+      ]
+    },
+    "samples": [
+      {
+        "prompt": "Once upon a time, there was a little girl named Lily. She loved",
+        "continuation": " to play outside in the sun. One day, she saw a big, smelly cat near her house. The cat had a big, soft bed on its head.\nLily wanted to give the cat some food from her favorite food. So, she put on her shoes and went outside to find the cat. She walked around the neighborhood, asking people if they knew who the cat belonged to.\nAfter looking at all the animals, Lily found the cat. The cat was so happy! It jumped up and down and made a funny sound. Lily felt good because she helped the cat find its way home. From that day on, the cat and Lily became best friends, and they played together every day."
+      },
+      {
+        "prompt": "Tom and his dog went to the park. Suddenly,",
+        "continuation": " they saw a big tree with lots of leaves. The dog wanted to play with the leaves too. Tom was not sure if he could trust the dog. He thought of a plan to make the dog happy.\nTom said, \"Bird, can you help me pick some leaves for my dog?\" The bird said, \"Yes, Tom, I can help you.\" So, the bird picked many leaves from the tree and put them in a big bag. Tom was very happy to see all the leaves.\nBut then, something unexpected happened. The wind blew so hard that it lifted Tom up into the sky! He was scared but also excited. He flew higher and higher until he was back on the ground. Tom was so happy and thanked the bird. From that day on, Tom"
+      },
+      {
+        "prompt": "The old tree in the garden was sad because",
+        "continuation": " it had no one to play with. The herb wanted to be happy like the other plants and plants in the garden.\nOne day, a small bug came to the garden. The bug saw the herb and said, \"Why are you so sad, Mr. herb?\" The herb told the bug about its worry and asked for help. The bug said, \"I can help you.\"\nThe bug took the herb and put it on a big leaf. Suddenly, the wind blew very hard. The herb began to grow bigger and bigger! It filled the whole garden with the bug's big leaves. Now, the herb was not a problem anymore. It was now a big pile of leaves!\nThe herb thanked the bug and said, \"You are a good friend. I am not worried"
+      },
+      {
+        "prompt": "One day, a small bird found a shiny key.",
+        "continuation": " The bird was very excited and wanted to show it to its friend, the wise old owl.\nThe bird took the key and went to find his friend. He found his friend, the squirrel. The squirrel saw the shiny key and said, \"Wow! That is a nice key!\" The bird was happy to have the key back. They played together all day long, and the bird learned that sharing is important."
+      },
+      {
+        "prompt": "Mia wanted to bake a cake for her mom, but",
+        "continuation": " she was too shy. She thought about what she could do. Mia had an idea! She would help her mom bake a cake. So, Mia went to the kitchen and got flour, sugar, and eggs.\nMia's mom came into the kitchen and saw the mix. She knew how to bake a cake. Her mom smiled and helped Mia bake the cake. They put in flour, sugar, and eggs. Mia was happy she could help her mom bake the cake. They made the cake together and had fun."
+      }
+    ],
+    "prompts": [
+      "Once upon a time, there was a little girl named Lily. She loved",
+      "Tom and his dog went to the park. Suddenly,",
+      "The old tree in the garden was sad because",
+      "One day, a small bird found a shiny key.",
+      "Mia wanted to bake a cake for her mom, but"
+    ],
+    "hardware": "NVIDIA GeForce RTX 5070 Laptop GPU",
+    "torch": "2.11.0+cu128"
+  },
+  "best_model": "NanoLM, RoPE \u00b7 SwiGLU \u00b7 RMSNorm",
+  "best_score": 4.028605266894854,
+  "lift_over_baseline": null
+}

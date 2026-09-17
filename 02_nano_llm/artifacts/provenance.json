@@ -1,0 +1,15 @@
+{
+  "slug": "tinystories-v2",
+  "name": "TinyStories V2 (GPT-4 stories), training split",
+  "source_url": "https://huggingface.co/datasets/roneneldan/TinyStories/resolve/main/TinyStoriesV2-GPT4-train.txt",
+  "license": "Community Data License Agreement \u2013 Sharing, Version 1.0 (CDLA-Sharing-1.0)",
+  "citation": "Eldan, R., & Li, Y. (2023). TinyStories: How small can language models be and still speak coherent English? arXiv:2305.07759.",
+  "retrieved_at": "2026-09-17T15:48:34Z",
+  "sha256": "6418d412de72888f52b5142c761ac21a582f7d1166f0bfbdb5f03ccfdec90443",
+  "n_rows": 0,
+  "n_cols": 0,
+  "bytes_on_disk": 2227753162,
+  "synthetic": false,
+  "notes": "Stories separated by <|endoftext|> lines.",
+  "extra": {}
+}

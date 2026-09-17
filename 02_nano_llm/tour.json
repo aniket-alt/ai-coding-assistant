@@ -1,0 +1,14 @@
+{
+  "api_port": 8002,
+  "web_port": 5102,
+  "views": [
+    {"tab": "Story studio", "file": "01_story_studio", "expect": "ms / token"},
+    {"tab": "Training & baselines", "file": "02_training_baselines", "expect": "Keeping the score honest"},
+    {"tab": "Ablations", "file": "03_ablations", "expect": "Beyond seed noise?"},
+    {"tab": "Attention", "file": "04_attention", "expect": "Cells above the diagonal"},
+    {"tab": "Tokenizer", "file": "05_tokenizer", "expect": "Hover a token for its id"},
+    {"tab": "Checks & samples", "file": "06_checks_samples", "expect": "Fixed-seed samples"},
+    {"tab": "CRISP-DM", "file": "07_crispdm_walkthrough", "expect": "Phase gate"},
+    {"tab": "Audit", "file": "08_leakage_audit", "expect": "Assertions executed during training"}
+  ]
+}
