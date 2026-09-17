@@ -2,6 +2,7 @@
 __pycache__/
 *.py[cod]
 .venv/
+.venv-automl/
 venv/
 venv311/
 *.egg-info/
@@ -39,3 +40,10 @@ desktop.ini
 
 # Run logs
 *.log
+
+# AutoGluon writes hundreds of model files; its results are kept in autogluon.json
+**/artifacts/autogluon_model/
+**/artifacts/work/
+
+# Task workspace database, created and seeded on first start
+00_task_workspace/data/

@@ -102,7 +102,9 @@ def main() -> int:
                     device_scale_factor=2,
                     color_scheme=theme,
                 )
-                page.goto(f"http://127.0.0.1:{web_port}/", wait_until="networkidle")
+                # A page holding a live event stream never goes network-idle, so its
+                # tour can ask to wait only for load; the proof text still gates each view.
+                page.goto(f"http://127.0.0.1:{web_port}/", wait_until=tour.get("wait_until", "networkidle"))
 
                 for view in tour["views"]:
                     name, proof = view["file"], view["expect"]

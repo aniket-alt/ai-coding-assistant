@@ -122,8 +122,9 @@ export function ModelLeaderboard({
           captionSide: 'top', textAlign: 'left', color: 'var(--text-secondary)',
           fontSize: 'var(--text-xs)', paddingBottom: 'var(--space-2)',
         }}>
-          {run.models.length} evaluated on {run.split?.n_test?.toLocaleString() ?? '—'} held-out
-          rows{nBaseline > 0 && `, including ${nBaseline} baseline${nBaseline > 1 ? 's' : ''}`}
+          {run.models.length} evaluated
+          {run.split?.n_test ? ` on ${run.split.n_test.toLocaleString()} held-out rows` : ''}
+          {nBaseline > 0 && `, including ${nBaseline} baseline${nBaseline > 1 ? 's' : ''}`}
           {' · sorted by '}<strong>{sortBy}</strong>
           {sortBy === run.primary_metric &&
             ` (${run.higher_is_better ? 'higher' : 'lower'} is better)`}

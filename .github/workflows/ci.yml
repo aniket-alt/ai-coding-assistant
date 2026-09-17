@@ -30,9 +30,13 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: "22"
+          node-version: "24"
       - name: Install workspaces
         run: npm ci
+      - name: FlowForge engine tests (Node runs the TypeScript directly)
+        run: node --test "09_flowforge_dag/engine/test/*.test.ts"
+      - name: Type-check FlowForge engine, including compile-time tests
+        run: npx tsc --noEmit -p 09_flowforge_dag/engine
       - name: Type-check @dsfs/ui
         run: npx tsc --noEmit -p platform/web
       - name: Type-check project clients

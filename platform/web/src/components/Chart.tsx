@@ -67,6 +67,13 @@ export interface ChartProps {
   /** Offer the table view toggle. Default true; required by the relief rule. */
   tableView?: boolean;
   caption?: string;
+  /**
+   * Line charts only: start the y-axis at zero (default) or fit it to the data.
+   * Bars always start at zero, because their length is the value.
+   */
+  zeroBaseline?: boolean;
+  /** Line charts only: a logarithmic y-axis, for values spanning orders of magnitude. Values must be positive. */
+  logScale?: boolean;
   /** Horizontal bars, for long category names. */
   horizontal?: boolean;
   /** Highlight one category in a bar chart (e.g. the winning model). */
@@ -94,6 +101,8 @@ export function Chart({
   tableView = true,
   caption,
   horizontal = false,
+  zeroBaseline = true,
+  logScale = false,
   highlightKey,
   emptyMessage = 'No data to plot.',
 }: ChartProps) {
@@ -161,6 +170,10 @@ export function Chart({
 
   function body() {
     if (kind === 'bar') {
+      // A bar's length is its value, so the value axis always includes zero,
+      // even when every value is negative (or every value is positive).
+      const barDomain: [(min: number) => number, (max: number) => number] =
+        [(min) => Math.min(0, min), (max) => Math.max(0, max)];
       return (
         <BarChart data={data} layout={horizontal ? 'vertical' : 'horizontal'}
                   margin={{ top: 8, right: 24,
@@ -168,14 +181,14 @@ export function Chart({
           {grid}
           {horizontal ? (
             <>
-              <XAxis type="number" {...axisProps} tickFormatter={yFormat as never} />
+              <XAxis type="number" {...axisProps} tickFormatter={yFormat as never} domain={barDomain} />
               <YAxis type="category" dataKey={x} width={140} {...axisProps} />
             </>
           ) : (
             <>
               <XAxis dataKey={x} {...axisProps}
                      tickFormatter={xFormat as never} label={xAxisLabel} />
-              <YAxis {...axisProps} tickFormatter={yFormat as never} />
+              <YAxis {...axisProps} tickFormatter={yFormat as never} domain={barDomain} />
             </>
           )}
           {tooltip}
@@ -248,7 +261,9 @@ export function Chart({
         {grid}
         <XAxis dataKey={x} {...axisProps} tickFormatter={xFormat as never}
                label={xAxisLabel} />
-        <YAxis {...axisProps} tickFormatter={yFormat as never} />
+        <YAxis {...axisProps} tickFormatter={yFormat as never}
+               scale={logScale ? 'log' : 'auto'} allowDataOverflow={false}
+               domain={logScale ? ['auto', 'auto'] : zeroBaseline ? [0, 'auto'] : ['auto', 'auto']} />
         {tooltip}
         {legend}
         {series.map((s, i) => (

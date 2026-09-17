@@ -5,7 +5,8 @@
   "description": "16 full-stack data science applications built with an AI coding assistant",
   "workspaces": [
     "platform/web",
-    "*/client"
+    "*/client",
+    "09_flowforge_dag/engine"
   ],
   "scripts": {
     "audit:all": "python scripts/run_audit.py",
