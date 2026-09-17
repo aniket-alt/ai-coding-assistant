@@ -1,0 +1,13 @@
+{
+  "api_port": 8008,
+  "web_port": 5108,
+  "views": [
+    {"tab": "1 · Probability", "file": "01_probability", "expect": "The strongest evidence it learned"},
+    {"tab": "2 · Evaluation", "file": "02_evaluation", "expect": "What duplicated messages do to a split"},
+    {"tab": "3 · Gradient descent", "file": "03_gradient_descent", "expect": "Why scaling matters here"},
+    {"tab": "4 · Backpropagation", "file": "04_backpropagation", "expect": "Training and checking the network"},
+    {"tab": "5 · Quiz", "file": "05_quiz", "expect": "Check your understanding"},
+    {"tab": "CRISP-DM", "file": "06_crispdm_walkthrough", "expect": "Phase gate"},
+    {"tab": "Audit", "file": "07_leakage_audit", "expect": "Assertions executed during training"}
+  ]
+}

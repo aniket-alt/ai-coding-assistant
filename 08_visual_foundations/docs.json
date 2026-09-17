@@ -1,0 +1,41 @@
+{
+  "entity": "Spam filter",
+  "temporal_modules": [],
+  "temporal_modules_reason": "Both datasets are used as unordered collections: SMS messages carry no timestamps, and the power-plant lesson is about optimisation, not forecasting.",
+  "metric_columns": [
+    {"key": "average_precision", "label": "Average precision", "fmt": "f4"},
+    {"key": "f1", "label": "F1 at 0.5", "fmt": "f3"},
+    {"key": "precision", "label": "Precision", "fmt": "pct"},
+    {"key": "recall", "label": "Recall", "fmt": "pct"}
+  ],
+  "reproduce": [
+    "python ml/train.py",
+    "python -m uvicorn main:app --app-dir server --port 8008",
+    "npm run dev -w 08_visual_foundations/client"
+  ],
+  "non_goals": [
+    "A production spam filter. The SMS collection is from 2011 and small, and spam has changed since.",
+    "A forecast of the power plant's output. The regression exists to teach optimisation, and its rows are split at random."
+  ],
+  "risks": [
+    "Duplicates are detected by exact text only; near-copies that differ by a word or a number remain on both sides of the split.",
+    "The duplicate-leak experiment uses one model, Naive Bayes, over twenty splits; other models may be affected differently.",
+    "The stable learning rate is exact for batch gradient descent on squared error only; stochastic or adaptive optimisers behave differently.",
+    "The neural network is deliberately tiny, so its comparison with linear regression says little about larger networks."
+  ],
+  "lessons": [
+    "Writing an algorithm out and matching it against a trusted library to many decimal places is a cheap, strong test.",
+    "Removing duplicated messages before splitting changed the measured scores only slightly on this data, but it is the only way to know that.",
+    "Feature scaling decides whether gradient descent is practical: it moved the largest stable learning rate by several orders of magnitude.",
+    "The learning-rate limit computed from the largest eigenvalue held in practice: gradient descent converged at 99% of it and diverged at 101%, with and without scaling.",
+    "Finite differences verify backpropagation without trusting any framework."
+  ],
+  "references": [
+    "Almeida, T. A., Gómez Hidalgo, J. M., & Yamakami, A. (2011). Contributions to the study of SMS spam filtering. Proceedings of DocEng 2011.",
+    "Tüfekci, P. (2014). Prediction of full load electrical power output of a base load operated combined cycle power plant using machine learning methods. International Journal of Electrical Power & Energy Systems, 60, 126–140.",
+    "McCallum, A., & Nigam, K. (1998). A comparison of event models for Naive Bayes text classification. AAAI-98 Workshop on Learning for Text Categorization.",
+    "Rumelhart, D. E., Hinton, G. E., & Williams, R. J. (1986). Learning representations by back-propagating errors. Nature, 323, 533–536.",
+    "Goodfellow, I., Bengio, Y., & Courville, A. (2016). Deep Learning, chapters 4 and 6. MIT Press.",
+    "Davis, J., & Goadrich, M. (2006). The relationship between precision-recall and ROC curves. Proceedings of ICML 2006."
+  ]
+}

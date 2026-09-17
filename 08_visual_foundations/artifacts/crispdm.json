@@ -1,0 +1,145 @@
+{
+  "project_slug": "08_visual_foundations",
+  "project_title": "DS Visual Foundations",
+  "business_question": "Can the foundations of machine learning -- probability, evaluation, gradient descent and backpropagation -- be taught on real data, with every mechanism checked?",
+  "phases": [
+    {
+      "name": "business_understanding",
+      "title": "1. Business Understanding",
+      "objective": "Teach four foundations interactively, each on a real dataset and verified against a reference.",
+      "narrative": "Foundations are usually taught on toy numbers, so the lessons never meet the problems real data brings: duplicated records, features on wildly different scales, and thresholds that trade one error for another. Each lesson here runs on a real dataset, and each algorithm is written out and then checked against a trusted implementation, so what is taught is shown to be correct.",
+      "findings": [
+        {
+          "label": "Lessons",
+          "value": "4",
+          "detail": ""
+        },
+        {
+          "label": "Datasets",
+          "value": "SMS Spam Collection, Combined Cycle Power Plant",
+          "detail": ""
+        }
+      ],
+      "figures": [],
+      "code_refs": [
+        "ml/lessons.py"
+      ],
+      "gate_passed": true,
+      "gate_notes": "Four lessons, two datasets and three reference checks fixed before building."
+    },
+    {
+      "name": "data_understanding",
+      "title": "2. Data Understanding",
+      "objective": "Find what in each dataset would mislead a naive lesson.",
+      "narrative": "**SMS.** 5,574 messages, 13.4% spam. 403 are exact copies of an earlier message, and copies are disproportionately spam (26% of duplicated messages, against 13.4% overall): the same promotion sent to many people.\n\n**Power plant.** 9,568 hourly readings. Ambient pressure averages 1,013 mbar while temperature averages 19.7 \u00b0C, so unscaled features differ by two orders of magnitude.",
+      "findings": [
+        {
+          "label": "Duplicate messages",
+          "value": "403",
+          "detail": ""
+        },
+        {
+          "label": "Spam share",
+          "value": "13.4%",
+          "detail": ""
+        }
+      ],
+      "figures": [],
+      "code_refs": [
+        "ml/data.py:load_sms",
+        "ml/data.py:load_power"
+      ],
+      "gate_passed": true,
+      "gate_notes": "Duplicates counted; feature scales recorded."
+    },
+    {
+      "name": "data_preparation",
+      "title": "3. Data Preparation",
+      "objective": "Split so that no message is tested on after being trained on.",
+      "narrative": "Messages are deduplicated before an 80/20 stratified split, leaving 4,136 to train and 1,035 to test, with no text in both.\n\nMeasured over 20 splits: when duplicates are kept, 10.5% of test messages already appear in training, and Naive Bayes recall is 92.8% against 91.7% when messages are deduplicated first.",
+      "findings": [
+        {
+          "label": "Test messages seen in training, duplicates kept",
+          "value": "10.5%",
+          "detail": ""
+        }
+      ],
+      "figures": [],
+      "code_refs": [
+        "ml/train.py:main"
+      ],
+      "gate_passed": true,
+      "gate_notes": "Executed assertion: no message text in both splits."
+    },
+    {
+      "name": "modeling",
+      "title": "4. Modeling",
+      "objective": "Write out each algorithm and check it against a trusted implementation.",
+      "narrative": "**Naive Bayes** is written out with add-one smoothing; its spam probabilities match scikit-learn's to within 2e-14. **Gradient descent** on scaled power-plant features reaches the least-squares coefficients to a relative difference of 1e-16. **Backpropagation** in a 4-8-1 tanh network matches finite differences to 1e-07 over all 49 parameters.",
+      "findings": [
+        {
+          "label": "Naive Bayes vs scikit-learn",
+          "value": "2e-14",
+          "detail": ""
+        },
+        {
+          "label": "Backprop vs finite differences",
+          "value": "1e-07",
+          "detail": ""
+        }
+      ],
+      "figures": [],
+      "code_refs": [
+        "ml/lessons.py:NaiveBayes",
+        "ml/lessons.py:gradient_descent",
+        "ml/lessons.py:TinyMLP.backward"
+      ],
+      "gate_passed": true,
+      "gate_notes": "Three executed reference checks."
+    },
+    {
+      "name": "evaluation",
+      "title": "5. Evaluation",
+      "objective": "Report what each lesson's analysis actually found.",
+      "narrative": "**Spam.** Logistic regression, TF-IDF has the highest average precision, 0.973; Naive Bayes reaches 0.965 with recall 91.6% at a 0.5 threshold.\n\n**Scaling.** Gradient descent is stable only below a learning rate of 0.410 on scaled features and 9.7e-07 on raw ones. After 500 steps, scaled features at learning rate 0.1 reach a training MSE of 20.89; raw features, at just under their own limit, reach 177.8. The exact minimum is 20.89.\n\n**Networks.** The trained network's test RMSE is 4.13 MW against 4.50 MW for linear least squares and 17.03 MW for predicting the mean.",
+      "findings": [
+        {
+          "label": "Best average precision",
+          "value": "0.973",
+          "detail": ""
+        },
+        {
+          "label": "Stable learning rate, scaled / raw",
+          "value": "0.410 / 9.7e-07",
+          "detail": ""
+        }
+      ],
+      "figures": [],
+      "code_refs": [
+        "ml/train.py:scores"
+      ],
+      "gate_passed": true,
+      "gate_notes": "Baselines beside every result."
+    },
+    {
+      "name": "deployment",
+      "title": "6. Deployment",
+      "objective": "Serve the lessons live from the checked implementations.",
+      "narrative": "The API loads the trained Naive Bayes and network and imports ml/lessons.py, so classifying a typed message, moving a threshold, rerunning gradient descent at a new learning rate, or stepping through backpropagation all run the checked code.",
+      "findings": [
+        {
+          "label": "Serving port",
+          "value": "8,008",
+          "detail": ""
+        }
+      ],
+      "figures": [],
+      "code_refs": [
+        "server/inference.py",
+        "server/main.py"
+      ],
+      "gate_passed": true,
+      "gate_notes": "Interactive views call the same functions the checks covered."
+    }
+  ]
+}

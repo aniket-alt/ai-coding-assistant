@@ -1,0 +1,15 @@
+{
+  "slug": "uci-sms-spam",
+  "name": "SMS Spam Collection (UCI)",
+  "source_url": "https://archive.ics.uci.edu/static/public/228/sms+spam+collection.zip",
+  "license": "Creative Commons Attribution 4.0 (CC BY 4.0)",
+  "citation": "Almeida, T. A., G\u00f3mez Hidalgo, J. M., & Yamakami, A. (2011). Contributions to the study of SMS spam filtering: New collection and results. Proceedings of DocEng 2011, 259-262.",
+  "retrieved_at": "2026-09-17T16:12:39Z",
+  "sha256": "1587ea43e58e82b14ff1f5425c88e17f8496bfcdb67a583dbff9eefaf9963ce3",
+  "n_rows": 5574,
+  "n_cols": 3,
+  "bytes_on_disk": 203415,
+  "synthetic": false,
+  "notes": "Tab-separated label and message.",
+  "extra": {}
+}
