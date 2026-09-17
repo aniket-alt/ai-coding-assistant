@@ -1,0 +1,178 @@
+{
+  "project_slug": "10_crispdm_curriculum",
+  "project_title": "CRISP-DM Curriculum",
+  "business_question": "Who earns more than $50,000 a year in the 1994 US Census, and can a model predict it without treating men and women unequally?",
+  "phases": [
+    {
+      "name": "business_understanding",
+      "title": "1. Business Understanding",
+      "objective": "Teach every CRISP-DM phase on one real dataset, with a fairness question at its centre.",
+      "narrative": "This project is a course. Each lesson is a real analysis of the Adult census data, and each quiz question is answered from that analysis's own output, so what is taught cannot drift from what the data shows.\n\nThe dataset earns its place for one reason beyond familiarity. It records sex and race next to variables that act as stand-ins for them, which makes it a clean demonstration of a mistake that is still common: assuming a model is fair because the protected attribute was left out of its inputs.",
+      "findings": [
+        {
+          "label": "Target",
+          "value": "income > $50,000",
+          "detail": ""
+        },
+        {
+          "label": "Fairness criteria",
+          "value": "four-fifths rule, equal opportunity",
+          "detail": ""
+        },
+        {
+          "label": "Lessons",
+          "value": "7",
+          "detail": ""
+        }
+      ],
+      "figures": [],
+      "code_refs": [
+        "ml/train.py:main"
+      ],
+      "gate_passed": true,
+      "gate_notes": "Prediction target, fairness criteria and lessons fixed before modelling."
+    },
+    {
+      "name": "data_understanding",
+      "title": "2. Data Understanding",
+      "objective": "Establish the base rates, gaps and quirks before any model.",
+      "narrative": "48,842 people; **23.9%** earn above $50,000. The rate is **30.4%** for men and **10.9%** for women \u2014 a gap already present in the data, which any model trained on it will learn unless something stops it.\n\nThree quirks shape preparation. Workclass, occupation and native country are missing for up to 5.8% of rows, marked `?` in the source. Capital gain is top-coded: 244 people report exactly $99,999. And `education` is a text copy of `education-num` \u2014 every education level maps to exactly one number, so only the ordinal version is modelled.",
+      "findings": [
+        {
+          "label": "People",
+          "value": "48,842",
+          "detail": ""
+        },
+        {
+          "label": "Earn > $50K",
+          "value": "23.9%",
+          "detail": ""
+        },
+        {
+          "label": "Men / women",
+          "value": "30.4% / 10.9%",
+          "detail": ""
+        },
+        {
+          "label": "Top-coded capital gains",
+          "value": "244",
+          "detail": ""
+        }
+      ],
+      "figures": [],
+      "code_refs": [
+        "ml/data.py:load"
+      ],
+      "gate_passed": true,
+      "gate_notes": "Base rates, missingness and duplicated columns documented."
+    },
+    {
+      "name": "data_preparation",
+      "title": "3. Data Preparation",
+      "objective": "Prepare features inside pipelines so nothing is learned from the test set.",
+      "narrative": "The census is a single cross-section with no time order, so a stratified random split is appropriate: 36,631 people for training and 12,211 for testing, each with the same 23.9% base rate.\n\nImputation, scaling and one-hot encoding all live inside a `ColumnTransformer` within each model's pipeline. They are fitted on the training rows alone, and rare categories (under 20 people) are pooled so the encoder does not memorise individuals.",
+      "findings": [
+        {
+          "label": "Training people",
+          "value": "36,631",
+          "detail": ""
+        },
+        {
+          "label": "Test people",
+          "value": "12,211",
+          "detail": ""
+        }
+      ],
+      "figures": [],
+      "code_refs": [
+        "ml/train.py:preprocessor"
+      ],
+      "gate_passed": true,
+      "gate_notes": "Disjoint split and target-correlation check executed."
+    },
+    {
+      "name": "modeling",
+      "title": "4. Modeling",
+      "objective": "Fit models with and without sex and race, and find what still carries them.",
+      "narrative": "Four real models were trained: logistic regression and LightGBM, each with and without sex and race, beside a majority-class baseline. Before the models, two unsupervised lessons run on the numeric columns.\n\n**Clustering.** k-means with four clusters (silhouette 0.252) separates people largely by age, hours and capital income; the highest-income cluster reaches 62.2% above $50K and the lowest 5.5%.\n\n**Outliers.** An isolation forest flags 367 people as the most unusual 1%. **83%** of them have a capital gain or loss, against 12% of everyone else, and 28% are 70 or older against 2%. Both capital columns are zero for almost everyone, so any non-zero value looks unusual: the detector is mostly reporting how those columns are distributed. Whether that makes someone interesting is a judgement the algorithm cannot make.\n\n**Proxies.** A model given only the features left after removing sex and race predicts a person's sex with an ROC-AUC of **0.935**. Relationship status alone nearly does it: 100% of 'Husband' are men, 56% of 'Own-child' are men.",
+      "findings": [
+        {
+          "label": "Best ROC-AUC",
+          "value": "0.9300",
+          "detail": ""
+        },
+        {
+          "label": "Sex recoverable from other features",
+          "value": "AUC 0.935",
+          "detail": ""
+        },
+        {
+          "label": "Cluster silhouette",
+          "value": "0.252",
+          "detail": ""
+        },
+        {
+          "label": "Outliers with capital gain or loss",
+          "value": "83%",
+          "detail": ""
+        }
+      ],
+      "figures": [],
+      "code_refs": [
+        "ml/train.py:fairness",
+        "ml/train.py:enter"
+      ],
+      "gate_passed": true,
+      "gate_notes": "5 classifiers, including two fairness-through-unawareness variants."
+    },
+    {
+      "name": "evaluation",
+      "title": "5. Evaluation",
+      "objective": "Judge the models on accuracy and on how they treat men and women.",
+      "narrative": "**LightGBM** is the most accurate, with ROC-AUC 0.9300. At a 0.5 threshold, LightGBM predicts high income for 25.7% of men and 8.3% of women: a disparate impact ratio of **0.32**, far below the four-fifths threshold of 0.8.\n\n**Removing sex and race does almost nothing.** The unaware LightGBM's ratio is **0.34**, and its equal-opportunity gap \u2014 the difference in how often truly high-earning men and women are identified \u2014 moves from +0.100 to +0.077. The information was never only in the `sex` column.\n\nTwo more lessons check themselves on held-out people. The strongest association rules for high income are recomputed on the test set, and locality-sensitive hashing finds 90% of each person's ten most similar people while scanning 7.7% of the index.",
+      "findings": [
+        {
+          "label": "Disparate impact, with sex",
+          "value": "0.32",
+          "detail": ""
+        },
+        {
+          "label": "Disparate impact, without sex",
+          "value": "0.34",
+          "detail": ""
+        },
+        {
+          "label": "LSH recall@10",
+          "value": "90%",
+          "detail": ""
+        }
+      ],
+      "figures": [],
+      "code_refs": [
+        "ml/train.py:fairness",
+        "ml/train.py:RandomHyperplaneLSH"
+      ],
+      "gate_passed": true,
+      "gate_notes": "Fairness reported beside accuracy; unawareness shown not to remove disparity."
+    },
+    {
+      "name": "deployment",
+      "title": "6. Deployment",
+      "objective": "Publish the course: lessons, interactive results and quizzes answered by the data.",
+      "narrative": "The course is served by endpoints for each lesson \u2014 `/api/eda`, `/api/unsupervised`, `/api/fairness`, `/api/rules`, `/api/lsh` \u2014 and `/api/quiz`, whose correct answers are computed from this run.",
+      "findings": [
+        {
+          "label": "Serving port",
+          "value": "8,010",
+          "detail": ""
+        }
+      ],
+      "figures": [],
+      "code_refs": [
+        "server/main.py"
+      ],
+      "gate_passed": true,
+      "gate_notes": "Every lesson and quiz answer served from the run record."
+    }
+  ]
+}

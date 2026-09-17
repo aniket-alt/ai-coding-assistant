@@ -1,0 +1,42 @@
+{
+  "entity": "Model",
+  "temporal_modules": [],
+  "temporal_modules_reason": "The Adult census is a single cross-sectional survey with no time order, so a stratified random split is the correct design.",
+  "metric_columns": [
+    {"key": "roc_auc", "label": "ROC AUC", "fmt": "f4"},
+    {"key": "balanced_accuracy", "label": "Balanced accuracy", "fmt": "f4"},
+    {"key": "disparate_impact_sex", "label": "Disparate impact (sex)", "fmt": "f4"},
+    {"key": "equal_opportunity_gap_sex", "label": "Equal-opportunity gap", "fmt": "f4"}
+  ],
+  "reproduce": [
+    "python ml/train.py",
+    "python -m uvicorn main:app --app-dir server --port 8010",
+    "npm run dev -w 10_crispdm_curriculum/client"
+  ],
+  "non_goals": [
+    "A fairness intervention. The course measures what removing sensitive attributes does; it does not reweight, post-process or claim to fix the gap.",
+    "A statement about incomes today. The census is from 1994 and its income threshold is not inflation-adjusted."
+  ],
+  "risks": [
+    "Sex is recorded as a binary field, and race in five coarse groups, as the 1994 census defined them.",
+    "Fairness metrics are computed at a single 0.5 threshold; a different operating point changes them.",
+    "Capital gains are top-coded at 99,999, so the largest incomes are indistinguishable.",
+    "Association rules and clusters describe this sample, and the rules were rechecked on held-out people but not tested for significance."
+  ],
+  "lessons": [
+    "Leaving sex and race out of the inputs barely changed disparate impact, because the remaining features predict sex almost perfectly.",
+    "Relationship status alone largely encodes sex in this data, which makes it a proxy any model can use.",
+    "Accuracy flatters a skewed problem: predicting that nobody earns above $50K is right about three times in four.",
+    "An outlier detector finds what is unusual, not what is wrong; here that was mostly people with any capital gain or loss.",
+    "Approximate similarity search keeps most true neighbours while scanning a small fraction of the index."
+  ],
+  "references": [
+    "Kohavi, R. (1996). Scaling up the accuracy of naive-Bayes classifiers: A decision-tree hybrid. Proceedings of KDD-96, 202–207.",
+    "Chapman, P. et al. (2000). CRISP-DM 1.0: Step-by-step data mining guide. SPSS.",
+    "Hardt, M., Price, E., & Srebro, N. (2016). Equality of opportunity in supervised learning. Advances in Neural Information Processing Systems 29.",
+    "Barocas, S., Hardt, M., & Narayanan, A. (2023). Fairness and Machine Learning: Limitations and Opportunities. MIT Press.",
+    "Liu, F. T., Ting, K. M., & Zhou, Z.-H. (2008). Isolation forest. Proceedings of ICDM 2008, 413–422.",
+    "Charikar, M. S. (2002). Similarity estimation techniques from rounding algorithms. Proceedings of STOC 2002, 380–388.",
+    "Han, J., Pei, J., & Yin, Y. (2000). Mining frequent patterns without candidate generation. Proceedings of SIGMOD 2000, 1–12."
+  ]
+}

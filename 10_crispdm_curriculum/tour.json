@@ -1,0 +1,14 @@
+{
+  "api_port": 8010,
+  "web_port": 5110,
+  "views": [
+    {"tab": "1 · CRISP-DM", "file": "01_crispdm_walkthrough", "expect": "Phase gate"},
+    {"tab": "2 · Exploration", "file": "02_exploration", "expect": "The gap before any model"},
+    {"tab": "3 · Clusters & outliers", "file": "03_clusters_outliers", "expect": "What the outlier detector found"},
+    {"tab": "4 · Models & fairness", "file": "04_models_fairness", "expect": "Removing sex from the inputs"},
+    {"tab": "5 · Rules", "file": "05_association_rules", "expect": "Test confidence"},
+    {"tab": "6 · Similarity search", "file": "06_similarity_search", "expect": "Recall @ 10"},
+    {"tab": "7 · Quiz", "file": "07_quiz", "expect": "Check your understanding"},
+    {"tab": "Audit", "file": "08_leakage_audit", "expect": "Assertions executed during training"}
+  ]
+}
