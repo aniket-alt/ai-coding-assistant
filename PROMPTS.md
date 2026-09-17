@@ -367,6 +367,50 @@ documentation and type-check suite before pushing.
 
 ---
 
+## Session 6 — projects 07, 08, 09, 02 and 00
+
+### 24. Next batch
+
+```text
+go ahead
+```
+
+**Produced:** five projects, the shared chart fixes they exposed, and CI steps for
+a TypeScript engine. Each project's claims were checked against its artifacts
+before its README was generated.
+
+- **07 AutoML Stacking.** Trained on bank calls before 2010 and scored on 2010,
+  a tuned LightGBM beat both AutoGluon and a hand-built stacked ensemble, and
+  every method overestimated itself in its own validation. AutoGluon runs in a
+  separate environment because installing it would have downgraded pandas for
+  every other project.
+  [`b0fc813`](https://github.com/aniket-alt/ai-coding-assistant/commit/b0fc813)
+- **08 DS Visual Foundations.** Four lessons on real data, each algorithm checked
+  against a reference. The duplicate-message leak turned out small, and the
+  README reports it as small.
+  [`32a840b`](https://github.com/aniket-alt/ai-coding-assistant/commit/32a840b)
+- **09 FlowForge DAG Engine.** A benchmark showed the first executor was
+  quadratic; the faster rewrite was checked against the original, and that
+  check found a real bug in the rewrite. Mutation testing confirmed the tests
+  catch ten planted bugs.
+  [`299e1aa`](https://github.com/aniket-alt/ai-coding-assistant/commit/299e1aa)
+- **02 Nano LLM Transformer.** Perplexity 4.03 against 34.0 for a bigram;
+  ablations judged against a second seed. The KV cache was correct but not
+  faster at this context length, which the README states.
+  [`994214f`](https://github.com/aniket-alt/ai-coding-assistant/commit/994214f)
+- **00 Task Workspace.** Live sync, conflicting edits and quick-entry parsing,
+  all verified against the running server. A generated round-trip test caught
+  a mistake in its own expectations.
+  [`0606b22`](https://github.com/aniket-alt/ai-coding-assistant/commit/0606b22)
+
+Claims corrected before publishing: a success rate quoted from memory
+(9.4%, measured 9.1%), an assumption that TinyStories repeats itself (it
+barely does), "fixed before looking at the data" for a rule chosen after
+seeing a sample, and two statements in documentation that the results did not
+support.
+
+---
+
 ## What made prompting work
 
 **Review before build.** Prompts 12 and 13 asked for the design before the code

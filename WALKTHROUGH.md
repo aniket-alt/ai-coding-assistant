@@ -19,11 +19,11 @@ Shared by every project. A project imports it instead of re-implementing data so
 | [`platform/dsfs/provenance.py`](./platform/dsfs/provenance.py) | 100 | Thesis of this portfolio: every number in every README traces to a real, citable dataset. A `Provenance` is the receipt. Projects cannot register a dataset without one, and… |
 | [`platform/web/src/components/AppShell.tsx`](./platform/web/src/components/AppShell.tsx) | 295 | AppShell -- the frame every project's client renders inside. |
 | [`platform/web/src/components/AuditPanel.tsx`](./platform/web/src/components/AuditPanel.tsx) | 288 | AuditPanel -- the leakage audit, published in the running app. |
-| [`platform/web/src/components/Chart.tsx`](./platform/web/src/components/Chart.tsx) | 355 | Chart -- a thin wrapper over Recharts, not a charting library. |
+| [`platform/web/src/components/Chart.tsx`](./platform/web/src/components/Chart.tsx) | 370 | Chart -- a thin wrapper over Recharts, not a charting library. |
 | [`platform/web/src/components/CrispDmWalkthrough.tsx`](./platform/web/src/components/CrispDmWalkthrough.tsx) | 246 | CrispDmWalkthrough -- the six phases, driven entirely by report data. |
 | [`platform/web/src/components/MarkdownMath.tsx`](./platform/web/src/components/MarkdownMath.tsx) | 198 | MarkdownMath -- renders the narrative markdown the backend produces, including KaTeX maths. |
 | [`platform/web/src/components/MetricsPanel.tsx`](./platform/web/src/components/MetricsPanel.tsx) | 175 | MetricsPanel -- the headline summary of a training run. |
-| [`platform/web/src/components/ModelLeaderboard.tsx`](./platform/web/src/components/ModelLeaderboard.tsx) | 268 | ModelLeaderboard -- the tournament table, for any project. |
+| [`platform/web/src/components/ModelLeaderboard.tsx`](./platform/web/src/components/ModelLeaderboard.tsx) | 269 | ModelLeaderboard -- the tournament table, for any project. |
 | [`platform/web/src/components/PredictionForm.tsx`](./platform/web/src/components/PredictionForm.tsx) | 410 | PredictionForm -- schema-driven inference input. |
 | [`platform/web/src/components/ProvenanceBadge.tsx`](./platform/web/src/components/ProvenanceBadge.tsx) | 179 | ProvenanceBadge -- renders the dataset receipt. |
 | [`platform/web/src/components/StatTile.tsx`](./platform/web/src/components/StatTile.tsx) | 175 | Per the dataviz form heuristic, one number is not a chart. Hero figures use proportional figures; only aligned columns get tabular-nums. Delta direction ships with an arrow… |
@@ -52,6 +52,31 @@ sequenceDiagram
   U->>S: /api/metrics, /api/crispdm, ...
 ```
 
+## 00 · Task Workspace
+
+A live task workspace: every tab stays in sync, and no edit silently overwrites another. Best: **Quick-entry parser** (exact parses 100.0%). [README](./00_task_workspace/README.md) · [paper](./00_task_workspace/paper.md) · [design doc](./00_task_workspace/DESIGN_DOC.md)
+
+| File | Lines | What it does |
+|---|---:|---|
+| [`ml/train.py`](./00_task_workspace/ml/train.py) | 361 | Project 00 -- verify the workspace's three promises. |
+| [`server/main.py`](./00_task_workspace/server/main.py) | 240 | Project 00 -- FastAPI application: the task workspace. |
+| [`server/parser.py`](./00_task_workspace/server/parser.py) | 139 | "Draft the Q3 report !high #work #finance @friday ~45m" -> title "Draft the Q3 report", priority high, tags work and finance, due the coming Friday, estimate 45 minutes |
+| [`server/seed.py`](./00_task_workspace/server/seed.py) | 57 | A fixed, seeded set of tasks so an empty workspace has something to show. It is generated, not real usage data, and the project's provenance says so. Dates are placed relative… |
+| [`server/store.py`](./00_task_workspace/server/store.py) | 175 | Project 00 -- task storage with optimistic concurrency. |
+| [`client/src/App.tsx`](./00_task_workspace/client/src/App.tsx) | 212 | Every view reads the same live task state (useTasks) and writes back through it. Analytics come from /api/analytics and the verification results from /api/evidence; the client… |
+| [`client/src/Views.tsx`](./00_task_workspace/client/src/Views.tsx) | 309 | Workspace views -- project-00-specific. They group and arrange the tasks the server holds; every change goes back through useTasks, which sends the task's version so a… |
+| [`client/src/main.tsx`](./00_task_workspace/client/src/main.tsx) | 10 |  |
+| [`client/src/useTasks.ts`](./00_task_workspace/client/src/useTasks.ts) | 106 | Loads every task once, then applies server-sent events. Each event carries a global sequence number: if one is skipped (a dropped connection, a sleeping laptop), the hook… |
+
+| Method | Endpoint | Purpose |
+|---|---|---|
+| GET | `/api/parse` | Preview what quick entry would create, resolved against today's date. |
+| GET | `/api/tasks` | Every task, with the sequence number of the latest event, so a client knows where to resume. |
+| GET | `/api/analytics` | Completions per day, streaks, workload by status and quadrant, and estimate accuracy. |
+| GET | `/api/evidence` | Parser accuracy, live-update latency and conflict tests from the recorded verification run. |
+
+![Task Workspace](./00_task_workspace/screenshots/01_list.png)
+
 ## 01 · NYC Taxi Trip Duration
 
 How long will this cab ride take? Estimated from booking-time information only. Best: **LightGBM** (rmse (min) 5.345). [README](./01_nyc_taxi_prediction/README.md) · [paper](./01_nyc_taxi_prediction/paper.md) · [design doc](./01_nyc_taxi_prediction/DESIGN_DOC.md)
@@ -76,6 +101,32 @@ How long will this cab ride take? Estimated from booking-time information only. 
 | GET | `/api/importance` | Which features the winning model actually leans on. |
 
 ![NYC Taxi Trip Duration](./01_nyc_taxi_prediction/screenshots/01_trip_estimator.png)
+
+## 02 · Nano LLM Transformer
+
+A small language model written from scratch, and which of its parts earn their place. Best: **NanoLM, RoPE · SwiGLU · RMSNorm** (validation perplexity 4.029). [README](./02_nano_llm/README.md) · [paper](./02_nano_llm/paper.md) · [design doc](./02_nano_llm/DESIGN_DOC.md)
+
+| File | Lines | What it does |
+|---|---:|---|
+| [`ml/data.py`](./02_nano_llm/ml/data.py) | 108 | Project 02 -- TinyStories: acquisition, deduplication and tokenisation. |
+| [`ml/model.py`](./02_nano_llm/ml/model.py) | 220 | Project 02 -- a small decoder-only transformer, written from scratch. |
+| [`ml/train.py`](./02_nano_llm/ml/train.py) | 470 | Project 02 -- train a small language model on TinyStories, and measure it honestly. |
+| [`server/inference.py`](./02_nano_llm/server/inference.py) | 116 | Project 02 -- serving the trained language model. |
+| [`server/main.py`](./02_nano_llm/server/main.py) | 91 | Project 02 -- FastAPI application. |
+| [`client/src/App.tsx`](./02_nano_llm/client/src/App.tsx) | 197 | Studio, tokenizer and attention views call the live model; training, ablation and check views read the training run. |
+| [`client/src/Studio.tsx`](./02_nano_llm/client/src/Studio.tsx) | 214 | Project-02-specific views: the generation studio, the tokenizer and the attention map. Each renders exactly what one API call returned. |
+| [`client/src/main.tsx`](./02_nano_llm/client/src/main.tsx) | 10 |  |
+
+| Method | Endpoint | Purpose |
+|---|---|---|
+| POST | `/api/generate` | Continue a prompt with nucleus sampling. |
+| POST | `/api/tokenize` | Split text into the model's BPE tokens. |
+| POST | `/api/attention` | Attention weights of every layer and head for a short prompt. |
+| GET | `/api/training` | Loss curves, baselines and the deduplication counts. |
+| GET | `/api/ablations` | Each component swapped for its older equivalent, beside a second seed of the reference. |
+| GET | `/api/checks` | Executed mechanics checks, generation timings and fixed-seed samples. |
+
+![Nano LLM Transformer](./02_nano_llm/screenshots/01_story_studio.png)
 
 ## 03 · Customer Segmentation
 
@@ -143,6 +194,81 @@ Which handful of transactions should an analyst look at today? Best: **Logistic 
 | GET | `/api/eda` | Fraud rate by hour and by transaction amount band. |
 
 ![Credit Card Fraud Detection](./06_anomaly_detection/screenshots/01_transaction_scorer.png)
+
+## 07 · AutoML Stacking
+
+Does automated stacking choose which clients to call better than one tuned model? Best: **LightGBM, tuned** (roc auc, 2010 0.6969). [README](./07_automl_stacking/README.md) · [paper](./07_automl_stacking/paper.md) · [design doc](./07_automl_stacking/DESIGN_DOC.md)
+
+| File | Lines | What it does |
+|---|---:|---|
+| [`ml/autogluon_run.py`](./07_automl_stacking/ml/autogluon_run.py) | 82 | ../.venv-automl/Scripts/python ml/autogluon_run.py |
+| [`ml/data.py`](./07_automl_stacking/ml/data.py) | 86 | Project 07 -- bank telemarketing calls: acquisition and dating. |
+| [`ml/features.py`](./07_automl_stacking/ml/features.py) | 43 | Project 07 -- preprocessing shared by every hand-built contestant. |
+| [`ml/train.py`](./07_automl_stacking/ml/train.py) | 517 | Project 07 -- does automated stacking beat one well-tuned model? |
+| [`server/inference.py`](./07_automl_stacking/server/inference.py) | 119 | Project 07 -- serving the tournament's servable winner, with the stack beside it. |
+| [`server/main.py`](./07_automl_stacking/server/main.py) | 69 | Project 07 -- FastAPI application. |
+| [`client/src/App.tsx`](./07_automl_stacking/client/src/App.tsx) | 323 | Every figure comes from the training run or the prediction API. The only project-specific pieces are the call form's field list and the tables of bootstrap verdicts and… |
+| [`client/src/main.tsx`](./07_automl_stacking/client/src/main.tsx) | 10 |  |
+
+| Method | Endpoint | Purpose |
+|---|---|---|
+| GET | `/api/form` | Recorded values of each categorical feature, numeric ranges, and a starting client. |
+| POST | `/api/predict` | Chance a client subscribes, with every stacked model's score and weight. |
+| GET | `/api/tournament` | Paired bootstrap verdicts, AutoGluon's own leaderboard and the estimate check. |
+| GET | `/api/stacking` | Level-one models, the Caruana selection trajectory and the tuning trace. |
+| GET | `/api/shift` | Success rate over time, the duration leak and permutation importance. |
+
+![AutoML Stacking](./07_automl_stacking/screenshots/01_tournament.png)
+
+## 08 · DS Visual Foundations
+
+Probability, evaluation, gradient descent and backpropagation, on real data and checked. Best: **Logistic regression, TF-IDF** (average precision 0.9729). [README](./08_visual_foundations/README.md) · [paper](./08_visual_foundations/paper.md) · [design doc](./08_visual_foundations/DESIGN_DOC.md)
+
+| File | Lines | What it does |
+|---|---:|---|
+| [`ml/data.py`](./08_visual_foundations/ml/data.py) | 72 | Project 08 -- the two real datasets behind the visual lessons. |
+| [`ml/lessons.py`](./08_visual_foundations/ml/lessons.py) | 221 | Project 08 -- the algorithms the lessons teach, written out in full. |
+| [`ml/train.py`](./08_visual_foundations/ml/train.py) | 339 | Project 08 -- visual foundations, computed from real data. |
+| [`server/inference.py`](./08_visual_foundations/server/inference.py) | 127 | Project 08 -- serving the lessons from the checked implementations. |
+| [`server/main.py`](./08_visual_foundations/server/main.py) | 110 | Project 08 -- FastAPI application. |
+| [`client/src/App.tsx`](./08_visual_foundations/client/src/App.tsx) | 223 | Four lessons on real data, a quiz, and the shared CRISP-DM and audit views. Every figure comes from the API: live computations by the checked implementations, or the recorded… |
+| [`client/src/Lessons.tsx`](./08_visual_foundations/client/src/Lessons.tsx) | 223 | Project-08-specific lesson views. Each calls one API endpoint and draws what it returns; the probabilities, confusion counts, loss curves and gradients are all computed on the… |
+| [`client/src/Quiz.tsx`](./08_visual_foundations/client/src/Quiz.tsx) | 76 | Quiz -- the same server-checked quiz as project 10, over this course's lessons. |
+| [`client/src/main.tsx`](./08_visual_foundations/client/src/main.tsx) | 10 |  |
+
+| Method | Endpoint | Purpose |
+|---|---|---|
+| POST | `/api/classify` | Spam probability of a message, with every word's contribution to the log-odds. |
+| GET | `/api/spam` | Dataset facts, the duplicate-leak experiment and the precision-recall curve. |
+| GET | `/api/threshold` | Confusion matrix on the held-out messages at a threshold. |
+| GET | `/api/gradient-descent` | Recorded runs, stability limits and condition numbers. |
+| POST | `/api/gradient-descent` | Run gradient descent now, at any learning rate, with or without feature scaling. |
+| GET | `/api/backprop` | One training row through the trained network, with every chain-rule factor. |
+| GET | `/api/backprop/training` | Loss curve, gradient checks and test error of the network. |
+| GET | `/api/quiz` |  |
+| POST | `/api/quiz/{question_id}` |  |
+
+![DS Visual Foundations](./08_visual_foundations/screenshots/01_probability.png)
+
+## 09 · FlowForge DAG Engine
+
+A typed workflow engine, with evidence that it is correct and scales. Best: **Kahn's algorithm** (ms at 8,000 nodes 0.18). [README](./09_flowforge_dag/README.md) · [paper](./09_flowforge_dag/paper.md) · [design doc](./09_flowforge_dag/DESIGN_DOC.md)
+
+| File | Lines | What it does |
+|---|---:|---|
+| [`ml/train.py`](./09_flowforge_dag/ml/train.py) | 294 | Project 09 -- verify and measure the FlowForge engine. |
+| [`server/main.py`](./09_flowforge_dag/server/main.py) | 72 | Project 09 -- FastAPI application: the engine's recorded evidence. |
+| [`client/src/App.tsx`](./09_flowforge_dag/client/src/App.tsx) | 182 | Project 09 client -- the engine and its evidence. |
+| [`client/src/Canvas.tsx`](./09_flowforge_dag/client/src/Canvas.tsx) | 266 | The workflow canvas and run replay -- project-09-specific. |
+| [`client/src/main.tsx`](./09_flowforge_dag/client/src/main.tsx) | 10 |  |
+
+| Method | Endpoint | Purpose |
+|---|---|---|
+| GET | `/api/evidence` | Unit, property, type and mutation test results from the recorded run. |
+| GET | `/api/benchmarks` | Ordering and executor timings from the recorded run. |
+| GET | `/api/source/{name}` | The engine's own source for the type-design view, read from disk. |
+
+![FlowForge DAG Engine](./09_flowforge_dag/screenshots/01_run_a_workflow.png)
 
 ## 10 · CRISP-DM Curriculum
 

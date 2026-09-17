@@ -38,16 +38,16 @@ Ports are assigned so every project can run simultaneously.
 
 | # | Project | Domain | Dataset | API | Web | Status |
 |---|---|---|---|:---:|:---:|:---:|
-| 00 | Task Workspace | Full-stack reactive UX, SSE telemetry | — | 8000 | 5100 | ⬜ |
+| 00 | [**Task Workspace**](./00_task_workspace) | Live sync, no lost edits, quick-entry grammar, all verified | Generated demo tasks (synthetic) | 8000 | 5100 | ✅ |
 | 01 | [**NYC Taxi Trip Prediction**](./01_nyc_taxi_prediction) | Booking-time spatial regression | NYC TLC (2.96M trips) | 8001 | 5101 | ✅ |
 | 02 | Nano LLM Transformer | Autoregressive transformer, RoPE + SwiGLU | TinyStories | 8002 | 5102 | ⬜ |
 | 03 | [**Customer Segmentation**](./03_customer_segmentation) | Clustering judged on next-year behaviour | Online Retail II (1,067,371 lines) | 8003 | 5103 | ✅ |
 | 04 | [**Market Basket Mining**](./04_market_basket) | FP-Growth rules judged on a later season | Online Retail II (shared with 03) | 8004 | 5104 | ✅ |
 | 05 | DS Skills Lab | Analytical skills catalogue | multiple | 8005 | 5105 | ⬜ |
 | 06 | [**Anomaly Detection**](./06_anomaly_detection) | Fraud ranking under 1:578 imbalance | ULB Credit Card Fraud (284,807) | 8006 | 5106 | ✅ |
-| 07 | AutoML Stacking | Multi-level stacking, ensembling | Adult / Covertype | 8007 | 5107 | ⬜ |
-| 08 | DS Visual Foundations | Interactive maths simulators | — | 8008 | 5108 | ⬜ |
-| 09 | FlowForge DAG Engine | Advanced TypeScript, Kahn's algorithm | — | 8009 | 5109 | ⬜ |
+| 07 | [**AutoML Stacking**](./07_automl_stacking) | AutoGluon vs hand-built stack vs tuned model, on a later year | UCI Bank Marketing (41,188 calls) | 8007 | 5107 | ✅ |
+| 08 | [**DS Visual Foundations**](./08_visual_foundations) | Four lessons, each algorithm checked against a reference | UCI SMS Spam + Power Plant | 8008 | 5108 | ✅ |
+| 09 | [**FlowForge DAG Engine**](./09_flowforge_dag) | Typed engine proven by property, differential and mutation tests | Seeded random graphs (synthetic) | 8009 | 5109 | ✅ |
 | 10 | [**CRISP-DM Curriculum**](./10_crispdm_curriculum) | Seven lessons, fairness through unawareness tested, LSH | Adult census (48,842 people) | 8010 | 5110 | ✅ |
 | 11 | [**Portfolio Audit**](./11_portfolio_audit) | Benchmark of the leakage auditor itself | Fraud data with planted leaks | 8011 | 5111 | ✅ |
 | 12 | [**Energy Demand Forecasting**](./12_energy_forecasting) | Day-ahead quantiles, measured leak | UCI household power (2.08M minutes) | 8012 | 5112 | ✅ |

@@ -316,5 +316,119 @@
   "file": "10_crispdm_curriculum/server/inference.py",
   "symbol": "check_answer",
   "why": "Questions are served without answers, and explanations quote figures from the training run."
+ },
+ {
+  "skill": "Caruana ensemble selection",
+  "file": "07_automl_stacking/ml/train.py",
+  "symbol": "caruana",
+  "why": "Greedy forward selection with replacement over out-of-fold predictions, with deterministic tie-breaking and a recorded trajectory."
+ },
+ {
+  "skill": "Bagged out-of-fold predictions for stacking",
+  "file": "07_automl_stacking/ml/train.py",
+  "symbol": "bag",
+  "why": "Gives every training row a prediction from a model that never saw it, and averages the fold models for the test set."
+ },
+ {
+  "skill": "Paired bootstrap of an AUC difference",
+  "file": "07_automl_stacking/ml/train.py",
+  "symbol": "bootstrap_auc",
+  "why": "Resamples the same test rows for both models, so a verdict reflects the models and not which rows were drawn."
+ },
+ {
+  "skill": "Running a conflicting library in its own environment",
+  "file": "07_automl_stacking/ml/autogluon_run.py",
+  "symbol": "main",
+  "why": "AutoGluon hands over test probabilities as a file, checked against the shared test set, instead of changing the shared environment."
+ },
+ {
+  "skill": "Reconstructing years from date-ordered rows",
+  "file": "07_automl_stacking/ml/data.py",
+  "symbol": "load",
+  "why": "Recovers a year the file does not store, so a chronological split is possible."
+ },
+ {
+  "skill": "Naive Bayes written out and matched to a library",
+  "file": "08_visual_foundations/ml/lessons.py",
+  "symbol": "NaiveBayes",
+  "why": "Every word's evidence is visible, and training asserts its probabilities equal scikit-learn's."
+ },
+ {
+  "skill": "Largest stable learning rate for least squares",
+  "file": "08_visual_foundations/ml/lessons.py",
+  "symbol": "largest_stable_rate",
+  "why": "Computes 2 / largest eigenvalue, the limit beyond which batch gradient descent diverges."
+ },
+ {
+  "skill": "Gradient check by finite differences",
+  "file": "08_visual_foundations/ml/lessons.py",
+  "symbol": "gradient_check",
+  "why": "Verifies every hand-derived gradient without trusting any framework."
+ },
+ {
+  "skill": "Measuring a duplicate leak across many splits",
+  "file": "08_visual_foundations/ml/train.py",
+  "symbol": "main",
+  "why": "Compares scores with and without deduplication over twenty seeds, so a small effect is not mistaken for noise or vice versa."
+ },
+ {
+  "skill": "Kahn's algorithm with a concrete cycle",
+  "file": "09_flowforge_dag/engine/src/graph.ts",
+  "symbol": "kahn",
+  "why": "Linear-time ordering that, on failure, returns one closed path instead of just 'cycle detected'."
+ },
+ {
+  "skill": "Incremental discrete-event scheduler",
+  "file": "09_flowforge_dag/engine/src/executor.ts",
+  "symbol": "simulate",
+  "why": "Counts open, usable and dead inputs per node so scheduling is O((V + E) log V), with retries, branches and join modes."
+ },
+ {
+  "skill": "Differential testing against a slow reference",
+  "file": "09_flowforge_dag/engine/src/properties.ts",
+  "symbol": "differentialProperties",
+  "why": "Keeps the simple implementation as an oracle; it found a real double-start bug in the optimised one."
+ },
+ {
+  "skill": "Mutation testing a test suite",
+  "file": "09_flowforge_dag/ml/train.py",
+  "symbol": "mutate",
+  "why": "Plants realistic bugs in copies of the code and requires the tests to fail on every one."
+ },
+ {
+  "skill": "Compile-time tests with @ts-expect-error",
+  "file": "09_flowforge_dag/engine/type-tests/compile-time.ts",
+  "symbol": "missingCase",
+  "why": "Branded ids and exhaustive switches are tested: a type change that lets a bad line compile fails the build."
+ },
+ {
+  "skill": "Optimistic concurrency with versions",
+  "file": "00_task_workspace/server/store.py",
+  "symbol": "Store.update",
+  "why": "An edit names the version it was based on; a stale edit is refused with the current task instead of overwriting it."
+ },
+ {
+  "skill": "Server-sent events with gap detection",
+  "file": "00_task_workspace/client/src/useTasks.ts",
+  "symbol": "useTasks",
+  "why": "Every event carries a global sequence number, so a tab that misses one reloads instead of drifting out of sync."
+ },
+ {
+  "skill": "A small, testable quick-entry grammar",
+  "file": "00_task_workspace/server/parser.py",
+  "symbol": "parse",
+  "why": "Resolves relative dates against an explicit day and keeps any marker it cannot parse in the title."
+ },
+ {
+  "skill": "Generated round-trip tests for a parser",
+  "file": "00_task_workspace/ml/train.py",
+  "symbol": "round_trips",
+  "why": "Renders known fields into text in random order and requires every one to come back, independently of hand-written cases."
+ },
+ {
+  "skill": "Measuring live-update delivery",
+  "file": "00_task_workspace/ml/train.py",
+  "symbol": "live_updates",
+  "why": "Runs the real server with many subscribers and checks completeness, order and latency of every event."
  }
 ]

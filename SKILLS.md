@@ -57,15 +57,39 @@ Each skill links to the line where it is implemented. Links are located by searc
 | **Testing fairness through unawareness** | [`10_crispdm_curriculum/ml/train.py`](./10_crispdm_curriculum/ml/train.py#L238) | Trains each model with and without sensitive attributes and asserts the unaware version truly excludes them. |
 | **Random-hyperplane LSH** | [`10_crispdm_curriculum/ml/train.py`](./10_crispdm_curriculum/ml/train.py#L67) | Approximate nearest-neighbour search whose recall and scanned fraction are measured against exact search. |
 | **Quiz answers checked on the server** | [`10_crispdm_curriculum/server/inference.py`](./10_crispdm_curriculum/server/inference.py#L68) | Questions are served without answers, and explanations quote figures from the training run. |
+| **Caruana ensemble selection** | [`07_automl_stacking/ml/train.py`](./07_automl_stacking/ml/train.py#L88) | Greedy forward selection with replacement over out-of-fold predictions, with deterministic tie-breaking and a recorded trajectory. |
+| **Bagged out-of-fold predictions for stacking** | [`07_automl_stacking/ml/train.py`](./07_automl_stacking/ml/train.py#L70) | Gives every training row a prediction from a model that never saw it, and averages the fold models for the test set. |
+| **Paired bootstrap of an AUC difference** | [`07_automl_stacking/ml/train.py`](./07_automl_stacking/ml/train.py#L114) | Resamples the same test rows for both models, so a verdict reflects the models and not which rows were drawn. |
+| **Running a conflicting library in its own environment** | [`07_automl_stacking/ml/autogluon_run.py`](./07_automl_stacking/ml/autogluon_run.py#L37) | AutoGluon hands over test probabilities as a file, checked against the shared test set, instead of changing the shared environment. |
+| **Reconstructing years from date-ordered rows** | [`07_automl_stacking/ml/data.py`](./07_automl_stacking/ml/data.py#L59) | Recovers a year the file does not store, so a chronological split is possible. |
+| **Naive Bayes written out and matched to a library** | [`08_visual_foundations/ml/lessons.py`](./08_visual_foundations/ml/lessons.py#L32) | Every word's evidence is visible, and training asserts its probabilities equal scikit-learn's. |
+| **Largest stable learning rate for least squares** | [`08_visual_foundations/ml/lessons.py`](./08_visual_foundations/ml/lessons.py#L142) | Computes 2 / largest eigenvalue, the limit beyond which batch gradient descent diverges. |
+| **Gradient check by finite differences** | [`08_visual_foundations/ml/lessons.py`](./08_visual_foundations/ml/lessons.py#L201) | Verifies every hand-derived gradient without trusting any framework. |
+| **Measuring a duplicate leak across many splits** | [`08_visual_foundations/ml/train.py`](./08_visual_foundations/ml/train.py#L48) | Compares scores with and without deduplication over twenty seeds, so a small effect is not mistaken for noise or vice versa. |
+| **Kahn's algorithm with a concrete cycle** | [`09_flowforge_dag/engine/src/graph.ts`](./09_flowforge_dag/engine/src/graph.ts#L58) | Linear-time ordering that, on failure, returns one closed path instead of just 'cycle detected'. |
+| **Incremental discrete-event scheduler** | [`09_flowforge_dag/engine/src/executor.ts`](./09_flowforge_dag/engine/src/executor.ts#L41) | Counts open, usable and dead inputs per node so scheduling is O((V + E) log V), with retries, branches and join modes. |
+| **Differential testing against a slow reference** | [`09_flowforge_dag/engine/src/properties.ts`](./09_flowforge_dag/engine/src/properties.ts#L172) | Keeps the simple implementation as an oracle; it found a real double-start bug in the optimised one. |
+| **Mutation testing a test suite** | [`09_flowforge_dag/ml/train.py`](./09_flowforge_dag/ml/train.py#L81) | Plants realistic bugs in copies of the code and requires the tests to fail on every one. |
+| **Compile-time tests with @ts-expect-error** | [`09_flowforge_dag/engine/type-tests/compile-time.ts`](./09_flowforge_dag/engine/type-tests/compile-time.ts#L28) | Branded ids and exhaustive switches are tested: a type change that lets a bad line compile fails the build. |
+| **Optimistic concurrency with versions** | [`00_task_workspace/server/store.py`](./00_task_workspace/server/store.py) | An edit names the version it was based on; a stale edit is refused with the current task instead of overwriting it. |
+| **Server-sent events with gap detection** | [`00_task_workspace/client/src/useTasks.ts`](./00_task_workspace/client/src/useTasks.ts#L27) | Every event carries a global sequence number, so a tab that misses one reloads instead of drifting out of sync. |
+| **A small, testable quick-entry grammar** | [`00_task_workspace/server/parser.py`](./00_task_workspace/server/parser.py#L98) | Resolves relative dates against an explicit day and keeps any marker it cannot parse in the title. |
+| **Generated round-trip tests for a parser** | [`00_task_workspace/ml/train.py`](./00_task_workspace/ml/train.py#L77) | Renders known fields into text in random order and requires every one to come back, independently of hand-written cases. |
+| **Measuring live-update delivery** | [`00_task_workspace/ml/train.py`](./00_task_workspace/ml/train.py#L160) | Runs the real server with many subscribers and checks completeness, order and latency of every event. |
 
 ## Reproduction skills
 
 Each built project ships an agent skill at `skills/reproduce/SKILL.md` describing how to rebuild and verify it from a fresh clone:
 
+- [`00_task_workspace/skills/reproduce/SKILL.md`](./00_task_workspace/skills/reproduce/SKILL.md)
 - [`01_nyc_taxi_prediction/skills/reproduce/SKILL.md`](./01_nyc_taxi_prediction/skills/reproduce/SKILL.md)
+- [`02_nano_llm/skills/reproduce/SKILL.md`](./02_nano_llm/skills/reproduce/SKILL.md)
 - [`03_customer_segmentation/skills/reproduce/SKILL.md`](./03_customer_segmentation/skills/reproduce/SKILL.md)
 - [`04_market_basket/skills/reproduce/SKILL.md`](./04_market_basket/skills/reproduce/SKILL.md)
 - [`06_anomaly_detection/skills/reproduce/SKILL.md`](./06_anomaly_detection/skills/reproduce/SKILL.md)
+- [`07_automl_stacking/skills/reproduce/SKILL.md`](./07_automl_stacking/skills/reproduce/SKILL.md)
+- [`08_visual_foundations/skills/reproduce/SKILL.md`](./08_visual_foundations/skills/reproduce/SKILL.md)
+- [`09_flowforge_dag/skills/reproduce/SKILL.md`](./09_flowforge_dag/skills/reproduce/SKILL.md)
 - [`10_crispdm_curriculum/skills/reproduce/SKILL.md`](./10_crispdm_curriculum/skills/reproduce/SKILL.md)
 - [`11_portfolio_audit/skills/reproduce/SKILL.md`](./11_portfolio_audit/skills/reproduce/SKILL.md)
 - [`12_energy_forecasting/skills/reproduce/SKILL.md`](./12_energy_forecasting/skills/reproduce/SKILL.md)

@@ -4,10 +4,15 @@ Every row below is read from a project's `artifacts/metrics.json`. Projects that
 
 | Project | Dataset | Real data | Critical | Warnings | Runtime assertions |
 |---|---|:---:|---:|---:|---|
+| [00 Task Workspace](./00_task_workspace/audit_report.md) | Hand-written quick-entry phrases and generated workspace traffic | no ⚠️ | 0 | 0 | 3/3 passed |
 | [01 NYC Taxi Trip Duration](./01_nyc_taxi_prediction/audit_report.md) | NYC TLC Yellow Taxi Trip Records — January 2024 | yes | 0 | 0 | 3/3 passed |
+| [02 Nano LLM Transformer](./02_nano_llm/audit_report.md) | TinyStories V2 (GPT-4 stories), training split | yes | 0 | 0 | 3/3 passed |
 | [03 Customer Segmentation](./03_customer_segmentation/audit_report.md) | Online Retail II (UCI) | yes | 0 | 0 | 3/3 passed |
 | [04 Market Basket Mining](./04_market_basket/audit_report.md) | Online Retail II (UCI) | yes | 0 | 0 | 4/4 passed |
 | [06 Credit Card Fraud Detection](./06_anomaly_detection/audit_report.md) | Credit Card Fraud Detection (ULB) | yes | 0 | 0 | 3/3 passed |
+| [07 AutoML Stacking](./07_automl_stacking/audit_report.md) | Bank Marketing, with social and economic context (UCI) | yes | 0 | 0 | 3/3 passed |
+| [08 DS Visual Foundations](./08_visual_foundations/audit_report.md) | SMS Spam Collection (UCI) | yes | 0 | 0 | 4/4 passed |
+| [09 FlowForge DAG Engine](./09_flowforge_dag/audit_report.md) | Seeded random workflow graphs (FlowForge generator) | no ⚠️ | 0 | 0 | 4/4 passed |
 | [10 CRISP-DM Curriculum](./10_crispdm_curriculum/audit_report.md) | Adult Census Income (UCI, via OpenML 1590) | yes | 0 | 0 | 3/3 passed |
 | [11 Portfolio Audit](./11_portfolio_audit/audit_report.md) | Credit Card Fraud Detection (ULB) | yes | 0 | 0 | 3/3 passed |
 | [12 Energy Demand Forecasting](./12_energy_forecasting/audit_report.md) | Individual Household Electric Power Consumption (UCI) | yes | 0 | 0 | 4/4 passed |
@@ -16,6 +21,16 @@ Every row below is read from a project's `artifacts/metrics.json`. Projects that
 
 ## Runtime assertions by project
 
+### 00 · Task Workspace
+
+| Assertion | Result | What it measured |
+|---|---|---|
+| `assert_round_trips_recover_every_field` | ✅ passed | 5,000 generated tasks rendered as quick-entry text in random order; 0 did not parse back to exactly the fields they were built from. |
+| `assert_every_tab_receives_every_change_in_order` | ✅ passed | 1 subscribers: 1 received all 200 changes in sequence; 10 subscribers: 10 received all 200 changes in sequence; 50 subscribers: 50 received all 200 changes in sequence. |
+| `assert_exactly_one_concurrent_writer_wins` | ✅ passed | 50 rounds of 8 writers on the same version: 50 accepted, 350 refused with 409; final version 51 (expected 51). |
+
+Recorded by the assertion ledger while training ran; generated from `artifacts/metrics.json`.
+
 ### 01 · NYC Taxi Trip Duration
 
 | Assertion | Result | What it measured |
@@ -23,6 +38,16 @@ Every row below is read from a project's `artifacts/metrics.json`. Projects that
 | `assert_temporal_split` | ✅ passed | Last training timestamp 2024-01-24 23:59:55 precedes first test timestamp 2024-01-26 00:00:01 by 1 days 00:00:06; embargo of 12h required. |
 | `assert_disjoint` | ✅ passed | 456,487 training and 121,130 test row indices compared; 0 appear in both. |
 | `assert_no_target_leak` | ✅ passed | 22 numeric features correlated against the target; strongest was zp_median_distance at |r|=0.7821 (threshold 0.995). |
+
+Recorded by the assertion ledger while training ran; generated from `artifacts/metrics.json`.
+
+### 02 · Nano LLM Transformer
+
+| Assertion | Result | What it measured |
+|---|---|---|
+| `assert_validation_stories_unseen` | ✅ passed | 27,630 validation stories hashed against 2,717,495 training stories; 0 also appeared in training and were removed; 0 remain. |
+| `assert_causal_mask` | ✅ passed | Tokens 40-63 of a 64-token sequence replaced; largest change in logits at positions 0-39 was 0.00e+00 (limit 1e-4). The model cannot see the future. |
+| `assert_kv_cache_matches_recompute` | ✅ passed | Greedy 60-token continuations of 3 prompts generated with and without the KV cache; 3 of 3 identical. |
 
 Recorded by the assertion ledger while training ran; generated from `artifacts/metrics.json`.
 
@@ -54,6 +79,38 @@ Recorded by the assertion ledger while training ran; generated from `artifacts/m
 | `assert_temporal_split` | ✅ passed | Last training timestamp 1 days 09:59:57 precedes first test timestamp 1 days 11:00:00 by 0 days 01:00:03; embargo of 30min required. |
 | `assert_disjoint` | ✅ passed | 175,582 training and 100,915 test row indices compared; 0 appear in both. |
 | `assert_no_target_leak` | ✅ passed | 30 numeric features correlated against the target; strongest was V17 at |r|=0.4096 (threshold 0.995). |
+
+Recorded by the assertion ledger while training ran; generated from `artifacts/metrics.json`.
+
+### 07 · AutoML Stacking
+
+| Assertion | Result | What it measured |
+|---|---|---|
+| `assert_temporal_split` | ✅ passed | Last training timestamp 2009-12-01 00:00:00 precedes first test timestamp 2010-03-01 00:00:00 by 90 days 00:00:00; no embargo required. |
+| `assert_duration_excluded` | ✅ passed | 19 model inputs; `duration` (known only after the call) absent. |
+| `assert_no_target_leak` | ✅ passed | 63 numeric features correlated against the target; strongest was emp.var.rate at |r|=0.2634 (threshold 0.995). |
+
+Recorded by the assertion ledger while training ran; generated from `artifacts/metrics.json`.
+
+### 08 · DS Visual Foundations
+
+| Assertion | Result | What it measured |
+|---|---|---|
+| `assert_no_message_in_both_splits` | ✅ passed | 4,136 training and 1,035 test messages after removing 403 duplicates; 0 message texts appear in both. |
+| `assert_naive_bayes_matches_sklearn` | ✅ passed | Spam probabilities for 1,035 test messages from the written-out Naive Bayes and scikit-learn's MultinomialNB; largest difference 1.6e-14 (limit 1e-9). |
+| `assert_gradient_descent_reaches_least_squares` | ✅ passed | Gradient descent (learning rate 0.1, 3,000 steps, scaled features) against the exact least-squares solution: largest coefficient difference 1.1e-16 relative (limit 1e-6). |
+| `assert_backprop_matches_finite_differences` | ✅ passed | All 49 parameter gradients compared with central finite differences, before and after training; largest relative error 1.1e-07 (limit 1e-5). |
+
+Recorded by the assertion ledger while training ran; generated from `artifacts/metrics.json`.
+
+### 09 · FlowForge DAG Engine
+
+| Assertion | Result | What it measured |
+|---|---|---|
+| `assert_engine_tests_pass` | ✅ passed | node --test ran 11 tests: 11 passed, 0 failed. |
+| `assert_type_tests_pass` | ✅ passed | tsc over the engine, its tests and type-tests: 0 errors, including 0 @ts-expect-error lines that no longer fail. |
+| `assert_properties_hold` | ✅ passed | 5 properties over 5,000 random graphs and workflows: 77,531 checks, 0 failures. |
+| `assert_every_mutant_killed` | ✅ passed | 10 planted bugs; the test suites caught 10. |
 
 Recorded by the assertion ledger while training ran; generated from `artifacts/metrics.json`.
 

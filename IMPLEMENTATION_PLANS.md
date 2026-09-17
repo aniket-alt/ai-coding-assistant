@@ -7,16 +7,16 @@ done, and for the rest they are intentions, not claims.
 <!-- dsfs:status -->
 | # | Project | Status | Dataset (planned or used) |
 |---|---|---|---|
-| 00 | Task Workspace | ⬜ planned | none — full-stack application |
+| 00 | [Task Workspace](./00_task_workspace) | ✅ built | none — full-stack application |
 | 01 | [NYC Taxi Trip Duration](./01_nyc_taxi_prediction) | ✅ built | NYC TLC Yellow Taxi, January 2024 |
-| 02 | Nano LLM Transformer | ⬜ planned | TinyStories (Hugging Face) |
+| 02 | [Nano LLM Transformer](./02_nano_llm) | ✅ built | TinyStories (Hugging Face) |
 | 03 | [Customer Segmentation](./03_customer_segmentation) | ✅ built | UCI Online Retail II |
 | 04 | [Market Basket Mining](./04_market_basket) | ✅ built | UCI Online Retail II invoices |
 | 05 | Data Science Skills Lab | ⬜ planned | several OpenML datasets |
 | 06 | [Credit Card Fraud Detection](./06_anomaly_detection) | ✅ built | ULB credit card fraud (OpenML 1597) |
-| 07 | AutoML Stacking | ⬜ planned | Adult census (OpenML 1590) |
-| 08 | Data Science Visual Foundations | ⬜ planned | none — interactive simulations |
-| 09 | FlowForge DAG Engine | ⬜ planned | none — TypeScript engine |
+| 07 | [AutoML Stacking](./07_automl_stacking) | ✅ built | Adult census (OpenML 1590) |
+| 08 | [Data Science Visual Foundations](./08_visual_foundations) | ✅ built | none — interactive simulations |
+| 09 | [FlowForge DAG Engine](./09_flowforge_dag) | ✅ built | none — TypeScript engine |
 | 10 | [CRISP-DM Curriculum](./10_crispdm_curriculum) | ✅ built | Adult census (OpenML 1590) |
 | 11 | [Portfolio Audit](./11_portfolio_audit) | ✅ built | this repository's own artifacts |
 | 12 | [Energy Demand Forecasting](./12_energy_forecasting) | ✅ built | UCI Individual Household Electric Power Consumption |
