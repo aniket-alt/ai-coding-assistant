@@ -1,0 +1,53 @@
+{
+  "entity": "Contestant",
+  "temporal_modules": [],
+  "temporal_modules_reason": "A product catalogue with no time order; the split is grouped by display name instead.",
+  "metric_columns": [
+    {
+      "key": "macro_f1",
+      "label": "Macro-F1",
+      "fmt": "f4"
+    },
+    {
+      "key": "accuracy",
+      "label": "Accuracy",
+      "fmt": "pct"
+    },
+    {
+      "key": "top3_accuracy",
+      "label": "Top-3 accuracy",
+      "fmt": "pct"
+    }
+  ],
+  "reproduce": [
+    "python ml/train.py",
+    "../.venv-automl/Scripts/python ml/autogluon_run.py",
+    "python ml/train.py",
+    "python -m uvicorn main:app --app-dir server --port 8014",
+    "npm run dev -w 14_multimodal_automl/client"
+  ],
+  "non_goals": [
+    "Fine-tuning a vision or language model. CLIP is used frozen, as a feature extractor.",
+    "Classifying rare article types. Types with fewer than 150 products are left out."
+  ],
+  "risks": [
+    "The product photographs come from a retailer's catalogue; the MIT licence is the Kaggle dataset author's and may not cover the images themselves.",
+    "Catalogue labels were entered by people and some are inconsistent, such as shirts labelled as tops.",
+    "Grouping by exact display name does not catch near-identical names, so some siblings may still straddle the split.",
+    "Fusion weights and regularisation were chosen on one validation split; a different split could favour different settings."
+  ],
+  "lessons": [
+    "A text field that contains the label can make a model look almost perfect; masking the label words is a cheap way to see what is left.",
+    "With the label words masked, fusing the name and catalogue fields with the photo was significantly better than the photo alone.",
+    "Grouping the split by shared names changed the measured score very little here, which is only knowable by measuring it.",
+    "A frozen CLIP model gave a strong image classifier with a logistic regression on top, and a usable zero-shot one with none.",
+    "Under a fifteen-minute limit, AutoGluon on fused features did not beat a simple late fusion whose weights were chosen on validation."
+  ],
+  "references": [
+    "Aggarwal, P. (2019). Fashion Product Images (Small) [Dataset]. Kaggle.",
+    "Radford, A. et al. (2021). Learning transferable visual models from natural language supervision. Proceedings of ICML 2021.",
+    "Baltrušaitis, T., Ahuja, C., & Morency, L.-P. (2019). Multimodal machine learning: A survey and taxonomy. IEEE Transactions on Pattern Analysis and Machine Intelligence, 41(2), 423–443.",
+    "Shi, X. et al. (2021). Benchmarking multimodal AutoML for tabular data with text fields. NeurIPS 2021 Datasets and Benchmarks Track.",
+    "Kaufman, S. et al. (2012). Leakage in data mining: Formulation, detection, and avoidance. ACM Transactions on Knowledge Discovery from Data, 6(4)."
+  ]
+}

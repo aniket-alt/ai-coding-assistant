@@ -1,0 +1,15 @@
+{
+  "slug": "fashion-product-images-small",
+  "name": "Fashion Product Images (Small)",
+  "source_url": "https://huggingface.co/datasets/ashraq/fashion-product-images-small/resolve/3859c76db2f6f3d3b9a3863345e3ccdbff75879d/data/train-00000-of-00002-6cff4c59f91661c3.parquet",
+  "license": "MIT, as declared by the Kaggle dataset; product photographs originate from a retailer's catalogue",
+  "citation": "Aggarwal, P. (2019). Fashion Product Images (Small) [Dataset]. Kaggle. https://www.kaggle.com/datasets/paramaggarwal/fashion-product-images-small",
+  "retrieved_at": "2026-09-17T17:29:21Z",
+  "sha256": "0f9b4042c6eea3c77aa0794630c956d1985de791c365abdb332f9d9cfa78d00a",
+  "n_rows": 44072,
+  "n_cols": 10,
+  "bytes_on_disk": 136091680,
+  "synthetic": false,
+  "notes": "Hugging Face mirror ashraq/fashion-product-images-small at revision 3859c76db2f6f3d3b9a3863345e3ccdbff75879d, two parquet shards.",
+  "extra": {}
+}

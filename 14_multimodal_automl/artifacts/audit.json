@@ -1,0 +1,9 @@
+[
+  {
+    "severity": "WARNING",
+    "rule": "fit-before-split",
+    "message": "`.fit()` on line 57 precedes the train/test split on line 136; verify the transformer is not fitted on all rows.",
+    "file": "ml\\train.py",
+    "line": 57
+  }
+]

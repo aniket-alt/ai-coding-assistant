@@ -47,3 +47,6 @@ desktop.ini
 
 # Task workspace database, created and seeded on first start
 00_task_workspace/data/
+
+# Project 14: AutoGluon test probabilities (6.5 MB); its scores are recorded in metrics.json
+14_multimodal_automl/artifacts/autogluon.json

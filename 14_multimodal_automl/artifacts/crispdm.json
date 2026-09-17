@@ -1,0 +1,152 @@
+{
+  "project_slug": "14_multimodal_automl",
+  "project_title": "Multimodal AutoML",
+  "business_question": "Can a catalogue classify products by type from their photo, name and attributes, and does combining them beat the best single source?",
+  "phases": [
+    {
+      "name": "business_understanding",
+      "title": "1. Business Understanding",
+      "objective": "Measure what each modality contributes to classifying products, and whether fusion pays.",
+      "narrative": "A retailer receives products from many suppliers, and each has to be filed under the right article type. There are three kinds of evidence: a photograph, a free-text name and a few catalogue fields. Multimodal AutoML promises to combine them automatically. This project measures each source alone, fuses them several ways, and asks whether fusion beats the strongest single source by more than chance -- and how much of the text's apparent strength is simply the label written in the name.",
+      "findings": [
+        {
+          "label": "Target",
+          "value": "article type",
+          "detail": ""
+        },
+        {
+          "label": "Modalities",
+          "value": "image, name, catalogue fields",
+          "detail": ""
+        }
+      ],
+      "figures": [],
+      "code_refs": [
+        "ml/train.py:main"
+      ],
+      "gate_passed": true,
+      "gate_notes": "Target, modalities and the leak to be measured fixed before modelling."
+    },
+    {
+      "name": "data_understanding",
+      "title": "2. Data Understanding",
+      "objective": "Find what in the catalogue would flatter a model.",
+      "narrative": "44,072 products in 141 article types. The 45 types with at least 150 products are kept: 40,875 products.\n\n**The name often states the answer.** 77.8% of names contain a word of their own article type. **Siblings share names.** 12,688 products repeat a display name already used by another.",
+      "findings": [
+        {
+          "label": "Products kept",
+          "value": "40,875",
+          "detail": ""
+        },
+        {
+          "label": "Article types",
+          "value": "45",
+          "detail": ""
+        },
+        {
+          "label": "Names containing their label",
+          "value": "77.8%",
+          "detail": ""
+        },
+        {
+          "label": "Repeated names",
+          "value": "12,688",
+          "detail": ""
+        }
+      ],
+      "figures": [],
+      "code_refs": [
+        "ml/data.py:load",
+        "ml/data.py:label_words"
+      ],
+      "gate_passed": true,
+      "gate_notes": "Label-in-name rate and duplicate names measured."
+    },
+    {
+      "name": "data_preparation",
+      "title": "3. Data Preparation",
+      "objective": "Split so siblings never straddle train and test, and build each modality's features.",
+      "narrative": "Products are grouped by display name before splitting: 28,510 train, 6,111 validation (used only to choose regularisation and fusion weights) and 6,254 test. Images and names are embedded once with openai/clip-vit-base-patch32. Names are also represented with TF-IDF, with a second copy in which every word of any article-type name is removed. Catalogue features are gender, baseColour, season, year, usage; the coarser category levels are excluded because they nearly determine the answer.",
+      "findings": [
+        {
+          "label": "Train / validation / test",
+          "value": "28,510 / 6,111 / 6,254",
+          "detail": ""
+        }
+      ],
+      "figures": [],
+      "code_refs": [
+        "ml/train.py:main",
+        "ml/embed.py:cached",
+        "ml/data.py:mask_label_words"
+      ],
+      "gate_passed": true,
+      "gate_notes": "Executed assertions: no shared names across splits, every class tested, hierarchy fields excluded."
+    },
+    {
+      "name": "modeling",
+      "title": "4. Modeling",
+      "objective": "Model each modality alone, then fuse them late, early and with AutoGluon.",
+      "narrative": "Single-modality models: logistic regression on CLIP image embeddings, logistic regression on TF-IDF names (full and masked), and LightGBM on catalogue fields, beside a majority-class baseline and CLIP zero-shot matching against the class names. Late fusion combines probabilities with weights chosen on validation; early fusion concatenates features into one logistic regression; AutoGluon trains on the same fused features.",
+      "findings": [
+        {
+          "label": "Contestants",
+          "value": "10",
+          "detail": ""
+        }
+      ],
+      "figures": [],
+      "code_refs": [
+        "ml/train.py:logistic",
+        "ml/train.py:main"
+      ],
+      "gate_passed": true,
+      "gate_notes": "10 contestants scored on the same test products."
+    },
+    {
+      "name": "evaluation",
+      "title": "5. Evaluation",
+      "objective": "Separate what fusion adds from what the name gives away.",
+      "narrative": "**Late fusion: image + name + fields** has the highest macro-F1, 0.9740. The image alone reaches 0.8183; CLIP zero-shot, with no training, 0.5283.\n\n**The name leak.** The name model's macro-F1 falls from 0.9694 to 0.5922 when label words are removed. On a random split, where 40.2% of test names also occur in training, it would have reported 0.9720.\n\n**Does fusion pay?** Against the best honest single modality (Image only (CLIP + logistic)), late fusion of image, masked name and fields changes accuracy by +0.0249 (95% interval +0.0198 to +0.0301): **better**.",
+      "findings": [
+        {
+          "label": "Best macro-F1",
+          "value": "0.9740",
+          "detail": ""
+        },
+        {
+          "label": "Fusion vs best single",
+          "value": "better",
+          "detail": ""
+        }
+      ],
+      "figures": [],
+      "code_refs": [
+        "ml/train.py:bootstrap",
+        "ml/train.py:scores"
+      ],
+      "gate_passed": true,
+      "gate_notes": "Paired bootstrap against the best single modality; leaks measured, not assumed."
+    },
+    {
+      "name": "deployment",
+      "title": "6. Deployment",
+      "objective": "Serve the gallery, per-modality predictions and text search.",
+      "narrative": "The API serves test products with every contestant's prediction, classifies any typed name with the text models, and searches test images by description with CLIP.",
+      "findings": [
+        {
+          "label": "Serving port",
+          "value": "8,014",
+          "detail": ""
+        }
+      ],
+      "figures": [],
+      "code_refs": [
+        "server/inference.py",
+        "server/main.py"
+      ],
+      "gate_passed": true,
+      "gate_notes": "Test-set predictions and CLIP search served from the training run's artifacts."
+    }
+  ]
+}
