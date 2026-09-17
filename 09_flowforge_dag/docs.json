@@ -1,0 +1,41 @@
+{
+  "entity": "Ordering method",
+  "temporal_modules": [],
+  "temporal_modules_reason": "There is no dataset to split; the Python code only orchestrates tests and benchmarks of the TypeScript engine.",
+  "metric_columns": [
+    {"key": "ms_at_8000_nodes", "label": "ms at 8,000 nodes", "fmt": "f2"},
+    {"key": "scaling_exponent", "label": "Scaling exponent", "fmt": "f2"},
+    {"key": "largest_nodes", "label": "Largest graph", "fmt": "int"},
+    {"key": "ms_at_largest", "label": "ms at largest", "fmt": "f1"}
+  ],
+  "reproduce": [
+    "npm install",
+    "node --test \"engine/test/*.test.ts\"",
+    "python ml/train.py",
+    "python -m uvicorn main:app --app-dir server --port 8009",
+    "npm run dev -w 09_flowforge_dag/client"
+  ],
+  "non_goals": [
+    "A distributed scheduler. Work is simulated in one process with virtual time; there are no workers, queues or persistence.",
+    "Fastest possible ordering. The benchmarks establish growth rates and relative cost, not records."
+  ],
+  "risks": [
+    "Timings depend on the machine and on what else was running; the scaling exponents are more stable than the milliseconds.",
+    "Random graphs have uniform structure, while real pipelines are shallower and more branched.",
+    "Mutation testing only shows that the planted bugs are caught, not that no other bug exists.",
+    "The executor's failure model is independent per attempt; correlated failures are not simulated."
+  ],
+  "lessons": [
+    "Keeping the slow, obviously correct implementation as an oracle found a real bug in the fast rewrite.",
+    "Tests that pass on correct code are only evidence once they have been shown to fail on broken code.",
+    "A benchmark can expose a scaling problem that no correctness test will: the first executor was correct and quadratic.",
+    "Types can be tested too: an @ts-expect-error that stops failing is a regression the compiler reports."
+  ],
+  "references": [
+    "Kahn, A. B. (1962). Topological sorting of large networks. Communications of the ACM, 5(11), 558–562.",
+    "Tarjan, R. E. (1976). Edge-disjoint spanning trees and depth-first search. Acta Informatica, 6(2), 171–185.",
+    "Claessen, K., & Hughes, J. (2000). QuickCheck: A lightweight tool for random testing of Haskell programs. Proceedings of ICFP 2000.",
+    "DeMillo, R. A., Lipton, R. J., & Sayward, F. G. (1978). Hints on test data selection: Help for the practicing programmer. Computer, 11(4), 34–41.",
+    "McKeeman, W. M. (1998). Differential testing for software. Digital Technical Journal, 10(1), 100–107."
+  ]
+}
