@@ -1,0 +1,39 @@
+{
+  "entity": "Parser",
+  "temporal_modules": [],
+  "temporal_modules_reason": "There is no model and no dataset split; the Python code is an application server and its verification.",
+  "metric_columns": [
+    {"key": "exact_match_pct", "label": "Exact parses", "fmt": "pct_raw"},
+    {"key": "fields_correct_pct", "label": "Fields correct", "fmt": "pct_raw"},
+    {"key": "due_pct", "label": "Due date", "fmt": "pct_raw"},
+    {"key": "tags_pct", "label": "Tags", "fmt": "pct_raw"}
+  ],
+  "reproduce": [
+    "python ml/train.py",
+    "python -m uvicorn main:app --app-dir server --port 8000",
+    "npm run dev -w 00_task_workspace/client"
+  ],
+  "non_goals": [
+    "Multi-user accounts, authentication or sharing. Every tab talks to one local workspace.",
+    "Natural-language understanding beyond the documented marker grammar; free text like 'next Tuesday afternoon' is kept as the title."
+  ],
+  "risks": [
+    "The labelled phrases were written by the parser's author, so their pass rate is weak evidence; the generated round trips only cover the grammar they were generated from.",
+    "Latency was measured with server and clients on one machine, which excludes network time, and Windows timestamps have roughly millisecond resolution.",
+    "One uvicorn worker holds the event subscribers in memory; several workers would need a shared broker.",
+    "The demonstration tasks and their history are generated, so the analytics show how the views work, not how anyone works."
+  ],
+  "lessons": [
+    "Sequence numbers on live events turn 'did this tab miss something?' into a check the client can make and recover from.",
+    "Sending the version an edit was based on is enough to make lost updates visible instead of silent.",
+    "A generated round-trip test caught a mistake in its own expectations, which is why generated and hand-written tests are both worth having.",
+    "A page that holds a live connection never becomes network-idle, so tooling that waits for idleness needs another signal."
+  ],
+  "references": [
+    "WHATWG. HTML Living Standard, section 9.2: Server-sent events.",
+    "Kung, H. T., & Robinson, J. T. (1981). On optimistic methods for concurrency control. ACM Transactions on Database Systems, 6(2), 213–226.",
+    "Fielding, R., & Reschke, J. (2014). RFC 7232: Hypertext Transfer Protocol (HTTP/1.1): Conditional Requests.",
+    "Cirillo, F. (2006). The Pomodoro Technique.",
+    "Covey, S. R. (1989). The 7 Habits of Highly Effective People (the urgent–important matrix)."
+  ]
+}

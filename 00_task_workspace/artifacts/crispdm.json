@@ -1,0 +1,121 @@
+{
+  "project_slug": "00_task_workspace",
+  "project_title": "Task Workspace",
+  "business_question": "Does the workspace understand quick entry, keep every tab in sync, and never lose an edit?",
+  "phases": [
+    {
+      "name": "business_understanding",
+      "title": "1. Business Understanding",
+      "objective": "State the workspace's promises as things that can be measured.",
+      "narrative": "A task app earns trust through three behaviours users rarely see directly. What they type is understood. A change made in one tab appears in every other. And when two people change the same task at once, neither change vanishes without a trace. Each is tested here against the running application.",
+      "findings": [
+        {
+          "label": "Promises",
+          "value": "3",
+          "detail": ""
+        }
+      ],
+      "figures": [],
+      "code_refs": [
+        "server/parser.py",
+        "server/main.py",
+        "server/store.py"
+      ],
+      "gate_passed": true,
+      "gate_notes": "Three measurable promises fixed before building the checks."
+    },
+    {
+      "name": "data_understanding",
+      "title": "2. Data Understanding",
+      "objective": "Decide what to test the parser and the server with.",
+      "narrative": "60 phrases were written by hand against the documented grammar, including awkward ones: email addresses, issue numbers such as #3, impossible dates and markers with trailing punctuation. Because the same author wrote the parser and the phrases, 5,000 generated round trips provide a check that no phrase was chosen to pass.",
+      "findings": [
+        {
+          "label": "Labelled phrases",
+          "value": "60",
+          "detail": ""
+        }
+      ],
+      "figures": [],
+      "code_refs": [
+        "ml/parser_cases.json",
+        "ml/train.py:round_trips"
+      ],
+      "gate_passed": true,
+      "gate_notes": "Test inputs fixed; their authorship stated."
+    },
+    {
+      "name": "data_preparation",
+      "title": "3. Data Preparation",
+      "objective": "Run every check against the real server on a throwaway database.",
+      "narrative": "The API is started as a subprocess on a free port with an empty temporary SQLite file, so the checks exercise the same code users run, and nothing persists between runs.",
+      "findings": [],
+      "figures": [],
+      "code_refs": [
+        "ml/train.py:Server"
+      ],
+      "gate_passed": true,
+      "gate_notes": "Isolated database per run."
+    },
+    {
+      "name": "modeling",
+      "title": "4. Modeling",
+      "objective": "Build the grammar, the event stream and the version check.",
+      "narrative": "Quick entry is a small grammar resolved against an explicit date. Changes are written to SQLite and broadcast as server-sent events with a global sequence number, so a tab can tell whether it missed anything. Every update names the version it was based on; the store checks and writes under one lock.",
+      "findings": [],
+      "figures": [],
+      "code_refs": [
+        "server/parser.py:parse",
+        "server/main.py:Broker",
+        "server/store.py:Store.update"
+      ],
+      "gate_passed": true,
+      "gate_notes": "Three mechanisms, each with a test."
+    },
+    {
+      "name": "evaluation",
+      "title": "5. Evaluation",
+      "objective": "Report what the checks measured.",
+      "narrative": "**Parsing.** 100.0% of labelled phrases were parsed exactly, against 28.3% for treating everything as the title; 0 of 5,000 round trips failed.\n\n**Live updates.** With 50 tabs open, every tab received all 200 changes in order: yes. Delivery took 4.0 ms at the median and 14.8 ms at the 99th percentile.\n\n**Conflicts.** In 50 rounds of 8 simultaneous edits, 50 were accepted and 350 refused; without the version check, each refused edit would have silently replaced another.",
+      "findings": [
+        {
+          "label": "Exact parses",
+          "value": "100.0%",
+          "detail": ""
+        },
+        {
+          "label": "p99 delivery, 50 tabs",
+          "value": "14.8 ms",
+          "detail": ""
+        }
+      ],
+      "figures": [],
+      "code_refs": [
+        "ml/train.py:live_updates",
+        "ml/train.py:conflicts"
+      ],
+      "gate_passed": true,
+      "gate_notes": "All promises checked against the running server."
+    },
+    {
+      "name": "deployment",
+      "title": "6. Deployment",
+      "objective": "Ship the workspace.",
+      "narrative": "FastAPI serves the tasks, analytics and event stream on port 8000; the React client keeps every view in sync from the stream and shows a conflict when an edit is refused.",
+      "findings": [
+        {
+          "label": "Serving port",
+          "value": "8,000",
+          "detail": ""
+        }
+      ],
+      "figures": [],
+      "code_refs": [
+        "server/main.py",
+        "client/src/App.tsx"
+      ],
+      "gate_passed": true,
+      "gate_notes": "One server, one stream, every view."
+    }
+  ]
+}

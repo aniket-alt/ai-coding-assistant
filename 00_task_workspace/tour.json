@@ -1,0 +1,16 @@
+{
+  "api_port": 8000,
+  "web_port": 5100,
+  "wait_until": "load",
+  "views": [
+    {"tab": "List", "file": "01_list", "expect": "Will create:"},
+    {"tab": "Board", "file": "02_board", "expect": "In review"},
+    {"tab": "Matrix", "file": "03_matrix", "expect": "Do first"},
+    {"tab": "Calendar", "file": "04_calendar", "expect": "Mon"},
+    {"tab": "Focus", "file": "05_focus", "expect": "A finished focus session"},
+    {"tab": "Analytics", "file": "06_analytics", "expect": "Completions per day"},
+    {"tab": "Evidence", "file": "07_evidence", "expect": "Can an edit be silently lost?"},
+    {"tab": "CRISP-DM", "file": "08_crispdm_walkthrough", "expect": "Phase gate"},
+    {"tab": "Audit", "file": "09_leakage_audit", "expect": "Assertions executed during training"}
+  ]
+}
