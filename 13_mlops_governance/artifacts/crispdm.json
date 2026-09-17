@@ -1,0 +1,186 @@
+{
+  "project_slug": "13_mlops_governance",
+  "project_title": "MLOps & Governance",
+  "business_question": "Once project 01's taxi model is in service, how fast does it go stale, and which retraining policy keeps it accurate at the lowest cost?",
+  "phases": [
+    {
+      "name": "business_understanding",
+      "title": "1. Business Understanding",
+      "objective": "Decide how often to retrain, using evidence from real months rather than a rule of thumb.",
+      "narrative": "A model is trained once and then used on a world that keeps moving. Two questions follow: how quickly does accuracy decay, and does retraining earn its cost? The usual answers \u2014 retrain monthly, or retrain when a drift metric crosses a threshold \u2014 are conventions, not findings.\n\nThis project answers them with six real months. Project 01's model and features are taken unchanged, trained on January 2024, and then operated from February to July under several retraining policies. Each month, a policy may train only on months that have already finished; its model is then scored on the new month.\n\nAround that experiment sit the pieces an auditor asks for: a model registry, per-prediction explanations, a measured load test and a model card.",
+      "findings": [
+        {
+          "label": "Training month",
+          "value": "January 2024",
+          "detail": ""
+        },
+        {
+          "label": "Monitored months",
+          "value": "6",
+          "detail": ""
+        },
+        {
+          "label": "Drift alarm",
+          "value": "PSI > 0.1",
+          "detail": ""
+        }
+      ],
+      "figures": [],
+      "code_refs": [
+        "ml/train.py:main"
+      ],
+      "gate_passed": true,
+      "gate_notes": "Policies, drift threshold and evaluation fixed before any month was scored."
+    },
+    {
+      "name": "data_understanding",
+      "title": "2. Data Understanding",
+      "objective": "Measure how much the city actually changed between January and July.",
+      "narrative": "| Month | Trips | Median duration | Median distance |\n|---|---:|---:|---:|\n| 2024-01 | 2,964,624 | 11.73 min | 1.70 mi |\n| 2024-02 | 3,007,526 | 12.08 min | 1.72 mi |\n| 2024-03 | 3,582,628 | 12.57 min | 1.80 mi |\n| 2024-04 | 3,514,289 | 12.93 min | 1.81 mi |\n| 2024-05 | 3,723,833 | 13.45 min | 1.82 mi |\n| 2024-06 | 3,539,193 | 13.08 min | 1.82 mi |\n| 2024-07 | 3,076,903 | 12.92 min | 1.83 mi |\n\nMedian trip duration rises from 11.73 minutes in January to 13.45 in May, while median distance barely moves. Trips got slower rather than longer: the model's target shifted even where its inputs did not.\n\nDrift against January is measured with the population stability index. By convention, values below 0.1 are stable and above 0.25 are a major shift:\n\n| Month | duration_min | trip_distance | hour | passenger_count | PULocationID |\n|---|---:|---:|---:|---:|---:|\n| 2024-02 | 0.002 | 0.001 | 0.002 | 0.000 | 0.004 |\n| 2024-03 | 0.009 | 0.003 | 0.006 | 0.002 | 0.009 |\n| 2024-04 | 0.018 | 0.005 | 0.004 | 0.002 | 0.007 |\n| 2024-05 | 0.038 | 0.006 | 0.004 | 0.002 | 0.008 |\n| 2024-06 | 0.025 | 0.006 | 0.006 | 0.001 | 0.012 |\n| 2024-07 | 0.019 | 0.007 | 0.002 | 0.000 | 0.016 |",
+      "findings": [
+        {
+          "label": "Trips across seven months",
+          "value": "23,408,996",
+          "detail": ""
+        },
+        {
+          "label": "Median duration, January",
+          "value": "11.73 min",
+          "detail": ""
+        },
+        {
+          "label": "Peak median duration",
+          "value": "13.45 min",
+          "detail": ""
+        }
+      ],
+      "figures": [],
+      "code_refs": [
+        "ml/data.py:load_month",
+        "ml/train.py:psi_numeric"
+      ],
+      "gate_passed": true,
+      "gate_notes": "Seven real months cleaned with project 01's rules; drift measured on every monitored month."
+    },
+    {
+      "name": "data_preparation",
+      "title": "3. Data Preparation",
+      "objective": "Guarantee no policy ever trains on the month it is judged on.",
+      "narrative": "Each policy chooses its training months at the start of a month, from months that have already finished. Every fit is written to the model registry with its training window, and an assertion checks all 14 fits: none may include the month it serves.\n\nFeatures and hyperparameters are project 01's, unchanged, so the only variable is what the model was trained on and when.",
+      "findings": [
+        {
+          "label": "Model fits",
+          "value": "14",
+          "detail": ""
+        },
+        {
+          "label": "Policies",
+          "value": "4",
+          "detail": ""
+        },
+        {
+          "label": "Baselines",
+          "value": "2",
+          "detail": ""
+        }
+      ],
+      "figures": [],
+      "code_refs": [
+        "ml/train.py:run_policy",
+        "ml/train.py:record_fit"
+      ],
+      "gate_passed": true,
+      "gate_notes": "14 registry entries verified against their serving month."
+    },
+    {
+      "name": "modeling",
+      "title": "4. Modeling",
+      "objective": "Compare four retraining policies and two model-free baselines month by month.",
+      "narrative": "- **Never retrain** serves January's model all year.\n- **Retrain monthly on last month** follows the most recent month only.\n- **Retrain monthly on all history** accumulates every finished month.\n- **Retrain on drift alarm** retrains on all history only when some monitored column's PSI against the model's training data exceeds 0.1.\n\nThe two baselines refresh without learning: January's median duration, and the median duration of each pickup\u2013dropoff pair over all finished months.",
+      "findings": [
+        {
+          "label": "Best policy",
+          "value": "Retrain monthly on all history",
+          "detail": ""
+        },
+        {
+          "label": "Mean RMSE",
+          "value": "6.396 min",
+          "detail": ""
+        },
+        {
+          "label": "Retrains",
+          "value": "6",
+          "detail": ""
+        }
+      ],
+      "figures": [],
+      "code_refs": [
+        "ml/train.py:on_alarm",
+        "ml/train.py:baseline"
+      ],
+      "gate_passed": true,
+      "gate_notes": "6 strategies scored on 6 months."
+    },
+    {
+      "name": "evaluation",
+      "title": "5. Evaluation",
+      "objective": "Decide which policy to run, and whether the drift alarm earns its place.",
+      "narrative": "**Retrain monthly on all history** keeps average error lowest, at 6.396 minutes RMSE, against 7.054 for never retraining. Never retraining is worst in May, at 7.858.\n\nThe drift alarm fired in 0 of 5 monthly checks and retrained 1 times in total, reaching 7.054 minutes. PSI thresholds are conventions, and this is the evidence for how much this one is worth on this model.\n\nServed, the model answers 25 requests per second at concurrency 8 on this machine, with a 99th-percentile latency of 428.4 ms. That is one uvicorn worker on a laptop, measured, not a production claim.",
+      "findings": [
+        {
+          "label": "Best mean RMSE",
+          "value": "6.396 min",
+          "detail": ""
+        },
+        {
+          "label": "Never retrain",
+          "value": "7.054 min",
+          "detail": ""
+        },
+        {
+          "label": "Alarm retrains",
+          "value": "1",
+          "detail": ""
+        },
+        {
+          "label": "Peak throughput",
+          "value": "25 req/s",
+          "detail": ""
+        }
+      ],
+      "figures": [],
+      "code_refs": [
+        "ml/train.py:main",
+        "ml/load_test.py"
+      ],
+      "gate_passed": true,
+      "gate_notes": "No critical findings; every policy judged only on months it had not seen."
+    },
+    {
+      "name": "deployment",
+      "title": "6. Deployment",
+      "objective": "Serve the model with its lineage, explanations, load profile and model card.",
+      "narrative": "The served model is the one trained on all history through June. `POST /api/predict` returns the estimate together with each feature's TreeSHAP contribution in minutes. `GET /api/registry`, `/api/drift`, `/api/load-test` and `/api/model-card` publish lineage, monitoring, capacity and governance information from the same run.",
+      "findings": [
+        {
+          "label": "Served policy",
+          "value": "Retrain monthly on all history",
+          "detail": ""
+        },
+        {
+          "label": "Serving port",
+          "value": "8,013",
+          "detail": ""
+        }
+      ],
+      "figures": [],
+      "code_refs": [
+        "server/main.py",
+        "server/inference.py"
+      ],
+      "gate_passed": true,
+      "gate_notes": "Model, registry, drift history, load profile and model card persisted together."
+    }
+  ]
+}

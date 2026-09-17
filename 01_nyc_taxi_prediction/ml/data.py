@@ -108,7 +108,7 @@ def load_zones() -> tuple[pd.DataFrame, Provenance]:
 # Cleaning
 # --------------------------------------------------------------------------
 
-def clean(df: pd.DataFrame) -> tuple[pd.DataFrame, list[dict]]:
+def clean(df: pd.DataFrame, month: str = "2024-01") -> tuple[pd.DataFrame, list[dict]]:
     """
     Filter the raw records to plausible, completed street-hail trips.
 
@@ -138,13 +138,15 @@ def clean(df: pd.DataFrame) -> tuple[pd.DataFrame, list[dict]]:
         d["tpep_dropoff_datetime"] - d["tpep_pickup_datetime"]
     ).dt.total_seconds() / 60.0
 
-    # The file is titled January 2024 but contains a handful of stray records
-    # from other months -- a real quirk of TLC exports.
+    # Each monthly file contains a handful of stray records from other months
+    # -- a real quirk of TLC exports. `month` lets project 13 clean later files
+    # with the same rules; the January default leaves this project unchanged.
+    start = pd.Timestamp(f"{month}-01")
     in_month = (
-        (d["tpep_pickup_datetime"] >= "2024-01-01")
-        & (d["tpep_pickup_datetime"] < "2024-02-01")
+        (d["tpep_pickup_datetime"] >= start)
+        & (d["tpep_pickup_datetime"] < start + pd.offsets.MonthBegin(1))
     )
-    d = drop(in_month, "pickup timestamp outside January 2024", d)
+    d = drop(in_month, f"pickup timestamp outside {start:%B %Y}", d)
 
     # Duration: 1 minute to 3 hours. Below a minute is a meter misfire; above
     # three hours in a yellow cab is almost always a forgotten meter.

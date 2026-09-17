@@ -1,0 +1,12 @@
+{
+  "api_port": 8013,
+  "web_port": 5113,
+  "views": [
+    {"tab": "Drift & retraining", "file": "01_drift_retraining", "expect": "Alarm decisions"},
+    {"tab": "Explain a prediction", "file": "02_explain_prediction", "expect": "Starting point"},
+    {"tab": "Model registry", "file": "03_model_registry", "expect": "What the served model relies on"},
+    {"tab": "Load test & model card", "file": "04_load_test_model_card", "expect": "Intended use"},
+    {"tab": "CRISP-DM", "file": "05_crispdm_walkthrough", "expect": "Phase gate"},
+    {"tab": "Audit", "file": "06_leakage_audit", "expect": "Assertions executed during training"}
+  ]
+}

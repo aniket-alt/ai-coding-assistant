@@ -13,6 +13,23 @@
 
 import { useMemo, useState } from 'react';
 import type { ModelScore, RunRecord } from '../types';
+
+/**
+ * One colour per model for the whole page, keyed by name.
+ *
+ * Slots follow the order training recorded the models in, not the current
+ * sort, so a model keeps its colour when the table is re-sorted and a chart
+ * of the same models can reuse the map. Baselines are muted.
+ */
+export function modelColors(run: RunRecord, baselineFamilies: string[] = ['baseline']): Record<string, string> {
+  const out: Record<string, string> = {};
+  let slot = 0;
+  for (const m of run.models) {
+    out[m.name] = baselineFamilies.includes((m.family ?? '').toLowerCase())
+      ? 'var(--text-muted)' : seriesColor(slot++);
+  }
+  return out;
+}
 import { seriesColor } from './Chart';
 
 export interface ColumnSpec {
@@ -93,6 +110,7 @@ export function ModelLeaderboard({
     baselineFamilies.includes((m.family ?? '').toLowerCase());
 
   const nBaseline = run.models.filter(isBaseline).length;
+  const colors = useMemo(() => modelColors(run, baselineFamilies), [run, baselineFamilies]);
 
   return (
     <div style={{ overflowX: 'auto' }}>
@@ -162,7 +180,7 @@ export function ModelLeaderboard({
                     <span style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
                       <span aria-hidden style={{
                         width: 8, height: 8, borderRadius: 2, flexShrink: 0,
-                        background: base ? 'var(--text-muted)' : seriesColor(i),
+                        background: colors[m.name],
                       }} />
                       <span style={{ fontWeight: best ? 700 : 500 }}>{m.name}</span>
                       {best && <Tag color="var(--delta-up)">BEST</Tag>}

@@ -1,0 +1,54 @@
+{
+  "slug": "nyc-tlc-yellow-2024-01",
+  "name": "NYC TLC Yellow Taxi Trip Records \u2014 January to July 2024",
+  "source_url": "https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2024-01.parquet",
+  "license": "NYC Taxi & Limousine Commission open data (public domain)",
+  "citation": "NYC Taxi & Limousine Commission (2024). TLC Trip Record Data. https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page",
+  "retrieved_at": "2026-09-17T05:27:04Z",
+  "sha256": "c4d59da7bbc8abaeeeb1727947ee93d9891a71acb42854bd80db1571b2030510",
+  "n_rows": 23408996,
+  "n_cols": 19,
+  "bytes_on_disk": 49961641,
+  "synthetic": false,
+  "notes": "Seven monthly files; the SHA-256 and size are January's. Every month's receipt is in extra.",
+  "extra": {
+    "months": [
+      {
+        "month": "2024-01",
+        "rows": 2964624,
+        "sha256": "c4d59da7bbc8abaeeeb1727947ee93d9891a71acb42854bd80db1571b2030510"
+      },
+      {
+        "month": "2024-02",
+        "rows": 3007526,
+        "sha256": "c76c43c18c6c6664080dd920baab4928988d5786a6b65980792ca7cd796f9f20"
+      },
+      {
+        "month": "2024-03",
+        "rows": 3582628,
+        "sha256": "2d4cdc8fb96726cdd3803b13b02d2e61e71d45720aff0ebc693a8bdd1f249823"
+      },
+      {
+        "month": "2024-04",
+        "rows": 3514289,
+        "sha256": "ce37f736c7cf9e92164c850ef2b502a8f7bb590fc1804b6edbcb80293da01b89"
+      },
+      {
+        "month": "2024-05",
+        "rows": 3723833,
+        "sha256": "1974230be2b5a3ea92e47b5eb77f32dbf1de896d81ad8df4ab6faba52749ad23"
+      },
+      {
+        "month": "2024-06",
+        "rows": 3539193,
+        "sha256": "677cf14c8347f745b583f012fbdba072334c6c4efa17bfd6a64369f2ba30329c"
+      },
+      {
+        "month": "2024-07",
+        "rows": 3076903,
+        "sha256": "af12d6b04daeb78550799ae99933d495b27d715b6dbb0fad9bb750a4537d3070"
+      }
+    ],
+    "rows_modelled_per_month": 150000
+  }
+}

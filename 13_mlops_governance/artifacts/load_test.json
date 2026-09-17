@@ -1,0 +1,37 @@
+{
+  "machine": "Windows 10, 32 logical CPUs",
+  "server": "uvicorn, one worker",
+  "warmup_requests": 50,
+  "levels": [
+    {
+      "concurrency": 1,
+      "requests": 600,
+      "errors": 0,
+      "throughput_rps": 21.7,
+      "p50_ms": 42.06,
+      "p95_ms": 63.65,
+      "p99_ms": 66.41,
+      "max_ms": 112.55
+    },
+    {
+      "concurrency": 8,
+      "requests": 600,
+      "errors": 0,
+      "throughput_rps": 25.3,
+      "p50_ms": 310.88,
+      "p95_ms": 385.62,
+      "p99_ms": 428.36,
+      "max_ms": 477.77
+    },
+    {
+      "concurrency": 32,
+      "requests": 600,
+      "errors": 0,
+      "throughput_rps": 23.1,
+      "p50_ms": 1054.91,
+      "p95_ms": 3611.23,
+      "p99_ms": 4847.69,
+      "max_ms": 7471.72
+    }
+  ]
+}

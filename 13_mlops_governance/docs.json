@@ -1,0 +1,38 @@
+{
+  "entity": "Strategy",
+  "metric_columns": [
+    {"key": "mean_rmse", "label": "Mean RMSE (min)", "fmt": "f3"},
+    {"key": "worst_month_rmse", "label": "Worst month", "fmt": "f3"},
+    {"key": "july_rmse", "label": "July", "fmt": "f3"},
+    {"key": "retrains", "label": "Models fitted", "fmt": "int"},
+    {"key": "mean_within_5min", "label": "Within 5 min", "fmt": "pct_raw"}
+  ],
+  "reproduce": [
+    "python ml/train.py",
+    "python -m uvicorn main:app --app-dir server --port 8013",
+    "npm run dev -w 13_mlops_governance/client"
+  ],
+  "non_goals": [
+    "A production deployment. The registry, monitoring and load test run locally to show the decisions, not the infrastructure.",
+    "Choosing a new model family each month. Model, features and hyperparameters are fixed so that only the retraining policy varies."
+  ],
+  "risks": [
+    "Each month is a 150,000-trip sample, not the full month; per-month RMSE carries sampling noise.",
+    "Six monitored months is a short history for judging a policy, and spring 2024 may not resemble other years.",
+    "The load test ran on one development machine with one server worker, so its figures describe that setup only.",
+    "TreeSHAP contributions explain this model's arithmetic, not the causes of a trip's duration."
+  ],
+  "lessons": [
+    "Distribution monitoring can stay quiet while accuracy degrades: the drift alarm never fired, yet never retraining was clearly worse than retraining monthly.",
+    "Retraining on all accumulated history beat retraining on only the latest month, so more data outweighed recency here.",
+    "A retraining policy has to be evaluated like a model, month by month on data it has never seen, with baselines beside it.",
+    "With a single worker, extra concurrency did not raise throughput; it only turned into queueing time."
+  ],
+  "references": [
+    "Sculley, D. et al. (2015). Hidden technical debt in machine learning systems. Advances in Neural Information Processing Systems 28.",
+    "Mitchell, M. et al. (2019). Model cards for model reporting. Proceedings of FAT* 2019, 220–229.",
+    "Gama, J. et al. (2014). A survey on concept drift adaptation. ACM Computing Surveys, 46(4), 1–37.",
+    "Lundberg, S. M. et al. (2020). From local explanations to global understanding with explainable AI for trees. Nature Machine Intelligence, 2, 56–67.",
+    "Yurdakul, B. (2018). Statistical properties of population stability index. PhD dissertation, Western Michigan University."
+  ]
+}

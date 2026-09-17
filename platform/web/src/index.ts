@@ -22,7 +22,7 @@ export type { AppShellProps, Tab, Theme } from './components/AppShell';
 export { MetricsPanel } from './components/MetricsPanel';
 export type { MetricsPanelProps, MetricSpec } from './components/MetricsPanel';
 
-export { ModelLeaderboard } from './components/ModelLeaderboard';
+export { ModelLeaderboard, modelColors } from './components/ModelLeaderboard';
 export type { ModelLeaderboardProps, ColumnSpec } from './components/ModelLeaderboard';
 
 export { CrispDmWalkthrough } from './components/CrispDmWalkthrough';

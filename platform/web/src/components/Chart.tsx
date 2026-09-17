@@ -41,6 +41,8 @@ export interface ChartSeries {
   label: string;
   /** Override the slot colour only when the entity has a fixed identity. */
   color?: string;
+  /** SVG dash pattern for lines, e.g. '6 4', to tell muted series apart. */
+  dash?: string;
 }
 
 export interface ChartProps {
@@ -252,7 +254,7 @@ export function Chart({
         {series.map((s, i) => (
           <Line key={s.key} type="monotone" dataKey={s.key} name={s.label}
                 isAnimationActive={false}
-                stroke={colors[i]} strokeWidth={2} dot={false}
+                stroke={colors[i]} strokeWidth={2} dot={false} strokeDasharray={s.dash}
                 activeDot={{ r: 4, strokeWidth: 2, stroke: 'var(--surface-1)' }}
                 label={labelPoints ? undefined : undefined} />
         ))}

@@ -1,0 +1,1123 @@
+{
+  "project_slug": "13_mlops_governance",
+  "project_title": "MLOps & Governance",
+  "task": "model monitoring and retraining policy",
+  "primary_metric": "mean_rmse",
+  "higher_is_better": false,
+  "provenance": {
+    "slug": "nyc-tlc-yellow-2024-01",
+    "name": "NYC TLC Yellow Taxi Trip Records \u2014 January to July 2024",
+    "source_url": "https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2024-01.parquet",
+    "license": "NYC Taxi & Limousine Commission open data (public domain)",
+    "citation": "NYC Taxi & Limousine Commission (2024). TLC Trip Record Data. https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page",
+    "retrieved_at": "2026-09-17T05:27:04Z",
+    "sha256": "c4d59da7bbc8abaeeeb1727947ee93d9891a71acb42854bd80db1571b2030510",
+    "n_rows": 23408996,
+    "n_cols": 19,
+    "bytes_on_disk": 49961641,
+    "synthetic": false,
+    "notes": "Seven monthly files; the SHA-256 and size are January's. Every month's receipt is in extra.",
+    "extra": {
+      "months": [
+        {
+          "month": "2024-01",
+          "rows": 2964624,
+          "sha256": "c4d59da7bbc8abaeeeb1727947ee93d9891a71acb42854bd80db1571b2030510"
+        },
+        {
+          "month": "2024-02",
+          "rows": 3007526,
+          "sha256": "c76c43c18c6c6664080dd920baab4928988d5786a6b65980792ca7cd796f9f20"
+        },
+        {
+          "month": "2024-03",
+          "rows": 3582628,
+          "sha256": "2d4cdc8fb96726cdd3803b13b02d2e61e71d45720aff0ebc693a8bdd1f249823"
+        },
+        {
+          "month": "2024-04",
+          "rows": 3514289,
+          "sha256": "ce37f736c7cf9e92164c850ef2b502a8f7bb590fc1804b6edbcb80293da01b89"
+        },
+        {
+          "month": "2024-05",
+          "rows": 3723833,
+          "sha256": "1974230be2b5a3ea92e47b5eb77f32dbf1de896d81ad8df4ab6faba52749ad23"
+        },
+        {
+          "month": "2024-06",
+          "rows": 3539193,
+          "sha256": "677cf14c8347f745b583f012fbdba072334c6c4efa17bfd6a64369f2ba30329c"
+        },
+        {
+          "month": "2024-07",
+          "rows": 3076903,
+          "sha256": "af12d6b04daeb78550799ae99933d495b27d715b6dbb0fad9bb750a4537d3070"
+        }
+      ],
+      "rows_modelled_per_month": 150000
+    }
+  },
+  "split": {
+    "strategy": "month-by-month, each policy trained only on finished months",
+    "n_train": 150000,
+    "n_test": 900000,
+    "n_val": 0,
+    "train_end": "2024-01-30 23:07:53",
+    "test_start": "2024-02-01 00:00:03",
+    "embargo": "",
+    "notes": "150,000 sampled trips per month."
+  },
+  "models": [
+    {
+      "name": "Never retrain",
+      "family": "retraining policy",
+      "metrics": {
+        "mean_rmse": 7.054250000000001,
+        "worst_month_rmse": 7.8583,
+        "july_rmse": 6.878,
+        "retrains": 1.0,
+        "mean_within_5min": 75.42999999999999
+      },
+      "params": {
+        "retrains": 1
+      },
+      "fit_seconds": 0.0,
+      "predict_ms_per_1k": 0.0,
+      "notes": ""
+    },
+    {
+      "name": "Retrain monthly on last month",
+      "family": "retraining policy",
+      "metrics": {
+        "mean_rmse": 6.667383333333333,
+        "worst_month_rmse": 7.0701,
+        "july_rmse": 6.8383,
+        "retrains": 6.0,
+        "mean_within_5min": 75.34575
+      },
+      "params": {
+        "retrains": 6
+      },
+      "fit_seconds": 0.0,
+      "predict_ms_per_1k": 0.0,
+      "notes": ""
+    },
+    {
+      "name": "Retrain monthly on all history",
+      "family": "retraining policy",
+      "metrics": {
+        "mean_rmse": 6.3962,
+        "worst_month_rmse": 6.8745,
+        "july_rmse": 6.0387,
+        "retrains": 6.0,
+        "mean_within_5min": 77.02499999999999
+      },
+      "params": {
+        "retrains": 6
+      },
+      "fit_seconds": 0.0,
+      "predict_ms_per_1k": 0.0,
+      "notes": ""
+    },
+    {
+      "name": "Retrain on drift alarm (PSI > 0.1)",
+      "family": "retraining policy",
+      "metrics": {
+        "mean_rmse": 7.054250000000001,
+        "worst_month_rmse": 7.8583,
+        "july_rmse": 6.878,
+        "retrains": 1.0,
+        "mean_within_5min": 75.42999999999999
+      },
+      "params": {
+        "retrains": 1
+      },
+      "fit_seconds": 0.0,
+      "predict_ms_per_1k": 0.0,
+      "notes": ""
+    },
+    {
+      "name": "January median, never refreshed",
+      "family": "baseline",
+      "metrics": {
+        "mean_rmse": 14.051166666666667,
+        "worst_month_rmse": 15.3962,
+        "july_rmse": 14.0776,
+        "retrains": 0.0,
+        "mean_within_5min": 46.144666666666666
+      },
+      "params": {
+        "retrains": 0
+      },
+      "fit_seconds": 0.0,
+      "predict_ms_per_1k": 0.0,
+      "notes": ""
+    },
+    {
+      "name": "Route median lookup, refreshed monthly",
+      "family": "baseline",
+      "metrics": {
+        "mean_rmse": 8.322383333333333,
+        "worst_month_rmse": 9.1706,
+        "july_rmse": 7.7331,
+        "retrains": 0.0,
+        "mean_within_5min": 71.04546666666668
+      },
+      "params": {
+        "retrains": 0
+      },
+      "fit_seconds": 0.0,
+      "predict_ms_per_1k": 0.0,
+      "notes": ""
+    }
+  ],
+  "baseline": {},
+  "audit": {
+    "critical": 0,
+    "warnings": 0,
+    "total": 0,
+    "runtime_assertions": [
+      {
+        "name": "assert_temporal_split",
+        "passed": true,
+        "detail": "Last training timestamp 2024-01-30 23:07:53 precedes first test timestamp 2024-02-01 00:00:03 by 1 days 00:52:10; no embargo required.",
+        "params": {
+          "train_end": "2024-01-30 23:07:53",
+          "test_start": "2024-02-01 00:00:03",
+          "gap": "1 days 00:52:10",
+          "embargo_required": "",
+          "chronologically_ordered": true
+        },
+        "at": "2026-09-17T05:27:37Z"
+      },
+      {
+        "name": "assert_no_target_leak",
+        "passed": true,
+        "detail": "22 numeric features correlated against the target; strongest was zp_median_distance at |r|=0.7821 (threshold 0.995).",
+        "params": {
+          "features_checked": 22,
+          "max_abs_correlation": 0.782065,
+          "max_correlation_feature": "zp_median_distance",
+          "threshold": 0.995,
+          "leaked_features": []
+        },
+        "at": "2026-09-17T05:27:37Z"
+      },
+      {
+        "name": "assert_policies_train_only_on_finished_months",
+        "passed": true,
+        "detail": "14 model fits checked; 0 used a month at or after the month they served.",
+        "params": {
+          "fits": 14,
+          "violations": []
+        },
+        "at": "2026-09-17T05:30:17Z"
+      }
+    ],
+    "assertions_passed": 3,
+    "assertions_run": 3
+  },
+  "env": {
+    "python": "3.11.6",
+    "platform": "Windows 10",
+    "machine": "AMD64",
+    "numpy": "2.4.6",
+    "pandas": "3.0.5",
+    "sklearn": "1.9.1",
+    "git_commit": "ada6490"
+  },
+  "created_at": "2026-09-17T05:30:17Z",
+  "duration_seconds": 281.6,
+  "extra": {
+    "facts": [
+      {
+        "month": "2024-01",
+        "raw_trips": 2964624,
+        "clean_trips": 2799247,
+        "sampled": 150000,
+        "median_duration": 11.733333333333333,
+        "median_distance": 1.7
+      },
+      {
+        "month": "2024-02",
+        "raw_trips": 3007526,
+        "clean_trips": 2831726,
+        "sampled": 150000,
+        "median_duration": 12.083333333333334,
+        "median_distance": 1.72
+      },
+      {
+        "month": "2024-03",
+        "raw_trips": 3582628,
+        "clean_trips": 3355726,
+        "sampled": 150000,
+        "median_duration": 12.566666666666666,
+        "median_distance": 1.8
+      },
+      {
+        "month": "2024-04",
+        "raw_trips": 3514289,
+        "clean_trips": 3330453,
+        "sampled": 150000,
+        "median_duration": 12.933333333333334,
+        "median_distance": 1.81
+      },
+      {
+        "month": "2024-05",
+        "raw_trips": 3723833,
+        "clean_trips": 3528284,
+        "sampled": 150000,
+        "median_duration": 13.45,
+        "median_distance": 1.82
+      },
+      {
+        "month": "2024-06",
+        "raw_trips": 3539193,
+        "clean_trips": 3343124,
+        "sampled": 150000,
+        "median_duration": 13.083333333333334,
+        "median_distance": 1.82
+      },
+      {
+        "month": "2024-07",
+        "raw_trips": 3076903,
+        "clean_trips": 2899298,
+        "sampled": 150000,
+        "median_duration": 12.916666666666666,
+        "median_distance": 1.83
+      }
+    ],
+    "drift_vs_january": [
+      {
+        "month": "2024-02",
+        "duration_min": 0.0016,
+        "trip_distance": 0.0007,
+        "hour": 0.0018,
+        "passenger_count": 0.0003,
+        "PULocationID": 0.0042
+      },
+      {
+        "month": "2024-03",
+        "duration_min": 0.0086,
+        "trip_distance": 0.003,
+        "hour": 0.006,
+        "passenger_count": 0.0016,
+        "PULocationID": 0.0091
+      },
+      {
+        "month": "2024-04",
+        "duration_min": 0.018,
+        "trip_distance": 0.0054,
+        "hour": 0.0045,
+        "passenger_count": 0.0022,
+        "PULocationID": 0.0069
+      },
+      {
+        "month": "2024-05",
+        "duration_min": 0.0382,
+        "trip_distance": 0.0057,
+        "hour": 0.0036,
+        "passenger_count": 0.0019,
+        "PULocationID": 0.0079
+      },
+      {
+        "month": "2024-06",
+        "duration_min": 0.0249,
+        "trip_distance": 0.0063,
+        "hour": 0.0056,
+        "passenger_count": 0.0014,
+        "PULocationID": 0.0122
+      },
+      {
+        "month": "2024-07",
+        "duration_min": 0.0193,
+        "trip_distance": 0.0069,
+        "hour": 0.0016,
+        "passenger_count": 0.0002,
+        "PULocationID": 0.0159
+      }
+    ],
+    "psi_alarm": 0.1,
+    "alarm_checks": [
+      {
+        "decided_for": "2024-03",
+        "compared": "2024-02",
+        "worst_column": "PULocationID",
+        "psi": 0.0042,
+        "retrained": false
+      },
+      {
+        "decided_for": "2024-04",
+        "compared": "2024-03",
+        "worst_column": "PULocationID",
+        "psi": 0.0091,
+        "retrained": false
+      },
+      {
+        "decided_for": "2024-05",
+        "compared": "2024-04",
+        "worst_column": "duration_min",
+        "psi": 0.018,
+        "retrained": false
+      },
+      {
+        "decided_for": "2024-06",
+        "compared": "2024-05",
+        "worst_column": "duration_min",
+        "psi": 0.0382,
+        "retrained": false
+      },
+      {
+        "decided_for": "2024-07",
+        "compared": "2024-06",
+        "worst_column": "duration_min",
+        "psi": 0.0249,
+        "retrained": false
+      }
+    ],
+    "policy_months": {
+      "Never retrain": [
+        {
+          "month": "2024-02",
+          "rmse": 6.1883,
+          "mae": 3.6959,
+          "within_5min": 78.822,
+          "trained_on": [
+            "2024-01"
+          ],
+          "retrained": true
+        },
+        {
+          "month": "2024-03",
+          "rmse": 6.7884,
+          "mae": 3.9384,
+          "within_5min": 77.4133,
+          "trained_on": [
+            "2024-01"
+          ],
+          "retrained": false
+        },
+        {
+          "month": "2024-04",
+          "rmse": 6.9127,
+          "mae": 4.1127,
+          "within_5min": 75.866,
+          "trained_on": [
+            "2024-01"
+          ],
+          "retrained": false
+        },
+        {
+          "month": "2024-05",
+          "rmse": 7.8583,
+          "mae": 4.6547,
+          "within_5min": 72.002,
+          "trained_on": [
+            "2024-01"
+          ],
+          "retrained": false
+        },
+        {
+          "month": "2024-06",
+          "rmse": 7.6998,
+          "mae": 4.5289,
+          "within_5min": 73.322,
+          "trained_on": [
+            "2024-01"
+          ],
+          "retrained": false
+        },
+        {
+          "month": "2024-07",
+          "rmse": 6.878,
+          "mae": 4.1483,
+          "within_5min": 75.1547,
+          "trained_on": [
+            "2024-01"
+          ],
+          "retrained": false
+        }
+      ],
+      "Retrain monthly on last month": [
+        {
+          "month": "2024-02",
+          "rmse": 6.1883,
+          "mae": 3.6959,
+          "within_5min": 78.822,
+          "trained_on": [
+            "2024-01"
+          ],
+          "retrained": true
+        },
+        {
+          "month": "2024-03",
+          "rmse": 6.5602,
+          "mae": 3.8571,
+          "within_5min": 77.8753,
+          "trained_on": [
+            "2024-02"
+          ],
+          "retrained": true
+        },
+        {
+          "month": "2024-04",
+          "rmse": 6.3662,
+          "mae": 3.9287,
+          "within_5min": 76.1093,
+          "trained_on": [
+            "2024-03"
+          ],
+          "retrained": true
+        },
+        {
+          "month": "2024-05",
+          "rmse": 7.0701,
+          "mae": 4.2753,
+          "within_5min": 73.7033,
+          "trained_on": [
+            "2024-04"
+          ],
+          "retrained": true
+        },
+        {
+          "month": "2024-06",
+          "rmse": 6.9812,
+          "mae": 4.3165,
+          "within_5min": 72.7473,
+          "trained_on": [
+            "2024-05"
+          ],
+          "retrained": true
+        },
+        {
+          "month": "2024-07",
+          "rmse": 6.8383,
+          "mae": 4.2808,
+          "within_5min": 72.8173,
+          "trained_on": [
+            "2024-06"
+          ],
+          "retrained": true
+        }
+      ],
+      "Retrain monthly on all history": [
+        {
+          "month": "2024-02",
+          "rmse": 6.1883,
+          "mae": 3.6959,
+          "within_5min": 78.822,
+          "trained_on": [
+            "2024-01"
+          ],
+          "retrained": true
+        },
+        {
+          "month": "2024-03",
+          "rmse": 6.378,
+          "mae": 3.762,
+          "within_5min": 78.6427,
+          "trained_on": [
+            "2024-01",
+            "2024-02"
+          ],
+          "retrained": true
+        },
+        {
+          "month": "2024-04",
+          "rmse": 6.3179,
+          "mae": 3.8493,
+          "within_5min": 77.3553,
+          "trained_on": [
+            "2024-01",
+            "2024-02",
+            "2024-03"
+          ],
+          "retrained": true
+        },
+        {
+          "month": "2024-05",
+          "rmse": 6.8745,
+          "mae": 4.1768,
+          "within_5min": 74.7967,
+          "trained_on": [
+            "2024-01",
+            "2024-02",
+            "2024-03",
+            "2024-04"
+          ],
+          "retrained": true
+        },
+        {
+          "month": "2024-06",
+          "rmse": 6.5798,
+          "mae": 4.0111,
+          "within_5min": 76.0353,
+          "trained_on": [
+            "2024-01",
+            "2024-02",
+            "2024-03",
+            "2024-04",
+            "2024-05"
+          ],
+          "retrained": true
+        },
+        {
+          "month": "2024-07",
+          "rmse": 6.0387,
+          "mae": 3.8282,
+          "within_5min": 76.498,
+          "trained_on": [
+            "2024-01",
+            "2024-02",
+            "2024-03",
+            "2024-04",
+            "2024-05",
+            "2024-06"
+          ],
+          "retrained": true
+        }
+      ],
+      "Retrain on drift alarm (PSI > 0.1)": [
+        {
+          "month": "2024-02",
+          "rmse": 6.1883,
+          "mae": 3.6959,
+          "within_5min": 78.822,
+          "trained_on": [
+            "2024-01"
+          ],
+          "retrained": true
+        },
+        {
+          "month": "2024-03",
+          "rmse": 6.7884,
+          "mae": 3.9384,
+          "within_5min": 77.4133,
+          "trained_on": [
+            "2024-01"
+          ],
+          "retrained": false
+        },
+        {
+          "month": "2024-04",
+          "rmse": 6.9127,
+          "mae": 4.1127,
+          "within_5min": 75.866,
+          "trained_on": [
+            "2024-01"
+          ],
+          "retrained": false
+        },
+        {
+          "month": "2024-05",
+          "rmse": 7.8583,
+          "mae": 4.6547,
+          "within_5min": 72.002,
+          "trained_on": [
+            "2024-01"
+          ],
+          "retrained": false
+        },
+        {
+          "month": "2024-06",
+          "rmse": 7.6998,
+          "mae": 4.5289,
+          "within_5min": 73.322,
+          "trained_on": [
+            "2024-01"
+          ],
+          "retrained": false
+        },
+        {
+          "month": "2024-07",
+          "rmse": 6.878,
+          "mae": 4.1483,
+          "within_5min": 75.1547,
+          "trained_on": [
+            "2024-01"
+          ],
+          "retrained": false
+        }
+      ],
+      "January median, never refreshed": [
+        {
+          "month": "2024-02",
+          "rmse": 12.4038,
+          "mae": 7.875,
+          "within_5min": 47.8187,
+          "trained_on": [
+            "2024-01"
+          ],
+          "retrained": true
+        },
+        {
+          "month": "2024-03",
+          "rmse": 13.6455,
+          "mae": 8.4677,
+          "within_5min": 46.7187,
+          "trained_on": [
+            "2024-01",
+            "2024-02"
+          ],
+          "retrained": true
+        },
+        {
+          "month": "2024-04",
+          "rmse": 13.8011,
+          "mae": 8.6381,
+          "within_5min": 46.2527,
+          "trained_on": [
+            "2024-01",
+            "2024-02",
+            "2024-03"
+          ],
+          "retrained": true
+        },
+        {
+          "month": "2024-05",
+          "rmse": 15.3962,
+          "mae": 9.4628,
+          "within_5min": 44.7053,
+          "trained_on": [
+            "2024-01",
+            "2024-02",
+            "2024-03",
+            "2024-04"
+          ],
+          "retrained": true
+        },
+        {
+          "month": "2024-06",
+          "rmse": 14.9828,
+          "mae": 9.1751,
+          "within_5min": 45.5713,
+          "trained_on": [
+            "2024-01",
+            "2024-02",
+            "2024-03",
+            "2024-04",
+            "2024-05"
+          ],
+          "retrained": true
+        },
+        {
+          "month": "2024-07",
+          "rmse": 14.0776,
+          "mae": 8.8478,
+          "within_5min": 45.8013,
+          "trained_on": [
+            "2024-01",
+            "2024-02",
+            "2024-03",
+            "2024-04",
+            "2024-05",
+            "2024-06"
+          ],
+          "retrained": true
+        }
+      ],
+      "Route median lookup, refreshed monthly": [
+        {
+          "month": "2024-02",
+          "rmse": 7.8102,
+          "mae": 4.4448,
+          "within_5min": 73.5613,
+          "trained_on": [
+            "2024-01"
+          ],
+          "retrained": true
+        },
+        {
+          "month": "2024-03",
+          "rmse": 8.3648,
+          "mae": 4.6993,
+          "within_5min": 72.2047,
+          "trained_on": [
+            "2024-01",
+            "2024-02"
+          ],
+          "retrained": true
+        },
+        {
+          "month": "2024-04",
+          "rmse": 8.2662,
+          "mae": 4.7634,
+          "within_5min": 71.1607,
+          "trained_on": [
+            "2024-01",
+            "2024-02",
+            "2024-03"
+          ],
+          "retrained": true
+        },
+        {
+          "month": "2024-05",
+          "rmse": 9.1706,
+          "mae": 5.3295,
+          "within_5min": 67.6587,
+          "trained_on": [
+            "2024-01",
+            "2024-02",
+            "2024-03",
+            "2024-04"
+          ],
+          "retrained": true
+        },
+        {
+          "month": "2024-06",
+          "rmse": 8.5894,
+          "mae": 4.9855,
+          "within_5min": 70.0127,
+          "trained_on": [
+            "2024-01",
+            "2024-02",
+            "2024-03",
+            "2024-04",
+            "2024-05"
+          ],
+          "retrained": true
+        },
+        {
+          "month": "2024-07",
+          "rmse": 7.7331,
+          "mae": 4.5834,
+          "within_5min": 71.6747,
+          "trained_on": [
+            "2024-01",
+            "2024-02",
+            "2024-03",
+            "2024-04",
+            "2024-05",
+            "2024-06"
+          ],
+          "retrained": true
+        }
+      ]
+    },
+    "registry": [
+      {
+        "version": 1,
+        "policy": "Never retrain",
+        "trained_on": [
+          "2024-01"
+        ],
+        "rows": 150000,
+        "fit_seconds": 8.3,
+        "first_used_for": "2024-02",
+        "rmse_on_first_month": 6.188
+      },
+      {
+        "version": 2,
+        "policy": "Retrain monthly on last month",
+        "trained_on": [
+          "2024-01"
+        ],
+        "rows": 150000,
+        "fit_seconds": 8.5,
+        "first_used_for": "2024-02",
+        "rmse_on_first_month": 6.188
+      },
+      {
+        "version": 3,
+        "policy": "Retrain monthly on last month",
+        "trained_on": [
+          "2024-02"
+        ],
+        "rows": 150000,
+        "fit_seconds": 9.2,
+        "first_used_for": "2024-03",
+        "rmse_on_first_month": 6.56
+      },
+      {
+        "version": 4,
+        "policy": "Retrain monthly on last month",
+        "trained_on": [
+          "2024-03"
+        ],
+        "rows": 150000,
+        "fit_seconds": 9.4,
+        "first_used_for": "2024-04",
+        "rmse_on_first_month": 6.366
+      },
+      {
+        "version": 5,
+        "policy": "Retrain monthly on last month",
+        "trained_on": [
+          "2024-04"
+        ],
+        "rows": 150000,
+        "fit_seconds": 11.6,
+        "first_used_for": "2024-05",
+        "rmse_on_first_month": 7.07
+      },
+      {
+        "version": 6,
+        "policy": "Retrain monthly on last month",
+        "trained_on": [
+          "2024-05"
+        ],
+        "rows": 150000,
+        "fit_seconds": 12.1,
+        "first_used_for": "2024-06",
+        "rmse_on_first_month": 6.981
+      },
+      {
+        "version": 7,
+        "policy": "Retrain monthly on last month",
+        "trained_on": [
+          "2024-06"
+        ],
+        "rows": 150000,
+        "fit_seconds": 8.1,
+        "first_used_for": "2024-07",
+        "rmse_on_first_month": 6.838
+      },
+      {
+        "version": 8,
+        "policy": "Retrain monthly on all history",
+        "trained_on": [
+          "2024-01"
+        ],
+        "rows": 150000,
+        "fit_seconds": 6.4,
+        "first_used_for": "2024-02",
+        "rmse_on_first_month": 6.188
+      },
+      {
+        "version": 9,
+        "policy": "Retrain monthly on all history",
+        "trained_on": [
+          "2024-01",
+          "2024-02"
+        ],
+        "rows": 300000,
+        "fit_seconds": 9.8,
+        "first_used_for": "2024-03",
+        "rmse_on_first_month": 6.378
+      },
+      {
+        "version": 10,
+        "policy": "Retrain monthly on all history",
+        "trained_on": [
+          "2024-01",
+          "2024-02",
+          "2024-03"
+        ],
+        "rows": 450000,
+        "fit_seconds": 14.6,
+        "first_used_for": "2024-04",
+        "rmse_on_first_month": 6.318
+      },
+      {
+        "version": 11,
+        "policy": "Retrain monthly on all history",
+        "trained_on": [
+          "2024-01",
+          "2024-02",
+          "2024-03",
+          "2024-04"
+        ],
+        "rows": 600000,
+        "fit_seconds": 12.8,
+        "first_used_for": "2024-05",
+        "rmse_on_first_month": 6.875
+      },
+      {
+        "version": 12,
+        "policy": "Retrain monthly on all history",
+        "trained_on": [
+          "2024-01",
+          "2024-02",
+          "2024-03",
+          "2024-04",
+          "2024-05"
+        ],
+        "rows": 750000,
+        "fit_seconds": 13.9,
+        "first_used_for": "2024-06",
+        "rmse_on_first_month": 6.58
+      },
+      {
+        "version": 13,
+        "policy": "Retrain monthly on all history",
+        "trained_on": [
+          "2024-01",
+          "2024-02",
+          "2024-03",
+          "2024-04",
+          "2024-05",
+          "2024-06"
+        ],
+        "rows": 900000,
+        "fit_seconds": 13.6,
+        "first_used_for": "2024-07",
+        "rmse_on_first_month": 6.039
+      },
+      {
+        "version": 14,
+        "policy": "Retrain on drift alarm (PSI > 0.1)",
+        "trained_on": [
+          "2024-01"
+        ],
+        "rows": 150000,
+        "fit_seconds": 8.3,
+        "first_used_for": "2024-02",
+        "rmse_on_first_month": 6.188
+      }
+    ],
+    "global_importance": [
+      {
+        "feature": "zp_median_distance",
+        "mean_abs_minutes": 4.651
+      },
+      {
+        "feature": "te_zone_pair",
+        "mean_abs_minutes": 3.79
+      },
+      {
+        "feature": "hour_cos",
+        "mean_abs_minutes": 1.427
+      },
+      {
+        "feature": "RatecodeID",
+        "mean_abs_minutes": 0.688
+      },
+      {
+        "feature": "hour",
+        "mean_abs_minutes": 0.562
+      },
+      {
+        "feature": "PULocationID",
+        "mean_abs_minutes": 0.52
+      },
+      {
+        "feature": "DOLocationID",
+        "mean_abs_minutes": 0.513
+      },
+      {
+        "feature": "dow_sin",
+        "mean_abs_minutes": 0.494
+      },
+      {
+        "feature": "dow_cos",
+        "mean_abs_minutes": 0.429
+      },
+      {
+        "feature": "zp_trip_count",
+        "mean_abs_minutes": 0.373
+      },
+      {
+        "feature": "hour_sin",
+        "mean_abs_minutes": 0.322
+      },
+      {
+        "feature": "dayofweek",
+        "mean_abs_minutes": 0.301
+      },
+      {
+        "feature": "te_pu_hour",
+        "mean_abs_minutes": 0.248
+      },
+      {
+        "feature": "day",
+        "mean_abs_minutes": 0.187
+      },
+      {
+        "feature": "vendor_fields_missing",
+        "mean_abs_minutes": 0.106
+      },
+      {
+        "feature": "passenger_count",
+        "mean_abs_minutes": 0.083
+      },
+      {
+        "feature": "is_overnight",
+        "mean_abs_minutes": 0.068
+      },
+      {
+        "feature": "is_am_rush",
+        "mean_abs_minutes": 0.056
+      },
+      {
+        "feature": "is_weekend",
+        "mean_abs_minutes": 0.051
+      },
+      {
+        "feature": "pu_trip_count",
+        "mean_abs_minutes": 0.044
+      },
+      {
+        "feature": "do_trip_count",
+        "mean_abs_minutes": 0.038
+      },
+      {
+        "feature": "pu_median_distance",
+        "mean_abs_minutes": 0.037
+      },
+      {
+        "feature": "is_pm_rush",
+        "mean_abs_minutes": 0.013
+      },
+      {
+        "feature": "zp_is_rare",
+        "mean_abs_minutes": 0.011
+      },
+      {
+        "feature": "is_same_zone",
+        "mean_abs_minutes": 0.005
+      }
+    ],
+    "load_test": {
+      "machine": "Windows 10, 32 logical CPUs",
+      "server": "uvicorn, one worker",
+      "warmup_requests": 50,
+      "levels": [
+        {
+          "concurrency": 1,
+          "requests": 600,
+          "errors": 0,
+          "throughput_rps": 21.7,
+          "p50_ms": 42.06,
+          "p95_ms": 63.65,
+          "p99_ms": 66.41,
+          "max_ms": 112.55
+        },
+        {
+          "concurrency": 8,
+          "requests": 600,
+          "errors": 0,
+          "throughput_rps": 25.3,
+          "p50_ms": 310.88,
+          "p95_ms": 385.62,
+          "p99_ms": 428.36,
+          "max_ms": 477.77
+        },
+        {
+          "concurrency": 32,
+          "requests": 600,
+          "errors": 0,
+          "throughput_rps": 23.1,
+          "p50_ms": 1054.91,
+          "p95_ms": 3611.23,
+          "p99_ms": 4847.69,
+          "max_ms": 7471.72
+        }
+      ]
+    },
+    "served": {
+      "policy": "Retrain monthly on all history",
+      "trained_on": [
+        "2024-01",
+        "2024-02",
+        "2024-03",
+        "2024-04",
+        "2024-05",
+        "2024-06"
+      ]
+    }
+  },
+  "best_model": "Retrain monthly on all history",
+  "best_score": 6.3962,
+  "lift_over_baseline": null
+}

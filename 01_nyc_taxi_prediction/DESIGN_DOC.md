@@ -47,7 +47,7 @@ Training is the only writer of results. The API serves the artifacts it wrote, a
 | File | Lines | Responsibility |
 |---|---:|---|
 | `ml/build_zone_map.py` | 163 | Build the taxi-zone SVG map from the official TLC shapefile. |
-| `ml/data.py` | 254 | Project 01 -- NYC Taxi trip duration: data acquisition and cleaning. |
+| `ml/data.py` | 256 | Project 01 -- NYC Taxi trip duration: data acquisition and cleaning. |
 | `ml/features.py` | 268 | Every feature here must be computable at the moment a rider requests a cab. |
 | `ml/train.py` | 428 | Project 01 -- model tournament, audit, and artefact generation. |
 | `server/inference.py` | 153 | Loads the persisted model together with the encoders it was trained with, so a prediction at request time is assembled exactly as it was during training. The zone statistics… |
