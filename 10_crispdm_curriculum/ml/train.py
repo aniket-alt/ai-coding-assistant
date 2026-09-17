@@ -385,7 +385,7 @@ def main() -> None:
             f"interesting is a judgement the algorithm cannot make.\n\n"
             f"**Proxies.** A model given only the features left after removing sex and "
             f"race predicts a person's sex with an ROC-AUC of **{proxy_auc:.3f}**. "
-            f"Relationship status alone nearly does it: "
+            f"Relationship status is one such proxy: "
             + ", ".join(f"{p['men_pct']:.0f}% of '{p['relationship']}' are men" for p in proxies[:2])
             + "."
         ),

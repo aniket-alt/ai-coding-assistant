@@ -121,7 +121,7 @@ Recorded by the assertion ledger while training ran; generated from `artifacts/m
 
 ## 9. Reproducibility
 
-Last trained at commit `ada6490` on Python 3.11.6.
+Last trained at commit `1e3bb26` on Python 3.11.6.
 
 ```bash
 python ml/train.py

@@ -4,7 +4,7 @@
   "source_url": "https://openml.org/data/v1/download/1595261/adult.arff",
   "license": "Public (OpenML); originally UCI Machine Learning Repository, CC BY 4.0",
   "citation": "Becker, B., & Kohavi, R. (1996). Adult [Dataset]. UCI Machine Learning Repository. https://doi.org/10.24432/C5XW20",
-  "retrieved_at": "2026-09-17T05:37:30Z",
+  "retrieved_at": "2026-09-17T16:26:29Z",
   "sha256": "77aa1703717a29f0b5642e94c3ba1defd2486f0b34d4d8eccc1b37a5f7d226b0",
   "n_rows": 48842,
   "n_cols": 16,

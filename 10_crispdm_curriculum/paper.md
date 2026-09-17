@@ -90,7 +90,7 @@ Four real models were trained: logistic regression and LightGBM, each with and w
 
 **Outliers.** An isolation forest flags 367 people as the most unusual 1%. **83%** of them have a capital gain or loss, against 12% of everyone else, and 28% are 70 or older against 2%. Both capital columns are zero for almost everyone, so any non-zero value looks unusual: the detector is mostly reporting how those columns are distributed. Whether that makes someone interesting is a judgement the algorithm cannot make.
 
-**Proxies.** A model given only the features left after removing sex and race predicts a person's sex with an ROC-AUC of **0.935**. Relationship status alone nearly does it: 100% of 'Husband' are men, 56% of 'Own-child' are men.
+**Proxies.** A model given only the features left after removing sex and race predicts a person's sex with an ROC-AUC of **0.935**. Relationship status is one such proxy: 100% of 'Husband' are men, 56% of 'Own-child' are men.
 
 | Finding | Value | Note |
 |---|---|---|
@@ -174,7 +174,7 @@ The course is served by endpoints for each lesson — `/api/eda`, `/api/unsuperv
 
 ## Reproducibility
 
-Trained 2026-09-17T05:37:32Z in 11.5 s at commit `ada6490` with Python 3.11.6, NumPy 2.4.6, pandas 3.0.5 and scikit-learn 1.9.1.
+Trained 2026-09-17T16:26:31Z in 8.5 s at commit `1e3bb26` with Python 3.11.6, NumPy 2.4.6, pandas 3.0.5 and scikit-learn 1.9.1.
 
 ```bash
 python ml/train.py
