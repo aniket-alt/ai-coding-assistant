@@ -76,6 +76,11 @@ Each skill links to the line where it is implemented. Links are located by searc
 | **A small, testable quick-entry grammar** | [`00_task_workspace/server/parser.py`](./00_task_workspace/server/parser.py#L98) | Resolves relative dates against an explicit day and keeps any marker it cannot parse in the title. |
 | **Generated round-trip tests for a parser** | [`00_task_workspace/ml/train.py`](./00_task_workspace/ml/train.py#L77) | Renders known fields into text in random order and requires every one to come back, independently of hand-written cases. |
 | **Measuring live-update delivery** | [`00_task_workspace/ml/train.py`](./00_task_workspace/ml/train.py#L160) | Runs the real server with many subscribers and checks completeness, order and latency of every event. |
+| **Masking label words to measure a text leak** | [`14_multimodal_automl/ml/data.py`](./14_multimodal_automl/ml/data.py#L77) | Removes every word of any class name, so a text model's score without the answer written in the input can be measured. |
+| **Grouped split by a shared key** | [`14_multimodal_automl/ml/train.py`](./14_multimodal_automl/ml/train.py#L75) | Keeps products sharing a display name on one side, checked by an executed assertion across train, validation and test. |
+| **Cached CLIP image and text embeddings** | [`14_multimodal_automl/ml/embed.py`](./14_multimodal_automl/ml/embed.py#L55) | Embeds 44,000 images and names once on the GPU and reuses them while the product ids match. |
+| **Late fusion with validation-chosen weights** | [`14_multimodal_automl/ml/train.py`](./14_multimodal_automl/ml/train.py#L75) | Weighted geometric mean of per-modality probabilities, with weights searched on validation products only. |
+| **Text-to-image search with CLIP** | [`14_multimodal_automl/server/inference.py`](./14_multimodal_automl/server/inference.py#L141) | Ranks product photos by similarity to a typed description, served live. |
 
 ## Reproduction skills
 
@@ -94,6 +99,7 @@ Each built project ships an agent skill at `skills/reproduce/SKILL.md` describin
 - [`11_portfolio_audit/skills/reproduce/SKILL.md`](./11_portfolio_audit/skills/reproduce/SKILL.md)
 - [`12_energy_forecasting/skills/reproduce/SKILL.md`](./12_energy_forecasting/skills/reproduce/SKILL.md)
 - [`13_mlops_governance/skills/reproduce/SKILL.md`](./13_mlops_governance/skills/reproduce/SKILL.md)
+- [`14_multimodal_automl/skills/reproduce/SKILL.md`](./14_multimodal_automl/skills/reproduce/SKILL.md)
 - [`15_spy_forecasting/skills/reproduce/SKILL.md`](./15_spy_forecasting/skills/reproduce/SKILL.md)
 
 ---

@@ -366,6 +366,33 @@ How fast does a deployed model go stale, and when is retraining worth it? Best: 
 
 ![MLOps & Governance](./13_mlops_governance/screenshots/01_drift_retraining.png)
 
+## 14 · Multimodal AutoML
+
+What do a product's photo, name and catalogue fields each add, and does fusing them pay? Best: **Late fusion: image + name + fields** (macro-f1 0.9740). [README](./14_multimodal_automl/README.md) · [paper](./14_multimodal_automl/paper.md) · [design doc](./14_multimodal_automl/DESIGN_DOC.md)
+
+| File | Lines | What it does |
+|---|---:|---|
+| [`ml/autogluon_run.py`](./14_multimodal_automl/ml/autogluon_run.py) | 55 | ../.venv-automl/Scripts/python ml/autogluon_run.py |
+| [`ml/data.py`](./14_multimodal_automl/ml/data.py) | 96 | Project 14 -- fashion products: images, names and catalogue attributes. |
+| [`ml/embed.py`](./14_multimodal_automl/ml/embed.py) | 69 | Project 14 -- CLIP embeddings for every product image and name. |
+| [`ml/train.py`](./14_multimodal_automl/ml/train.py) | 395 | Project 14 -- what does each modality add, and is fusing them worth it? |
+| [`server/inference.py`](./14_multimodal_automl/server/inference.py) | 158 | Project 14 -- serving the multimodal results. |
+| [`server/main.py`](./14_multimodal_automl/server/main.py) | 80 | Project 14 -- FastAPI application. |
+| [`client/src/App.tsx`](./14_multimodal_automl/client/src/App.tsx) | 195 | Project 14 client -- multimodal product classification. |
+| [`client/src/Explorer.tsx`](./14_multimodal_automl/client/src/Explorer.tsx) | 183 | Project-14-specific views: the product gallery, a product's predictions, text search over photos and live name classification. Each draws one API response. |
+| [`client/src/main.tsx`](./14_multimodal_automl/client/src/main.tsx) | 10 |  |
+
+| Method | Endpoint | Purpose |
+|---|---|---|
+| GET | `/api/results` | Leak measurements, bootstrap verdicts, per-class gains, confusions and search quality. |
+| GET | `/api/gallery` | Test products, with the image model's and the fusion model's predictions. |
+| GET | `/api/products/{product_id}` | One test product with the top three predictions of each model. |
+| GET | `/api/images/{product_id}` |  |
+| POST | `/api/classify-name` | Classify a typed product name with both text models, with and without label words. |
+| GET | `/api/search` | Find test products whose photos best match a description, using CLIP. |
+
+![Multimodal AutoML](./14_multimodal_automl/screenshots/01_which_source_wins.png)
+
 ## 15 · SPY Probabilistic Forecasting
 
 How much of tomorrow's S&P 500 move is actually predictable? Best: **Historical drift** (pinball loss 0.002660). [README](./15_spy_forecasting/README.md) · [paper](./15_spy_forecasting/paper.md) · [design doc](./15_spy_forecasting/DESIGN_DOC.md)

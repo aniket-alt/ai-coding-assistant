@@ -411,6 +411,36 @@ support.
 
 ---
 
+## Session 7 — the last project
+
+### 25. Status
+
+```text
+what all is left now?
+```
+
+### 26. Project 14
+
+```text
+complete the 14th project
+```
+
+**Produced:** the sixteenth project. Before building on the only suitable
+public dataset, its licence was checked at the source: Kaggle declares MIT, and
+the README notes that this may not extend to the retailer's photographs.
+
+- **14 Multimodal AutoML.** Product photos, names and catalogue fields for
+  40,875 products. Most names contain their own label word, so the text model
+  was also scored with those words removed, which cut its macro-F1 from 0.969 to
+  0.592. Judged that way, fusing the name and fields with the photo was still
+  significantly better than the photo alone. Checking the README against the
+  data removed three details that had not been verified: the retailer's
+  country, why products share names, and a claim that no images are
+  redistributed (the screenshots show some).
+  [`62d40fe`](https://github.com/aniket-alt/ai-coding-assistant/commit/62d40fe)
+
+---
+
 ## What made prompting work
 
 **Review before build.** Prompts 12 and 13 asked for the design before the code

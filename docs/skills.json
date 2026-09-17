@@ -430,5 +430,35 @@
   "file": "00_task_workspace/ml/train.py",
   "symbol": "live_updates",
   "why": "Runs the real server with many subscribers and checks completeness, order and latency of every event."
+ },
+ {
+  "skill": "Masking label words to measure a text leak",
+  "file": "14_multimodal_automl/ml/data.py",
+  "symbol": "mask_label_words",
+  "why": "Removes every word of any class name, so a text model's score without the answer written in the input can be measured."
+ },
+ {
+  "skill": "Grouped split by a shared key",
+  "file": "14_multimodal_automl/ml/train.py",
+  "symbol": "main",
+  "why": "Keeps products sharing a display name on one side, checked by an executed assertion across train, validation and test."
+ },
+ {
+  "skill": "Cached CLIP image and text embeddings",
+  "file": "14_multimodal_automl/ml/embed.py",
+  "symbol": "cached",
+  "why": "Embeds 44,000 images and names once on the GPU and reuses them while the product ids match."
+ },
+ {
+  "skill": "Late fusion with validation-chosen weights",
+  "file": "14_multimodal_automl/ml/train.py",
+  "symbol": "main",
+  "why": "Weighted geometric mean of per-modality probabilities, with weights searched on validation products only."
+ },
+ {
+  "skill": "Text-to-image search with CLIP",
+  "file": "14_multimodal_automl/server/inference.py",
+  "symbol": "search",
+  "why": "Ranks product photos by similarity to a typed description, served live."
  }
 ]

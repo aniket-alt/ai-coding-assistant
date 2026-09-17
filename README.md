@@ -52,7 +52,7 @@ Ports are assigned so every project can run simultaneously.
 | 11 | [**Portfolio Audit**](./11_portfolio_audit) | Benchmark of the leakage auditor itself | Fraud data with planted leaks | 8011 | 5111 | ✅ |
 | 12 | [**Energy Demand Forecasting**](./12_energy_forecasting) | Day-ahead quantiles, measured leak | UCI household power (2.08M minutes) | 8012 | 5112 | ✅ |
 | 13 | [**MLOps & Governance**](./13_mlops_governance) | Retraining policies, drift, SHAP, load test | NYC TLC (23.4M trips, Jan–Jul 2024) | 8013 | 5113 | ✅ |
-| 14 | Multimodal AutoML | Vision–language–tabular fusion | multiple | 8014 | 5114 | ⬜ |
+| 14 | [**Multimodal AutoML**](./14_multimodal_automl) | Image, text and fields fused; the name leak measured | Fashion Product Images (44,072 products) | 8014 | 5114 | ✅ |
 | 15 | [**SPY Forecasting**](./15_spy_forecasting) | Probabilistic returns, walk-forward, purged | SPY/VIX/TNX daily, 2015–2026 | 8015 | 5115 | ✅ |
 
 ✅ complete · 🚧 in progress · ⬜ not started

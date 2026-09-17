@@ -21,7 +21,7 @@ done, and for the rest they are intentions, not claims.
 | 11 | [Portfolio Audit](./11_portfolio_audit) | ✅ built | this repository's own artifacts |
 | 12 | [Energy Demand Forecasting](./12_energy_forecasting) | ✅ built | UCI Individual Household Electric Power Consumption |
 | 13 | [MLOps & Governance Platform](./13_mlops_governance) | ✅ built | NYC TLC Yellow Taxi (shared cache with 01) |
-| 14 | Multimodal AutoML | ⬜ planned | to be confirmed — needs a public image/text/tabular set |
+| 14 | [Multimodal AutoML](./14_multimodal_automl) | ✅ built | to be confirmed — needs a public image/text/tabular set |
 | 15 | [SPY Probabilistic Forecasting](./15_spy_forecasting) | ✅ built | SPY, VIX, 10-year yield daily, Yahoo Finance |
 <!-- /dsfs:status -->
 

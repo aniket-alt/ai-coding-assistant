@@ -17,6 +17,7 @@ Every row below is read from a project's `artifacts/metrics.json`. Projects that
 | [11 Portfolio Audit](./11_portfolio_audit/audit_report.md) | Credit Card Fraud Detection (ULB) | yes | 0 | 0 | 3/3 passed |
 | [12 Energy Demand Forecasting](./12_energy_forecasting/audit_report.md) | Individual Household Electric Power Consumption (UCI) | yes | 0 | 0 | 4/4 passed |
 | [13 MLOps & Governance](./13_mlops_governance/audit_report.md) | NYC TLC Yellow Taxi Trip Records — January to July 2024 | yes | 0 | 0 | 3/3 passed |
+| [14 Multimodal AutoML](./14_multimodal_automl/audit_report.md) | Fashion Product Images (Small) | yes | 0 | 1 | 3/3 passed |
 | [15 SPY Probabilistic Forecasting](./15_spy_forecasting/audit_report.md) | SPY Daily Bars with VIX and 10-Year Yield | yes | 0 | 0 | 2/2 passed |
 
 ## Runtime assertions by project
@@ -152,6 +153,16 @@ Recorded by the assertion ledger while training ran; generated from `artifacts/m
 | `assert_temporal_split` | ✅ passed | Last training timestamp 2024-01-30 23:07:53 precedes first test timestamp 2024-02-01 00:00:03 by 1 days 00:52:10; no embargo required. |
 | `assert_no_target_leak` | ✅ passed | 22 numeric features correlated against the target; strongest was zp_median_distance at |r|=0.7821 (threshold 0.995). |
 | `assert_policies_train_only_on_finished_months` | ✅ passed | 14 model fits checked; 0 used a month at or after the month they served. |
+
+Recorded by the assertion ledger while training ran; generated from `artifacts/metrics.json`.
+
+### 14 · Multimodal AutoML
+
+| Assertion | Result | What it measured |
+|---|---|---|
+| `assert_no_name_in_two_splits` | ✅ passed | 28,510 training, 6,111 validation and 6,254 test products grouped by display name; 0 names appear in more than one split. |
+| `assert_every_class_in_test` | ✅ passed | All 45 article types have test products; missing: []. |
+| `assert_hierarchy_fields_excluded` | ✅ passed | Catalogue features ['gender', 'baseColour', 'season', 'year', 'usage']; the coarser category levels, which determine most of the article type, are excluded. |
 
 Recorded by the assertion ledger while training ran; generated from `artifacts/metrics.json`.
 
