@@ -1,0 +1,1255 @@
+{
+  "project_slug": "07_automl_stacking",
+  "project_title": "AutoML Stacking",
+  "task": "binary classification, ranking clients to call",
+  "primary_metric": "roc_auc",
+  "higher_is_better": true,
+  "provenance": {
+    "slug": "uci-bank-marketing",
+    "name": "Bank Marketing, with social and economic context (UCI)",
+    "source_url": "https://archive.ics.uci.edu/static/public/222/bank+marketing.zip",
+    "license": "Creative Commons Attribution 4.0 (CC BY 4.0)",
+    "citation": "Moro, S., Cortez, P., & Rita, P. (2014). A data-driven approach to predict the success of bank telemarketing. Decision Support Systems, 62, 22-31. https://doi.org/10.1016/j.dss.2014.03.001",
+    "retrieved_at": "2026-09-17T15:48:06Z",
+    "sha256": "e0bf5f5de5b846e2f18e9d90606637267d46dfa260e0f17bb12e605db5efbeb4",
+    "n_rows": 41188,
+    "n_cols": 21,
+    "bytes_on_disk": 1023843,
+    "synthetic": false,
+    "notes": "bank-additional-full.csv: 41,188 calls ordered by date, May 2008 to November 2010.",
+    "extra": {}
+  },
+  "split": {
+    "strategy": "chronological: calls before 2010 train, calls in 2010 test",
+    "n_train": 39130,
+    "n_test": 2058,
+    "n_val": 0,
+    "train_end": "2009-12",
+    "test_start": "2010-03",
+    "embargo": "",
+    "notes": ""
+  },
+  "models": [
+    {
+      "name": "Previous-campaign outcome rule",
+      "family": "baseline",
+      "metrics": {
+        "roc_auc": 0.633663858151868,
+        "average_precision": 0.6462792744265103
+      },
+      "params": {},
+      "fit_seconds": 0.0,
+      "predict_ms_per_1k": 0.0,
+      "notes": "Scores each client by the pre-2010 success rate for their previous campaign's outcome."
+    },
+    {
+      "name": "Constant score",
+      "family": "baseline",
+      "metrics": {
+        "roc_auc": 0.5,
+        "average_precision": 0.5213799805636541,
+        "believed_auc": 0.5,
+        "optimism": 0.0
+      },
+      "params": {},
+      "fit_seconds": 0.0,
+      "predict_ms_per_1k": 0.0,
+      "notes": "The same score for everyone; ranks no better than chance."
+    },
+    {
+      "name": "Logistic regression",
+      "family": "linear",
+      "metrics": {
+        "roc_auc": 0.6100117796774545,
+        "average_precision": 0.6324465392312879,
+        "believed_auc": 0.750787518434396,
+        "optimism": 0.1407757387569415
+      },
+      "params": {},
+      "fit_seconds": 1.6,
+      "predict_ms_per_1k": 32.22,
+      "notes": "Average of five fold models; believed score is its out-of-fold AUC."
+    },
+    {
+      "name": "LightGBM, defaults",
+      "family": "gbdt",
+      "metrics": {
+        "roc_auc": 0.6785784909712793,
+        "average_precision": 0.6728392725039076,
+        "believed_auc": 0.7589635820126318,
+        "optimism": 0.0803850910413525
+      },
+      "params": {},
+      "fit_seconds": 1.8,
+      "predict_ms_per_1k": 30.65,
+      "notes": "Average of five fold models; believed score is its out-of-fold AUC."
+    },
+    {
+      "name": "LightGBM, tuned",
+      "family": "gbdt",
+      "metrics": {
+        "roc_auc": 0.6969405954177528,
+        "average_precision": 0.7007947002729792,
+        "believed_auc": 0.7679036740756789,
+        "optimism": 0.07096307865792617
+      },
+      "params": {
+        "n_estimators": 200,
+        "learning_rate": 0.016,
+        "num_leaves": 32,
+        "min_child_samples": 27,
+        "subsample": 0.94768,
+        "colsample_bytree": 0.74754,
+        "reg_lambda": 0.07946,
+        "subsample_freq": 1
+      },
+      "fit_seconds": 51.0,
+      "predict_ms_per_1k": 42.07,
+      "notes": "Optuna TPE, 40 trials of five-fold CV on pre-2010 calls."
+    },
+    {
+      "name": "Hand-built stack, Caruana selection",
+      "family": "stacked ensemble",
+      "metrics": {
+        "roc_auc": 0.679738008619507,
+        "average_precision": 0.6888867189151243,
+        "believed_auc": 0.7629981977359488,
+        "optimism": 0.08326018911644184
+      },
+      "params": {
+        "weight: LightGBM": 0.2,
+        "weight: Logistic regression": 0.233,
+        "weight: XGBoost": 0.567
+      },
+      "fit_seconds": 16.6,
+      "predict_ms_per_1k": 83.61,
+      "notes": "Greedy forward selection with replacement over five bagged models, 30 rounds."
+    },
+    {
+      "name": "Hand-built stack, logistic stacker",
+      "family": "stacked ensemble",
+      "metrics": {
+        "roc_auc": 0.6837118757125759,
+        "average_precision": 0.6875089252943202,
+        "believed_auc": 0.7622689587331628,
+        "optimism": 0.07855708302058695
+      },
+      "params": {
+        "coef: Extra trees": 0.085,
+        "coef: LightGBM": 0.204,
+        "coef: Logistic regression": 0.263,
+        "coef: XGBoost": 0.448,
+        "coef: k-nearest neighbours": -0.011
+      },
+      "fit_seconds": 15.5,
+      "predict_ms_per_1k": 513.34,
+      "notes": "A logistic regression trained on the five models' out-of-fold predictions."
+    },
+    {
+      "name": "AutoGluon, best_quality",
+      "family": "AutoML",
+      "metrics": {
+        "roc_auc": 0.6829838064915957,
+        "average_precision": 0.6988562153611563,
+        "believed_auc": 0.7696796047457084,
+        "optimism": 0.08669579825411267
+      },
+      "params": {
+        "models_trained": 13,
+        "best_model": "WeightedEnsemble_L2"
+      },
+      "fit_seconds": 899.6,
+      "predict_ms_per_1k": 370.16,
+      "notes": "AutoGluon 1.6.2, best_quality presets, 900s limit; best model WeightedEnsemble_L2."
+    }
+  ],
+  "baseline": {},
+  "audit": {
+    "critical": 0,
+    "warnings": 0,
+    "total": 0,
+    "runtime_assertions": [
+      {
+        "name": "assert_temporal_split",
+        "passed": true,
+        "detail": "Last training timestamp 2009-12-01 00:00:00 precedes first test timestamp 2010-03-01 00:00:00 by 90 days 00:00:00; no embargo required.",
+        "params": {
+          "train_end": "2009-12-01 00:00:00",
+          "test_start": "2010-03-01 00:00:00",
+          "gap": "90 days 00:00:00",
+          "embargo_required": "",
+          "chronologically_ordered": true
+        },
+        "at": "2026-09-17T15:48:06Z"
+      },
+      {
+        "name": "assert_duration_excluded",
+        "passed": true,
+        "detail": "19 model inputs; `duration` (known only after the call) absent.",
+        "params": {
+          "features": 19,
+          "leak_column": "duration"
+        },
+        "at": "2026-09-17T15:48:06Z"
+      },
+      {
+        "name": "assert_no_target_leak",
+        "passed": true,
+        "detail": "63 numeric features correlated against the target; strongest was emp.var.rate at |r|=0.2634 (threshold 0.995).",
+        "params": {
+          "features_checked": 63,
+          "max_abs_correlation": 0.26343,
+          "max_correlation_feature": "emp.var.rate",
+          "threshold": 0.995,
+          "leaked_features": []
+        },
+        "at": "2026-09-17T15:48:06Z"
+      }
+    ],
+    "assertions_passed": 3,
+    "assertions_run": 3
+  },
+  "env": {
+    "python": "3.11.6",
+    "platform": "Windows 10",
+    "machine": "AMD64",
+    "numpy": "2.4.6",
+    "pandas": "3.0.5",
+    "sklearn": "1.9.1",
+    "torch": "2.11.0+cu128",
+    "git_commit": "1e3bb26"
+  },
+  "created_at": "2026-09-17T15:48:06Z",
+  "duration_seconds": 134.1,
+  "extra": {
+    "shift": {
+      "periods": [
+        {
+          "period": "2008-05",
+          "calls": 7763,
+          "subscribed_pct": 3.1,
+          "euribor3m": 4.858,
+          "is_test": false
+        },
+        {
+          "period": "2008-06",
+          "calls": 4374,
+          "subscribed_pct": 4.3,
+          "euribor3m": 4.932,
+          "is_test": false
+        },
+        {
+          "period": "2008-07",
+          "calls": 6685,
+          "subscribed_pct": 6.1,
+          "euribor3m": 4.962,
+          "is_test": false
+        },
+        {
+          "period": "2008-08",
+          "calls": 5175,
+          "subscribed_pct": 5.2,
+          "euribor3m": 4.965,
+          "is_test": false
+        },
+        {
+          "period": "2008-10",
+          "calls": 67,
+          "subscribed_pct": 62.7,
+          "euribor3m": 4.924,
+          "is_test": false
+        },
+        {
+          "period": "2008-11",
+          "calls": 3616,
+          "subscribed_pct": 5.3,
+          "euribor3m": 4.115,
+          "is_test": false
+        },
+        {
+          "period": "2008-12",
+          "calls": 10,
+          "subscribed_pct": 10.0,
+          "euribor3m": 3.493,
+          "is_test": false
+        },
+        {
+          "period": "2009-03",
+          "calls": 282,
+          "subscribed_pct": 44.7,
+          "euribor3m": 1.646,
+          "is_test": false
+        },
+        {
+          "period": "2009-04",
+          "calls": 2458,
+          "subscribed_pct": 18.0,
+          "euribor3m": 1.412,
+          "is_test": false
+        },
+        {
+          "period": "2009-05",
+          "calls": 5794,
+          "subscribed_pct": 9.0,
+          "euribor3m": 1.294,
+          "is_test": false
+        },
+        {
+          "period": "2009-06",
+          "calls": 715,
+          "subscribed_pct": 36.9,
+          "euribor3m": 1.258,
+          "is_test": false
+        },
+        {
+          "period": "2009-07",
+          "calls": 178,
+          "subscribed_pct": 37.1,
+          "euribor3m": 1.025,
+          "is_test": false
+        },
+        {
+          "period": "2009-08",
+          "calls": 770,
+          "subscribed_pct": 34.3,
+          "euribor3m": 0.866,
+          "is_test": false
+        },
+        {
+          "period": "2009-09",
+          "calls": 267,
+          "subscribed_pct": 39.7,
+          "euribor3m": 0.783,
+          "is_test": false
+        },
+        {
+          "period": "2009-10",
+          "calls": 447,
+          "subscribed_pct": 40.3,
+          "euribor3m": 0.735,
+          "is_test": false
+        },
+        {
+          "period": "2009-11",
+          "calls": 357,
+          "subscribed_pct": 47.1,
+          "euribor3m": 0.716,
+          "is_test": false
+        },
+        {
+          "period": "2009-12",
+          "calls": 172,
+          "subscribed_pct": 51.2,
+          "euribor3m": 0.713,
+          "is_test": false
+        },
+        {
+          "period": "2010-03",
+          "calls": 264,
+          "subscribed_pct": 56.8,
+          "euribor3m": 0.646,
+          "is_test": true
+        },
+        {
+          "period": "2010-04",
+          "calls": 174,
+          "subscribed_pct": 55.7,
+          "euribor3m": 0.646,
+          "is_test": true
+        },
+        {
+          "period": "2010-05",
+          "calls": 212,
+          "subscribed_pct": 57.5,
+          "euribor3m": 0.686,
+          "is_test": true
+        },
+        {
+          "period": "2010-06",
+          "calls": 229,
+          "subscribed_pct": 46.7,
+          "euribor3m": 0.733,
+          "is_test": true
+        },
+        {
+          "period": "2010-07",
+          "calls": 311,
+          "subscribed_pct": 56.6,
+          "euribor3m": 0.85,
+          "is_test": true
+        },
+        {
+          "period": "2010-08",
+          "calls": 233,
+          "subscribed_pct": 51.5,
+          "euribor3m": 0.899,
+          "is_test": true
+        },
+        {
+          "period": "2010-09",
+          "calls": 303,
+          "subscribed_pct": 49.5,
+          "euribor3m": 0.88,
+          "is_test": true
+        },
+        {
+          "period": "2010-10",
+          "calls": 204,
+          "subscribed_pct": 45.6,
+          "euribor3m": 0.995,
+          "is_test": true
+        },
+        {
+          "period": "2010-11",
+          "calls": 128,
+          "subscribed_pct": 45.3,
+          "euribor3m": 1.042,
+          "is_test": true
+        }
+      ],
+      "train_calls": 39130,
+      "test_calls": 2058,
+      "train_rate_pct": 9.115767952977254,
+      "test_rate_pct": 52.13799805636541,
+      "train_first": "2008-05",
+      "train_last": "2009-12",
+      "test_first": "2010-03",
+      "test_last": "2010-11",
+      "pdays_never_pct": 96.32174419733903,
+      "unknown_default_pct": 20.87258424783918,
+      "duplicate_rows": 12
+    },
+    "level_one": [
+      {
+        "model": "Extra trees",
+        "oof_auc": 0.7460017432273163,
+        "test_auc": 0.703492745327158,
+        "fit_seconds": 6.3,
+        "weight": 0.0,
+        "stacker_coef": 0.08469919125383994
+      },
+      {
+        "model": "LightGBM",
+        "oof_auc": 0.7589635820126318,
+        "test_auc": 0.6785784909712793,
+        "fit_seconds": 1.8,
+        "weight": 0.2,
+        "stacker_coef": 0.20413938079267907
+      },
+      {
+        "model": "Logistic regression",
+        "oof_auc": 0.750787518434396,
+        "test_auc": 0.6100117796774545,
+        "fit_seconds": 1.6,
+        "weight": 0.23333333333333334,
+        "stacker_coef": 0.26287234056866887
+      },
+      {
+        "model": "XGBoost",
+        "oof_auc": 0.7615778238693679,
+        "test_auc": 0.6917196909845256,
+        "fit_seconds": 3.0,
+        "weight": 0.5666666666666667,
+        "stacker_coef": 0.44796828849012493
+      },
+      {
+        "model": "k-nearest neighbours",
+        "oof_auc": 0.7313998002463019,
+        "test_auc": 0.6918653994446048,
+        "fit_seconds": 2.8,
+        "weight": 0.0,
+        "stacker_coef": -0.011141624323198887
+      }
+    ],
+    "caruana_trajectory": [
+      {
+        "round": 1,
+        "added": "XGBoost",
+        "oof_auc": 0.7615778238693679
+      },
+      {
+        "round": 2,
+        "added": "LightGBM",
+        "oof_auc": 0.7617823594719759
+      },
+      {
+        "round": 3,
+        "added": "Logistic regression",
+        "oof_auc": 0.7626595307343438
+      },
+      {
+        "round": 4,
+        "added": "XGBoost",
+        "oof_auc": 0.762972561808265
+      },
+      {
+        "round": 5,
+        "added": "XGBoost",
+        "oof_auc": 0.7629718365606184
+      },
+      {
+        "round": 6,
+        "added": "XGBoost",
+        "oof_auc": 0.7628834824777527
+      },
+      {
+        "round": 7,
+        "added": "Logistic regression",
+        "oof_auc": 0.7629565275287729
+      },
+      {
+        "round": 8,
+        "added": "LightGBM",
+        "oof_auc": 0.7629725618082649
+      },
+      {
+        "round": 9,
+        "added": "XGBoost",
+        "oof_auc": 0.76298863550339
+      },
+      {
+        "round": 10,
+        "added": "XGBoost",
+        "oof_auc": 0.7629718365606184
+      },
+      {
+        "round": 11,
+        "added": "Logistic regression",
+        "oof_auc": 0.7629861996172727
+      },
+      {
+        "round": 12,
+        "added": "XGBoost",
+        "oof_auc": 0.7629973621245297
+      },
+      {
+        "round": 13,
+        "added": "LightGBM",
+        "oof_auc": 0.7629886355033902
+      },
+      {
+        "round": 14,
+        "added": "XGBoost",
+        "oof_auc": 0.7629880442688957
+      },
+      {
+        "round": 15,
+        "added": "Logistic regression",
+        "oof_auc": 0.7629856241490313
+      },
+      {
+        "round": 16,
+        "added": "XGBoost",
+        "oof_auc": 0.762999356555558
+      },
+      {
+        "round": 17,
+        "added": "XGBoost",
+        "oof_auc": 0.7629982371515815
+      },
+      {
+        "round": 18,
+        "added": "LightGBM",
+        "oof_auc": 0.7629886355033901
+      },
+      {
+        "round": 19,
+        "added": "Logistic regression",
+        "oof_auc": 0.7629840869393455
+      },
+      {
+        "round": 20,
+        "added": "XGBoost",
+        "oof_auc": 0.7629957224341981
+      },
+      {
+        "round": 21,
+        "added": "XGBoost",
+        "oof_auc": 0.7630014298178524
+      },
+      {
+        "round": 22,
+        "added": "XGBoost",
+        "oof_auc": 0.7629956830185652
+      },
+      {
+        "round": 23,
+        "added": "Logistic regression",
+        "oof_auc": 0.7629980873721764
+      },
+      {
+        "round": 24,
+        "added": "XGBoost",
+        "oof_auc": 0.7629973621245297
+      },
+      {
+        "round": 25,
+        "added": "LightGBM",
+        "oof_auc": 0.7630021392992457
+      },
+      {
+        "round": 26,
+        "added": "XGBoost",
+        "oof_auc": 0.762999395971191
+      },
+      {
+        "round": 27,
+        "added": "Logistic regression",
+        "oof_auc": 0.7629976459170871
+      },
+      {
+        "round": 28,
+        "added": "XGBoost",
+        "oof_auc": 0.7629963609674523
+      },
+      {
+        "round": 29,
+        "added": "LightGBM",
+        "oof_auc": 0.7630004207776482
+      },
+      {
+        "round": 30,
+        "added": "XGBoost",
+        "oof_auc": 0.7629981977359488
+      }
+    ],
+    "weights": {
+      "LightGBM": 0.2,
+      "Logistic regression": 0.23333333333333334,
+      "XGBoost": 0.5666666666666667
+    },
+    "tuning_trace": [
+      {
+        "trial": 1,
+        "cv_auc": 0.7158706341881389,
+        "best_so_far": 0.7158706341881389
+      },
+      {
+        "trial": 2,
+        "cv_auc": 0.7322301265319342,
+        "best_so_far": 0.7322301265319342
+      },
+      {
+        "trial": 3,
+        "cv_auc": 0.7658169669170464,
+        "best_so_far": 0.7658169669170464
+      },
+      {
+        "trial": 4,
+        "cv_auc": 0.7663205850304807,
+        "best_so_far": 0.7663205850304807
+      },
+      {
+        "trial": 5,
+        "cv_auc": 0.7634827528112335,
+        "best_so_far": 0.7663205850304807
+      },
+      {
+        "trial": 6,
+        "cv_auc": 0.7654259923493048,
+        "best_so_far": 0.7663205850304807
+      },
+      {
+        "trial": 7,
+        "cv_auc": 0.7583745216832268,
+        "best_so_far": 0.7663205850304807
+      },
+      {
+        "trial": 8,
+        "cv_auc": 0.7342558303319748,
+        "best_so_far": 0.7663205850304807
+      },
+      {
+        "trial": 9,
+        "cv_auc": 0.7584008513735975,
+        "best_so_far": 0.7663205850304807
+      },
+      {
+        "trial": 10,
+        "cv_auc": 0.7648435839296561,
+        "best_so_far": 0.7663205850304807
+      },
+      {
+        "trial": 11,
+        "cv_auc": 0.7661339731311012,
+        "best_so_far": 0.7663205850304807
+      },
+      {
+        "trial": 12,
+        "cv_auc": 0.7657030754088494,
+        "best_so_far": 0.7663205850304807
+      },
+      {
+        "trial": 13,
+        "cv_auc": 0.7654657363992399,
+        "best_so_far": 0.7663205850304807
+      },
+      {
+        "trial": 14,
+        "cv_auc": 0.7615877983545595,
+        "best_so_far": 0.7663205850304807
+      },
+      {
+        "trial": 15,
+        "cv_auc": 0.7663502850735576,
+        "best_so_far": 0.7663502850735576
+      },
+      {
+        "trial": 16,
+        "cv_auc": 0.7637192296016907,
+        "best_so_far": 0.7663502850735576
+      },
+      {
+        "trial": 17,
+        "cv_auc": 0.7663247995633025,
+        "best_so_far": 0.7663502850735576
+      },
+      {
+        "trial": 18,
+        "cv_auc": 0.7652685956998798,
+        "best_so_far": 0.7663502850735576
+      },
+      {
+        "trial": 19,
+        "cv_auc": 0.7658718686010177,
+        "best_so_far": 0.7663502850735576
+      },
+      {
+        "trial": 20,
+        "cv_auc": 0.7619311502814503,
+        "best_so_far": 0.7663502850735576
+      },
+      {
+        "trial": 21,
+        "cv_auc": 0.7676131393240141,
+        "best_so_far": 0.7676131393240141
+      },
+      {
+        "trial": 22,
+        "cv_auc": 0.7679036740756789,
+        "best_so_far": 0.7679036740756789
+      },
+      {
+        "trial": 23,
+        "cv_auc": 0.767763284251157,
+        "best_so_far": 0.7679036740756789
+      },
+      {
+        "trial": 24,
+        "cv_auc": 0.767143292558438,
+        "best_so_far": 0.7679036740756789
+      },
+      {
+        "trial": 25,
+        "cv_auc": 0.7659678422654945,
+        "best_so_far": 0.7679036740756789
+      },
+      {
+        "trial": 26,
+        "cv_auc": 0.7659091425852748,
+        "best_so_far": 0.7679036740756789
+      },
+      {
+        "trial": 27,
+        "cv_auc": 0.7657788309837308,
+        "best_so_far": 0.7679036740756789
+      },
+      {
+        "trial": 28,
+        "cv_auc": 0.7674424632596418,
+        "best_so_far": 0.7679036740756789
+      },
+      {
+        "trial": 29,
+        "cv_auc": 0.7669177386471109,
+        "best_so_far": 0.7679036740756789
+      },
+      {
+        "trial": 30,
+        "cv_auc": 0.7655733102952302,
+        "best_so_far": 0.7679036740756789
+      },
+      {
+        "trial": 31,
+        "cv_auc": 0.7626021344761033,
+        "best_so_far": 0.7679036740756789
+      },
+      {
+        "trial": 32,
+        "cv_auc": 0.7677058853051153,
+        "best_so_far": 0.7679036740756789
+      },
+      {
+        "trial": 33,
+        "cv_auc": 0.7677149829680394,
+        "best_so_far": 0.7679036740756789
+      },
+      {
+        "trial": 34,
+        "cv_auc": 0.7674404636626619,
+        "best_so_far": 0.7679036740756789
+      },
+      {
+        "trial": 35,
+        "cv_auc": 0.7673589365587776,
+        "best_so_far": 0.7679036740756789
+      },
+      {
+        "trial": 36,
+        "cv_auc": 0.7671534392057803,
+        "best_so_far": 0.7679036740756789
+      },
+      {
+        "trial": 37,
+        "cv_auc": 0.7656562912375839,
+        "best_so_far": 0.7679036740756789
+      },
+      {
+        "trial": 38,
+        "cv_auc": 0.7672363950653145,
+        "best_so_far": 0.7679036740756789
+      },
+      {
+        "trial": 39,
+        "cv_auc": 0.7668393051283434,
+        "best_so_far": 0.7679036740756789
+      },
+      {
+        "trial": 40,
+        "cv_auc": 0.7651409280266399,
+        "best_so_far": 0.7679036740756789
+      }
+    ],
+    "tuned_params": {
+      "n_estimators": 200,
+      "learning_rate": 0.016002906233280302,
+      "num_leaves": 32,
+      "min_child_samples": 27,
+      "subsample": 0.9476770925992776,
+      "colsample_bytree": 0.7475364484647794,
+      "reg_lambda": 0.07945675411607563,
+      "subsample_freq": 1
+    },
+    "significance": [
+      {
+        "a": "AutoGluon, best_quality",
+        "b": "LightGBM, tuned",
+        "diff": -0.013956788926157038,
+        "ci_low": -0.022435620751883323,
+        "ci_high": -0.005145577629289937,
+        "verdict": "worse"
+      },
+      {
+        "a": "AutoGluon, best_quality",
+        "b": "Hand-built stack, Caruana selection",
+        "diff": 0.003245797872088785,
+        "ci_low": -0.01082108576849963,
+        "ci_high": 0.017014783700593082,
+        "verdict": "inconclusive"
+      },
+      {
+        "a": "Hand-built stack, Caruana selection",
+        "b": "LightGBM, tuned",
+        "diff": -0.017202586798245822,
+        "ci_low": -0.02790338580498653,
+        "ci_high": -0.0060144053693953654,
+        "verdict": "worse"
+      },
+      {
+        "a": "Hand-built stack, logistic stacker",
+        "b": "LightGBM, tuned",
+        "diff": -0.013228719705176917,
+        "ci_low": -0.02328569732275513,
+        "ci_high": -0.0028896420534139443,
+        "verdict": "worse"
+      },
+      {
+        "a": "LightGBM, tuned",
+        "b": "LightGBM, defaults",
+        "diff": 0.01836210444647346,
+        "ci_low": 0.01028111565153643,
+        "ci_high": 0.0266812721771692,
+        "verdict": "better"
+      },
+      {
+        "a": "Hand-built stack, Caruana selection",
+        "b": "Hand-built stack, logistic stacker",
+        "diff": -0.003973867093068906,
+        "ci_low": -0.006919442306941875,
+        "ci_high": -0.0008913802146871358,
+        "verdict": "worse"
+      }
+    ],
+    "leak": {
+      "honest_test_auc": 0.6785784909712793,
+      "leaky_test_auc": 0.7819624280327939,
+      "honest_believed_auc": 0.7589635820126318,
+      "leaky_believed_auc": 0.9483385250422611
+    },
+    "estimate_check": {
+      "random_cv_auc": 0.7589635820126318,
+      "time_ordered_auc": 0.5927487983046078,
+      "actual_test_auc": 0.6785784909712793,
+      "time_ordered_train": "2008 (27,690 calls)",
+      "time_ordered_validate": "2009 (11,440 calls)"
+    },
+    "importance": [
+      {
+        "feature": "pdays",
+        "auc_drop": 0.08688276934382311,
+        "spread": 0.004485263493837034,
+        "kind": "numeric"
+      },
+      {
+        "feature": "poutcome",
+        "auc_drop": 0.028778997797026862,
+        "spread": 0.0033345115597612236,
+        "kind": "categorical"
+      },
+      {
+        "feature": "contact",
+        "auc_drop": 0.01831479650488928,
+        "spread": 0.0028606533210023734,
+        "kind": "categorical"
+      },
+      {
+        "feature": "emp.var.rate",
+        "auc_drop": 0.012714009300741291,
+        "spread": 0.0019250008157553702,
+        "kind": "numeric"
+      },
+      {
+        "feature": "day_of_week",
+        "auc_drop": 0.012335703461206679,
+        "spread": 0.00143555579556101,
+        "kind": "categorical"
+      },
+      {
+        "feature": "euribor3m",
+        "auc_drop": 0.00883381193200905,
+        "spread": 0.0037642325551458192,
+        "kind": "numeric"
+      },
+      {
+        "feature": "campaign",
+        "auc_drop": 0.004223337638355991,
+        "spread": 0.001026070489330471,
+        "kind": "numeric"
+      },
+      {
+        "feature": "previous",
+        "auc_drop": 0.003336786813069037,
+        "spread": 0.0002785427786872896,
+        "kind": "numeric"
+      },
+      {
+        "feature": "month",
+        "auc_drop": 0.0019020946379601684,
+        "spread": 0.0035657954460153636,
+        "kind": "categorical"
+      },
+      {
+        "feature": "default",
+        "auc_drop": -0.0001982202752376002,
+        "spread": 0.0005171262233491074,
+        "kind": "categorical"
+      },
+      {
+        "feature": "housing",
+        "auc_drop": -0.0007443116142573277,
+        "spread": 0.0006370678283655675,
+        "kind": "categorical"
+      },
+      {
+        "feature": "education",
+        "auc_drop": -0.0009195086912573425,
+        "spread": 0.0008230001429507704,
+        "kind": "categorical"
+      },
+      {
+        "feature": "marital",
+        "auc_drop": -0.0013000222347325046,
+        "spread": 0.001313549787794476,
+        "kind": "categorical"
+      },
+      {
+        "feature": "loan",
+        "auc_drop": -0.0013127953789602669,
+        "spread": 0.0011680985737758972,
+        "kind": "categorical"
+      },
+      {
+        "feature": "job",
+        "auc_drop": -0.0023234507043364085,
+        "spread": 0.0009423374902941494,
+        "kind": "categorical"
+      },
+      {
+        "feature": "nr.employed",
+        "auc_drop": -0.0030882624266134937,
+        "spread": 0.0003279749648797244,
+        "kind": "numeric"
+      },
+      {
+        "feature": "age",
+        "auc_drop": -0.0046420129213758194,
+        "spread": 0.0013779733558470619,
+        "kind": "numeric"
+      },
+      {
+        "feature": "cons.conf.idx",
+        "auc_drop": -0.006073866619989469,
+        "spread": 0.0012742306027125616,
+        "kind": "numeric"
+      },
+      {
+        "feature": "cons.price.idx",
+        "auc_drop": -0.010519866970068273,
+        "spread": 0.0028864045176697456,
+        "kind": "numeric"
+      }
+    ],
+    "autogluon": {
+      "autogluon_version": "1.6.2",
+      "presets": "best_quality",
+      "time_limit_seconds": 900,
+      "fit_seconds": 899.583320500009,
+      "best_model": "WeightedEnsemble_L2",
+      "believed_validation_auc": 0.7696796047457084,
+      "leaderboard": [
+        {
+          "model": "WeightedEnsemble_L2",
+          "score_val": 0.7696796047457084,
+          "stack_level": 2,
+          "fit_time": 418.4788203239441,
+          "pred_time_val": 0.2674412727355957
+        },
+        {
+          "model": "XGBoost_BAG_L1",
+          "score_val": 0.7678740889046878,
+          "stack_level": 1,
+          "fit_time": 3.084306478500366,
+          "pred_time_val": 0.1257786750793457
+        },
+        {
+          "model": "LightGBM_r131_BAG_L1",
+          "score_val": 0.767777611259867,
+          "stack_level": 1,
+          "fit_time": 13.059296607971191,
+          "pred_time_val": 0.11093020439147949
+        },
+        {
+          "model": "LightGBM_BAG_L1",
+          "score_val": 0.766765681889938,
+          "stack_level": 1,
+          "fit_time": 3.5450491905212402,
+          "pred_time_val": 0.03712344169616699
+        },
+        {
+          "model": "LightGBMLarge_BAG_L1",
+          "score_val": 0.7664773052944394,
+          "stack_level": 1,
+          "fit_time": 9.801662921905518,
+          "pred_time_val": 0.04549908638000488
+        },
+        {
+          "model": "CatBoost_BAG_L1",
+          "score_val": 0.7654549544311532,
+          "stack_level": 1,
+          "fit_time": 404.5702223777771,
+          "pred_time_val": 0.09216618537902832
+        },
+        {
+          "model": "CatBoost_r177_BAG_L1",
+          "score_val": 0.7650868084776499,
+          "stack_level": 1,
+          "fit_time": 173.95153617858887,
+          "pred_time_val": 0.07494568824768066
+        },
+        {
+          "model": "LightGBMXT_BAG_L1",
+          "score_val": 0.7590592122213435,
+          "stack_level": 1,
+          "fit_time": 4.200464963912964,
+          "pred_time_val": 0.04913663864135742
+        },
+        {
+          "model": "CatBoost_r9_BAG_L1",
+          "score_val": 0.7418531453765765,
+          "stack_level": 1,
+          "fit_time": 37.89898490905762,
+          "pred_time_val": 0.08334684371948242
+        },
+        {
+          "model": "RandomForestEntr_BAG_L1",
+          "score_val": 0.729933810667685,
+          "stack_level": 1,
+          "fit_time": 1.0766596794128418,
+          "pred_time_val": 0.7121391296386719
+        },
+        {
+          "model": "ExtraTreesGini_BAG_L1",
+          "score_val": 0.7296533920884831,
+          "stack_level": 1,
+          "fit_time": 0.9929888248443604,
+          "pred_time_val": 0.7983875274658203
+        },
+        {
+          "model": "RandomForestGini_BAG_L1",
+          "score_val": 0.7282996700572546,
+          "stack_level": 1,
+          "fit_time": 1.0802655220031738,
+          "pred_time_val": 0.7313308715820312
+        },
+        {
+          "model": "ExtraTreesEntr_BAG_L1",
+          "score_val": 0.7271220097753767,
+          "stack_level": 1,
+          "fit_time": 1.047025203704834,
+          "pred_time_val": 0.7997136116027832
+        }
+      ],
+      "models_trained": 13
+    },
+    "form": {
+      "choices": {
+        "job": [
+          "admin.",
+          "blue-collar",
+          "entrepreneur",
+          "housemaid",
+          "management",
+          "retired",
+          "self-employed",
+          "services",
+          "student",
+          "technician",
+          "unemployed",
+          "unknown"
+        ],
+        "marital": [
+          "divorced",
+          "married",
+          "single",
+          "unknown"
+        ],
+        "education": [
+          "basic.4y",
+          "basic.6y",
+          "basic.9y",
+          "high.school",
+          "illiterate",
+          "professional.course",
+          "university.degree",
+          "unknown"
+        ],
+        "default": [
+          "no",
+          "unknown",
+          "yes"
+        ],
+        "housing": [
+          "no",
+          "unknown",
+          "yes"
+        ],
+        "loan": [
+          "no",
+          "unknown",
+          "yes"
+        ],
+        "contact": [
+          "cellular",
+          "telephone"
+        ],
+        "month": [
+          "apr",
+          "aug",
+          "dec",
+          "jul",
+          "jun",
+          "mar",
+          "may",
+          "nov",
+          "oct",
+          "sep"
+        ],
+        "day_of_week": [
+          "fri",
+          "mon",
+          "thu",
+          "tue",
+          "wed"
+        ],
+        "poutcome": [
+          "failure",
+          "nonexistent",
+          "success"
+        ]
+      },
+      "defaults": {
+        "age": 59,
+        "campaign": 3,
+        "pdays": 6,
+        "previous": 1,
+        "emp.var.rate": -3.0,
+        "cons.price.idx": 92.713,
+        "cons.conf.idx": -33.0,
+        "euribor3m": 0.7,
+        "nr.employed": 5023.5,
+        "job": "management",
+        "marital": "married",
+        "education": "university.degree",
+        "default": "no",
+        "housing": "yes",
+        "loan": "no",
+        "contact": "cellular",
+        "month": "dec",
+        "day_of_week": "thu",
+        "poutcome": "success"
+      },
+      "ranges": {
+        "age": [
+          17.0,
+          98.0
+        ],
+        "campaign": [
+          1.0,
+          56.0
+        ],
+        "pdays": [
+          0.0,
+          999.0
+        ],
+        "previous": [
+          0.0,
+          7.0
+        ],
+        "emp.var.rate": [
+          -3.4,
+          1.4
+        ],
+        "cons.price.idx": [
+          92.201,
+          94.767
+        ],
+        "cons.conf.idx": [
+          -50.8,
+          -26.9
+        ],
+        "euribor3m": [
+          0.634,
+          5.045
+        ],
+        "nr.employed": [
+          4963.6,
+          5228.1
+        ]
+      }
+    },
+    "served": "LightGBM, tuned"
+  },
+  "best_model": "LightGBM, tuned",
+  "best_score": 0.6969405954177528,
+  "lift_over_baseline": null
+}

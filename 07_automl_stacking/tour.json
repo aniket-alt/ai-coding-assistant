@@ -1,0 +1,12 @@
+{
+  "api_port": 8007,
+  "web_port": 5107,
+  "views": [
+    {"tab": "Tournament", "file": "01_tournament", "expect": "Are the differences real?"},
+    {"tab": "Score a client", "file": "02_score_a_client", "expect": "Weighted contribution"},
+    {"tab": "Inside the stack", "file": "03_inside_the_stack", "expect": "Caruana selection, round by round"},
+    {"tab": "Shift & leak", "file": "04_shift_and_leak", "expect": "What the stack relies on in 2010"},
+    {"tab": "CRISP-DM", "file": "05_crispdm_walkthrough", "expect": "Phase gate"},
+    {"tab": "Audit", "file": "06_leakage_audit", "expect": "Assertions executed during training"}
+  ]
+}

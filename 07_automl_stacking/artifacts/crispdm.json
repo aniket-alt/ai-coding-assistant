@@ -1,0 +1,171 @@
+{
+  "project_slug": "07_automl_stacking",
+  "project_title": "AutoML Stacking",
+  "business_question": "Which clients should a bank call about a term deposit, and does an automated stacked ensemble choose them better than one well-tuned model?",
+  "phases": [
+    {
+      "name": "business_understanding",
+      "title": "1. Business Understanding",
+      "objective": "Rank clients by their chance of subscribing, using only what is known before the call.",
+      "narrative": "A call centre has more clients than time. A model that ranks clients by their chance of subscribing lets the best prospects be called first, so ranking quality (ROC AUC) is the measure, with average precision beside it.\n\nThe second question is about tooling. AutoML systems such as AutoGluon win benchmarks by stacking many models. This project checks whether that holds on a deployment-shaped test, against an ensemble built by hand and a single tuned LightGBM, and whether each method's own validation told the truth about it.",
+      "findings": [
+        {
+          "label": "Target",
+          "value": "client subscribes to a term deposit",
+          "detail": ""
+        },
+        {
+          "label": "Primary metric",
+          "value": "ROC AUC",
+          "detail": ""
+        },
+        {
+          "label": "Excluded by rule",
+          "value": "duration",
+          "detail": ""
+        }
+      ],
+      "figures": [],
+      "code_refs": [
+        "ml/train.py:main"
+      ],
+      "gate_passed": true,
+      "gate_notes": "Target, ranking metric and a before-the-call feature rule fixed before modelling."
+    },
+    {
+      "name": "data_understanding",
+      "title": "2. Data Understanding",
+      "objective": "Find what the data's time order and documentation imply for evaluation.",
+      "narrative": "41,188 calls from 2008-05 to 2010-11. The file is in date order but records only the month, so the year is reconstructed from the order.\n\n**The success rate moves with the financial crisis.** 9.1% of calls before 2010 led to a subscription, against **52.1%** in 2010, while the three-month Euribor rate collapsed. A random split would mix these regimes and hide the change a deployed model actually faces.\n\n**`duration` is a documented leak.** It is the length of the call, known only after the client has answered. 96.3% of calls have `pdays` = 999, meaning never contacted before.",
+      "findings": [
+        {
+          "label": "Calls",
+          "value": "41,188",
+          "detail": ""
+        },
+        {
+          "label": "Success rate before 2010",
+          "value": "9.1%",
+          "detail": ""
+        },
+        {
+          "label": "Success rate in 2010",
+          "value": "52.1%",
+          "detail": ""
+        }
+      ],
+      "figures": [],
+      "code_refs": [
+        "ml/data.py:load"
+      ],
+      "gate_passed": true,
+      "gate_notes": "Time order, regime change and the leaking column documented."
+    },
+    {
+      "name": "data_preparation",
+      "title": "3. Data Preparation",
+      "objective": "Split by time and keep every transformation inside the model pipelines.",
+      "narrative": "Training uses the 39,130 calls from before 2010; the test set is all 2,058 calls made in 2010. `pdays` = 999 becomes an explicit 'previously contacted' indicator, because as a number it would read as a very long gap. Scaling and one-hot encoding are fitted inside each pipeline on training rows only, and every contestant, AutoGluon included, sees the same 19 columns.",
+      "findings": [
+        {
+          "label": "Training calls",
+          "value": "39,130",
+          "detail": ""
+        },
+        {
+          "label": "Test calls",
+          "value": "2,058",
+          "detail": ""
+        }
+      ],
+      "figures": [],
+      "code_refs": [
+        "ml/features.py:preprocessor",
+        "ml/data.py:split"
+      ],
+      "gate_passed": true,
+      "gate_notes": "Chronological split, leak exclusion and target-correlation checks executed."
+    },
+    {
+      "name": "modeling",
+      "title": "4. Modeling",
+      "objective": "Build the same kind of ensemble AutoML builds, by hand, beside a tuned single model.",
+      "narrative": "Five different learners are each bagged over five folds, giving out-of-fold predictions for every training call. Caruana selection then adds, 30 times, whichever model most improves the out-of-fold AUC of the running average; it settled on XGBoost (57%), Logistic regression (23%), LightGBM (20%). A logistic stacker trained on the same out-of-fold predictions is the second ensemble. LightGBM is tuned with 40 Optuna trials of five-fold cross-validation. AutoGluon 1.6.2 ran with `best_quality` for up to 900 seconds and trained 13 models.",
+      "findings": [
+        {
+          "label": "Caruana weights",
+          "value": "XGBoost 57%, Logistic regression 23%, LightGBM 20%",
+          "detail": ""
+        },
+        {
+          "label": "Tuning trials",
+          "value": "40",
+          "detail": ""
+        }
+      ],
+      "figures": [],
+      "code_refs": [
+        "ml/train.py:bag",
+        "ml/train.py:caruana",
+        "ml/autogluon_run.py:main"
+      ],
+      "gate_passed": true,
+      "gate_notes": "8 contestants scored on the same 2010 calls."
+    },
+    {
+      "name": "evaluation",
+      "title": "5. Evaluation",
+      "objective": "Score every contestant on the deployment year, and check each against its own promise.",
+      "narrative": "**LightGBM, tuned** ranks 2010 clients best, with ROC AUC 0.6969. The hand-built Caruana stack against tuned LightGBM: -0.0172 AUC, 95% interval [-0.0279, -0.0060], **worse**.\n\n**Every method overestimated itself.** Validation drawn at random from 2008-2009 calls expected more than 2010 delivered; the smallest gap was +0.071 (LightGBM, tuned) and the largest +0.141 (Logistic regression). A time-ordered check, training on 2008 and validating on 2009, gave 0.5927 against a random-CV 0.7590; the actual 2010 score was 0.6786.\n\n**The leak.** Adding `duration` lifts LightGBM's 2010 AUC from 0.6786 to 0.7820, a gain that would vanish the moment the model had to score a client before calling them.",
+      "findings": [
+        {
+          "label": "Best ROC AUC",
+          "value": "0.6969",
+          "detail": ""
+        },
+        {
+          "label": "Stack vs tuned LightGBM",
+          "value": "worse",
+          "detail": ""
+        },
+        {
+          "label": "AUC with the duration leak",
+          "value": "0.7820",
+          "detail": ""
+        }
+      ],
+      "figures": [],
+      "code_refs": [
+        "ml/train.py:bootstrap_auc",
+        "ml/train.py:enter"
+      ],
+      "gate_passed": true,
+      "gate_notes": "Paired bootstrap on the test year; believed scores compared with actual."
+    },
+    {
+      "name": "deployment",
+      "title": "6. Deployment",
+      "objective": "Serve the stronger of the two servable models, with the stack's parts visible beside it.",
+      "narrative": "The API serves **LightGBM, tuned**, the better of the two contestants that run in this repository's environment on the 2010 calls. AutoGluon needs its own environment, so its results are served from its recorded run rather than live. Every prediction also returns the hand-built stack's answer with each member model's score and Caruana weight, so an ensemble's output can be traced to its parts.",
+      "findings": [
+        {
+          "label": "Served model",
+          "value": "LightGBM, tuned",
+          "detail": ""
+        },
+        {
+          "label": "Serving port",
+          "value": "8,007",
+          "detail": ""
+        }
+      ],
+      "figures": [],
+      "code_refs": [
+        "server/inference.py:predict",
+        "server/main.py"
+      ],
+      "gate_passed": true,
+      "gate_notes": "Served models persisted with the preprocessing they were trained with."
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "entity": "Contestant",
+  "metric_columns": [
+    {"key": "roc_auc", "label": "ROC AUC, 2010", "fmt": "f4"},
+    {"key": "average_precision", "label": "Avg precision", "fmt": "f4"},
+    {"key": "believed_auc", "label": "Believed AUC", "fmt": "f4"},
+    {"key": "optimism", "label": "Overestimate", "fmt": "f3"}
+  ],
+  "reproduce": [
+    "../.venv-automl/Scripts/python ml/autogluon_run.py",
+    "python ml/train.py",
+    "python -m uvicorn main:app --app-dir server --port 8007",
+    "npm run dev -w 07_automl_stacking/client"
+  ],
+  "non_goals": [
+    "Choosing the best AutoML system. One AutoGluon configuration was run once, with one time limit, on one dataset.",
+    "A deployable call-centre model. Scores are ranked, not calibrated, and the 2010 success rate differs sharply from the training years."
+  ],
+  "risks": [
+    "The test year is 2,058 calls from a single year of unusual conditions; the ranking may not hold in another period.",
+    "AutoGluon ran without its neural-network models, because PyTorch was not installed in its environment.",
+    "Years are reconstructed from the file's date order, which the dataset's documentation states but does not encode.",
+    "Each contestant was trained once with one seed; run-to-run variation of the tuned and AutoML models was not measured."
+  ],
+  "lessons": [
+    "On a test set drawn from a later period, a single tuned gradient-boosting model beat both AutoGluon and a hand-built stack of five models.",
+    "Every method's own random validation overestimated how it would do on the following year; among the boosted and ensemble methods, AutoGluon's estimate was the most optimistic.",
+    "Stacking chooses members by how well they fit the validation folds, which rewards what fitted the past rather than what transfers.",
+    "A documented leak such as call duration can raise a cross-validated AUC dramatically while adding far less on the period that matters."
+  ],
+  "references": [
+    "Moro, S., Cortez, P., & Rita, P. (2014). A data-driven approach to predict the success of bank telemarketing. Decision Support Systems, 62, 22–31.",
+    "Caruana, R., Niculescu-Mizil, A., Crew, G., & Ksikes, A. (2004). Ensemble selection from libraries of models. Proceedings of ICML 2004.",
+    "Erickson, N. et al. (2020). AutoGluon-Tabular: Robust and accurate AutoML for structured data. arXiv:2003.06505.",
+    "Wolpert, D. H. (1992). Stacked generalization. Neural Networks, 5(2), 241–259.",
+    "Akiba, T. et al. (2019). Optuna: A next-generation hyperparameter optimization framework. Proceedings of KDD 2019."
+  ]
+}
