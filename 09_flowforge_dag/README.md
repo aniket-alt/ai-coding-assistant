@@ -80,7 +80,7 @@ is covered by the mutant "Retries start before their backoff ends".
 | 2 | Depth-first search | 0.21 | 1.01 | 1,000,000 | 43.5 |
 | 3 | Naive repeated scan *(baseline)* | 172.20 | 2.10 | 8,000 | 169.8 |
 
-Ranked by ms at 8,000 nodes (lower is better). Split: seeded random graphs; every method timed on the same graphs; 0 evaluation rows. Generated from `artifacts/metrics.json`.
+Ranked by ms at 8,000 nodes (lower is better). Split: seeded random graphs; every method timed on the same graphs. Generated from `artifacts/metrics.json`.
 <!-- /dsfs:leaderboard -->
 
 **Ordering.** Kahn's algorithm's time grows with an exponent of 1.06 and orders a

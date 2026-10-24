@@ -46,7 +46,7 @@ Training is the only writer of results. The API serves the artifacts it wrote, a
 
 | File | Lines | Responsibility |
 |---|---:|---|
-| `ml/data.py` | 69 | 48,842 records from the 1994 US Census, extracted by Barry Becker, with the classic question of whether a person's income exceeds $50,000 a year. The dataset is also a standard… |
+| `ml/data.py` | 53 | 48,842 records from the 1994 US Census, extracted by Barry Becker, with the classic question of whether a person's income exceeds $50,000 a year. The dataset is also a standard… |
 | `ml/train.py` | 494 | Project 10 -- a CRISP-DM curriculum on the Adult census data. |
 | `server/inference.py` | 72 | Every lesson is read from the training run's metrics.json. Quiz questions are sent without their answers; a choice is checked on the server, so the answer cannot be read from… |
 | `server/main.py` | 87 | Project 10 -- FastAPI application. |
@@ -121,7 +121,7 @@ Recorded by the assertion ledger while training ran; generated from `artifacts/m
 
 ## 9. Reproducibility
 
-Last trained at commit `1e3bb26` on Python 3.11.6.
+Last trained at commit `4b4031a` on Python 3.11.6.
 
 ```bash
 python ml/train.py

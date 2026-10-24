@@ -280,8 +280,11 @@ def leaderboard_md(p: Project) -> str:
     out.append("")
     out.append(
         f"Ranked by {primary(p)['label'].lower()} ({direction} is better). "
-        f"Split: {split.get('strategy', '—')}; {split.get('n_test', 0):,} evaluation rows. "
-        f"Generated from `artifacts/metrics.json`."
+        f"Split: {split.get('strategy', '—')}"
+        # A project whose design has no single held-out set records no count;
+        # printing "0 evaluation rows" there would be wrong, not merely empty.
+        + (f"; {split['n_test']:,} evaluation rows" if split.get("n_test") else "")
+        + ". Generated from `artifacts/metrics.json`."
     )
     return "\n".join(out)
 
@@ -371,8 +374,9 @@ def render_abstract(p: Project) -> str:
         f"{prov.get('n_rows', 0):,} rows as downloaded, used under "
         f"{prov.get('license', 'an unrecorded licence')}. Following the CRISP-DM "
         f"process, we compare {len(models)} approaches, {n_base} of them baselines, "
-        f"on {split.get('n_test', 0):,} evaluation rows and rank them by "
-        f"{pcol['label'].lower()}. Evaluation split: {split.get('strategy', 'held-out')}.",
+        + (f"on {split['n_test']:,} evaluation rows " if split.get("n_test") else "")
+        + f"and rank them by {pcol['label'].lower()}. "
+        f"Evaluation split: {split.get('strategy', 'held-out')}.",
         "",
     ]
     if is_baseline(best):

@@ -174,7 +174,7 @@ The course is served by endpoints for each lesson — `/api/eda`, `/api/unsuperv
 
 ## Reproducibility
 
-Trained 2026-09-17T16:26:31Z in 8.5 s at commit `1e3bb26` with Python 3.11.6, NumPy 2.4.6, pandas 3.0.5 and scikit-learn 1.9.1.
+Trained 2026-10-24T19:27:53Z in 21.8 s at commit `4b4031a` with Python 3.11.6, NumPy 2.4.6, pandas 3.0.5 and scikit-learn 1.9.1.
 
 ```bash
 python ml/train.py

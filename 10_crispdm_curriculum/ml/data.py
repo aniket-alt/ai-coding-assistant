@@ -9,13 +9,12 @@ race alongside variables that stand in for them.
 
 from __future__ import annotations
 
-import io
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
 
-from dsfs import Provenance, fetch, stamp_frame
+from dsfs import Provenance, fetch, read_arff, stamp_frame
 
 ADULT = Provenance(
     slug="openml-adult",
@@ -35,24 +34,9 @@ CATEGORICAL = ["workclass", "education", "marital-status", "occupation", "relati
 SENSITIVE = ["sex", "race"]
 
 
-def _parse_arff(raw: bytes) -> pd.DataFrame:
-    text = raw.decode("utf-8", errors="replace").splitlines()
-    columns, start = [], 0
-    for i, line in enumerate(text):
-        low = line.strip().lower()
-        if low.startswith("@attribute"):
-            columns.append(line.split()[1].strip("'\""))
-        elif low.startswith("@data"):
-            start = i + 1
-            break
-    body = "\n".join(text[start:])
-    return pd.read_csv(io.StringIO(body), header=None, names=columns, quotechar="'",
-                       skipinitialspace=True, na_values=["?"])
-
-
 def load() -> tuple[pd.DataFrame, Provenance]:
     path, prov = fetch(ADULT, filename="adult.arff")
-    df = _parse_arff(path.read_bytes())
+    df = read_arff(path.read_bytes())
     df = df.rename(columns={"class": "income"})
     df["high_income"] = (df["income"].astype(str).str.strip() == ">50K").astype(int)
     # Plain object columns with NaN for missing values: scikit-learn's imputers

@@ -100,3 +100,57 @@ def fetch_via(
 def stamp_frame(spec: Provenance, df) -> Provenance:
     """Attach shape facts from a loaded DataFrame."""
     return spec.stamped(n_rows=int(df.shape[0]), n_cols=int(df.shape[1]))
+
+
+def read_arff(raw: bytes) -> "pd.DataFrame":
+    """
+    Parse an ARFF file, the format OpenML serves, into a DataFrame.
+
+    Only what OpenML's files actually use is handled: an `@attribute` line per
+    column, then `@data` and comma-separated rows. Missing values are written
+    as `?`.
+
+    Files differ in how they quote. OpenML's Adult wraps values in single
+    quotes, its Titanic in double quotes, and a passenger name there contains a
+    comma -- so a fixed quote character silently splits one row into two
+    columns. Both are tried, and the one that yields the declared number of
+    columns is used; any quotes the other convention left behind are stripped.
+    """
+    import io
+
+    import pandas as pd
+
+    text = raw.decode("utf-8", errors="replace").splitlines()
+    columns, start = [], 0
+    for i, line in enumerate(text):
+        low = line.strip().lower()
+        if low.startswith("@attribute"):
+            columns.append(line.split()[1].strip("'\""))
+        elif low.startswith("@data"):
+            start = i + 1
+            break
+    if not columns:
+        raise ValueError("no @attribute lines found; is this an ARFF file?")
+
+    body = "\n".join(text[start:])
+    frame = None
+    for quote in ('"', "'"):
+        try:
+            candidate = pd.read_csv(io.StringIO(body), header=None, names=columns, quotechar=quote,
+                                    skipinitialspace=True, na_values=["?"])
+        except pd.errors.ParserError:
+            continue
+        if candidate.shape[1] == len(columns):
+            frame = candidate
+            break
+    if frame is None:
+        raise ValueError(f"could not parse the @data rows into {len(columns)} columns")
+
+    # Tested with is_numeric_dtype rather than `== object`: pandas 3 reads text
+    # into a string dtype, which is not object, so an object test would skip
+    # every column that needs stripping.
+    for column in frame.columns:
+        if not pd.api.types.is_numeric_dtype(frame[column]):
+            frame[column] = frame[column].map(
+                lambda v: v[1:-1] if isinstance(v, str) and len(v) > 1 and v[0] == v[-1] and v[0] in "\"'" else v)
+    return frame

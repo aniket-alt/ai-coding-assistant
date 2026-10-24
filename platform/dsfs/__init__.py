@@ -9,7 +9,7 @@ once and behave identically across the portfolio.
 __version__ = "1.0.0"
 
 from .provenance import Provenance, sha256_file
-from .datasets import fetch, fetch_via, stamp_frame, cache_dir
+from .datasets import fetch, fetch_via, read_arff, stamp_frame, cache_dir
 from .crispdm import CrispDmReport, Phase, Finding, PHASE_ORDER
 from .metrics import RunRecord, ModelScore, SplitInfo, capture_env
 from . import leakage
@@ -18,7 +18,7 @@ from .leakage import LeakageError, reset_ledger, ledger, require
 
 __all__ = [
     "Provenance", "sha256_file",
-    "fetch", "fetch_via", "stamp_frame", "cache_dir",
+    "fetch", "fetch_via", "read_arff", "stamp_frame", "cache_dir",
     "CrispDmReport", "Phase", "Finding", "PHASE_ORDER",
     "RunRecord", "ModelScore", "SplitInfo", "capture_env",
     "leakage", "forecasting", "LeakageError", "reset_ledger", "ledger", "require",
