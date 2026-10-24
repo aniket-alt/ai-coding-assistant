@@ -40,7 +40,7 @@ Ports are assigned so every project can run simultaneously.
 |---|---|---|---|:---:|:---:|:---:|
 | 00 | [**Task Workspace**](./00_task_workspace) | Live sync, no lost edits, quick-entry grammar, all verified | Generated demo tasks (synthetic) | 8000 | 5100 | ✅ |
 | 01 | [**NYC Taxi Trip Prediction**](./01_nyc_taxi_prediction) | Booking-time spatial regression | NYC TLC (2.96M trips) | 8001 | 5101 | ✅ |
-| 02 | Nano LLM Transformer | Autoregressive transformer, RoPE + SwiGLU | TinyStories | 8002 | 5102 | ⬜ |
+| 02 | [**Nano LLM Transformer**](./02_nano_llm) | 8.7M-parameter transformer from scratch; ablations against seed noise | TinyStories V2 (2.72M stories) | 8002 | 5102 | ✅ |
 | 03 | [**Customer Segmentation**](./03_customer_segmentation) | Clustering judged on next-year behaviour | Online Retail II (1,067,371 lines) | 8003 | 5103 | ✅ |
 | 04 | [**Market Basket Mining**](./04_market_basket) | FP-Growth rules judged on a later season | Online Retail II (shared with 03) | 8004 | 5104 | ✅ |
 | 05 | DS Skills Lab | Analytical skills catalogue | multiple | 8005 | 5105 | ⬜ |
