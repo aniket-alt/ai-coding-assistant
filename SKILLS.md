@@ -10,7 +10,7 @@ Each skill links to the line where it is implemented. Links are located by searc
 | **Runtime leakage assertions with a ledger** | [`platform/dsfs/leakage.py`](./platform/dsfs/leakage.py#L99) | Each check records what it measured; deleting a check deletes its evidence. |
 | **Static leakage audit (AST)** | [`platform/dsfs/leakage.py`](./platform/dsfs/leakage.py#L196) | Flags fitting on held-out data, shuffled time splits and unseeded estimators. |
 | **Temporal split with embargo** | [`platform/dsfs/leakage.py`](./platform/dsfs/leakage.py#L350) | Guarantees training ends before testing starts, with a gap against boundary bleed. |
-| **Generated documentation with drift check** | [`platform/dsfs/docs.py`](./platform/dsfs/docs.py#L982) | Papers, abstracts and result tables are regenerated from artifacts; CI fails if they drift. |
+| **Generated documentation with drift check** | [`platform/dsfs/docs.py`](./platform/dsfs/docs.py#L986) | Papers, abstracts and result tables are regenerated from artifacts; CI fails if they drift. |
 | **Rendered-output verification** | [`scripts/capture_screenshots.py`](./scripts/capture_screenshots.py#L44) | Screenshots are only saved as evidence after the view is confirmed to show its expected content. |
 | **Excluding post-event fields** | [`01_nyc_taxi_prediction/ml/data.py`](./01_nyc_taxi_prediction/ml/data.py#L71) | Meter distance, fare and arrival time are unknowable at booking, so the model may not use them. |
 | **Data cleaning with an audit trail** | [`01_nyc_taxi_prediction/ml/data.py`](./01_nyc_taxi_prediction/ml/data.py#L111) | Each filter records how many rows it removed and why. |
@@ -81,6 +81,10 @@ Each skill links to the line where it is implemented. Links are located by searc
 | **Cached CLIP image and text embeddings** | [`14_multimodal_automl/ml/embed.py`](./14_multimodal_automl/ml/embed.py#L55) | Embeds 44,000 images and names once on the GPU and reuses them while the product ids match. |
 | **Late fusion with validation-chosen weights** | [`14_multimodal_automl/ml/train.py`](./14_multimodal_automl/ml/train.py#L75) | Weighted geometric mean of per-modality probabilities, with weights searched on validation products only. |
 | **Text-to-image search with CLIP** | [`14_multimodal_automl/server/inference.py`](./14_multimodal_automl/server/inference.py#L141) | Ranks product photos by similarity to a typed description, served live. |
+| **Paired comparison over seeds** | [`05_skills_lab/ml/skills.py`](./05_skills_lab/ml/skills.py) | Runs both versions on the same seed so split-to-split variation cancels, then bootstraps the differences. |
+| **Out-of-fold target encoding** | [`05_skills_lab/ml/skills.py`](./05_skills_lab/ml/skills.py#L80) | Encodes each training row from the other folds, so a row's own label never enters its own feature. |
+| **Reading ARFF files from OpenML** | [`platform/dsfs/datasets.py`](./platform/dsfs/datasets.py#L105) | Handles both quoting conventions OpenML serves, so a comma inside a quoted value cannot split a row. |
+| **A claim that must match its interval** | [`05_skills_lab/ml/train.py`](./05_skills_lab/ml/train.py#L36) | An executed assertion refuses to publish an effect whose bootstrap interval covers zero. |
 
 ## Reproduction skills
 
@@ -91,6 +95,7 @@ Each built project ships an agent skill at `skills/reproduce/SKILL.md` describin
 - [`02_nano_llm/skills/reproduce/SKILL.md`](./02_nano_llm/skills/reproduce/SKILL.md)
 - [`03_customer_segmentation/skills/reproduce/SKILL.md`](./03_customer_segmentation/skills/reproduce/SKILL.md)
 - [`04_market_basket/skills/reproduce/SKILL.md`](./04_market_basket/skills/reproduce/SKILL.md)
+- [`05_skills_lab/skills/reproduce/SKILL.md`](./05_skills_lab/skills/reproduce/SKILL.md)
 - [`06_anomaly_detection/skills/reproduce/SKILL.md`](./06_anomaly_detection/skills/reproduce/SKILL.md)
 - [`07_automl_stacking/skills/reproduce/SKILL.md`](./07_automl_stacking/skills/reproduce/SKILL.md)
 - [`08_visual_foundations/skills/reproduce/SKILL.md`](./08_visual_foundations/skills/reproduce/SKILL.md)

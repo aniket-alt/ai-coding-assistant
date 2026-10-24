@@ -11,8 +11,8 @@ Shared by every project. A project imports it instead of re-implementing data so
 | [`platform/dsfs/__init__.py`](./platform/dsfs/__init__.py) | 26 | dsfs -- the shared kernel behind this 16-project data science portfolio. |
 | [`platform/dsfs/app.py`](./platform/dsfs/app.py) | 165 | FastAPI application factory shared by all 16 project backends. |
 | [`platform/dsfs/crispdm.py`](./platform/dsfs/crispdm.py) | 134 | CRISP-DM as a data structure, not a section heading. |
-| [`platform/dsfs/datasets.py`](./platform/dsfs/datasets.py) | 102 | `fetch()` downloads a URL once into `datasets/cache/`, checksums it, and returns a stamped `Provenance`. Re-running is free and offline-safe. Every project's data step goes… |
-| [`platform/dsfs/docs.py`](./platform/dsfs/docs.py) | 994 | Every figure in a generated document is read from the artifacts a training run wrote: metrics.json, crispdm.json, provenance.json and audit.json. The only hand-written inputs… |
+| [`platform/dsfs/datasets.py`](./platform/dsfs/datasets.py) | 156 | `fetch()` downloads a URL once into `datasets/cache/`, checksums it, and returns a stamped `Provenance`. Re-running is free and offline-safe. Every project's data step goes… |
+| [`platform/dsfs/docs.py`](./platform/dsfs/docs.py) | 998 | Every figure in a generated document is read from the artifacts a training run wrote: metrics.json, crispdm.json, provenance.json and audit.json. The only hand-written inputs… |
 | [`platform/dsfs/forecasting.py`](./platform/dsfs/forecasting.py) | 73 | Shared evaluation for probabilistic forecasts. |
 | [`platform/dsfs/leakage.py`](./platform/dsfs/leakage.py) | 458 | Leakage auditor: static (AST) + runtime assertions. |
 | [`platform/dsfs/metrics.py`](./platform/dsfs/metrics.py) | 205 | The single source of truth for every number this portfolio publishes. |
@@ -172,6 +172,29 @@ Which products go together, and do those associations hold next season? Best: **
 
 ![Market Basket Mining](./04_market_basket/screenshots/01_build_basket.png)
 
+## 05 · Data Science Skills Lab
+
+A catalogue of techniques, each one measured the careless way and the careful way. Best: **Reading accuracy on an imbalanced target** (how much it flatters 0.2207). [README](./05_skills_lab/README.md) · [paper](./05_skills_lab/paper.md) · [design doc](./05_skills_lab/DESIGN_DOC.md)
+
+| File | Lines | What it does |
+|---|---:|---|
+| [`ml/data.py`](./05_skills_lab/ml/data.py) | 119 | Project 05 -- four small, real datasets for the skills catalogue. |
+| [`ml/skills.py`](./05_skills_lab/ml/skills.py) | 459 | Project 05 -- the skills catalogue, as executable comparisons. |
+| [`ml/train.py`](./05_skills_lab/ml/train.py) | 227 | Project 05 -- run the skills catalogue and record what it measured. |
+| [`server/inference.py`](./05_skills_lab/server/inference.py) | 80 | Recorded results are read from the training run. A skill can also be re-run on request, through the same code the training run used, so a reader can watch an interval narrow as… |
+| [`server/main.py`](./05_skills_lab/server/main.py) | 57 | Project 05 -- FastAPI application. |
+| [`client/src/App.tsx`](./05_skills_lab/client/src/App.tsx) | 166 | Browse the entries, open one to see its measured comparison, and run any of them again. Nothing here computes a result: every number is returned by the API, from the training… |
+| [`client/src/Catalogue.tsx`](./05_skills_lab/client/src/Catalogue.tsx) | 135 | Project-05-specific views: the catalogue list, one skill's comparison, and the live re-run. Every number shown is returned by the API; the client only decides how many decimals… |
+| [`client/src/main.tsx`](./05_skills_lab/client/src/main.tsx) | 10 |  |
+
+| Method | Endpoint | Purpose |
+|---|---|---|
+| GET | `/api/catalogue` | Every skill's recorded comparison, the datasets behind them, and the auditor's warnings. |
+| GET | `/api/skills/{skill_id}` | One skill's recorded comparison. |
+| POST | `/api/skills/{skill_id}/rerun` | Run this skill again now, on a chosen number of seeds, beside what the training run recorded. |
+
+![Data Science Skills Lab](./05_skills_lab/screenshots/01_catalogue.png)
+
 ## 06 · Credit Card Fraud Detection
 
 Which handful of transactions should an analyst look at today? Best: **Logistic regression** (avg precision 0.7547). [README](./06_anomaly_detection/README.md) · [paper](./06_anomaly_detection/paper.md) · [design doc](./06_anomaly_detection/DESIGN_DOC.md)
@@ -276,7 +299,7 @@ Seven lessons on the Adult census, and why leaving out sex does not make a model
 
 | File | Lines | What it does |
 |---|---:|---|
-| [`ml/data.py`](./10_crispdm_curriculum/ml/data.py) | 69 | 48,842 records from the 1994 US Census, extracted by Barry Becker, with the classic question of whether a person's income exceeds $50,000 a year. The dataset is also a standard… |
+| [`ml/data.py`](./10_crispdm_curriculum/ml/data.py) | 53 | 48,842 records from the 1994 US Census, extracted by Barry Becker, with the classic question of whether a person's income exceeds $50,000 a year. The dataset is also a standard… |
 | [`ml/train.py`](./10_crispdm_curriculum/ml/train.py) | 494 | Project 10 -- a CRISP-DM curriculum on the Adult census data. |
 | [`server/inference.py`](./10_crispdm_curriculum/server/inference.py) | 72 | Every lesson is read from the training run's metrics.json. Quiz questions are sent without their answers; a choice is checked on the server, so the answer cannot be read from… |
 | [`server/main.py`](./10_crispdm_curriculum/server/main.py) | 87 | Project 10 -- FastAPI application. |

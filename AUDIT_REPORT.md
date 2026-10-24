@@ -9,6 +9,7 @@ Every row below is read from a project's `artifacts/metrics.json`. Projects that
 | [02 Nano LLM Transformer](./02_nano_llm/audit_report.md) | TinyStories V2 (GPT-4 stories), training split | yes | 0 | 0 | 3/3 passed |
 | [03 Customer Segmentation](./03_customer_segmentation/audit_report.md) | Online Retail II (UCI) | yes | 0 | 0 | 3/3 passed |
 | [04 Market Basket Mining](./04_market_basket/audit_report.md) | Online Retail II (UCI) | yes | 0 | 0 | 4/4 passed |
+| [05 Data Science Skills Lab](./05_skills_lab/audit_report.md) | Titanic (OpenML 40945) | yes | 0 | 0 | 3/3 passed |
 | [06 Credit Card Fraud Detection](./06_anomaly_detection/audit_report.md) | Credit Card Fraud Detection (ULB) | yes | 0 | 0 | 3/3 passed |
 | [07 AutoML Stacking](./07_automl_stacking/audit_report.md) | Bank Marketing, with social and economic context (UCI) | yes | 0 | 0 | 3/3 passed |
 | [08 DS Visual Foundations](./08_visual_foundations/audit_report.md) | SMS Spam Collection (UCI) | yes | 0 | 0 | 4/4 passed |
@@ -70,6 +71,16 @@ Recorded by the assertion ledger while training ran; generated from `artifacts/m
 | `assert_disjoint` | ✅ passed | 789,736 training and 203,765 test row indices compared; 0 appear in both. |
 | `assert_no_shared_invoices` | ✅ passed | 32,126 training and 7,012 test invoices compared; 0 in both. |
 | `assert_hidden_item_not_visible` | ✅ passed | 6,548 test baskets checked; the hidden item was visible to the model in 0. |
+
+Recorded by the assertion ledger while training ran; generated from `artifacts/metrics.json`.
+
+### 05 · Data Science Skills Lab
+
+| Assertion | Result | What it measured |
+|---|---|---|
+| `assert_every_dataset_is_real` | ✅ passed | 4 datasets downloaded and checksummed: titanic 1,309 rows, sha256 c56e3785; credit_g 1,000 rows, sha256 768be84e; diabetes 768 rows, sha256 4eddd5b2; blood 748 rows, sha256 ee1304ca. Marked synthetic: none. |
+| `assert_every_skill_paired_on_the_same_seeds` | ✅ passed | 12 skills, each run on the same 25 seeds, careless and careful on every seed; seed counts seen: [25]. |
+| `assert_claims_match_intervals` | ✅ passed | 7 of 12 skills have a bootstrap interval that excludes zero and may state an effect; entries claiming one without it: none. |
 
 Recorded by the assertion ledger while training ran; generated from `artifacts/metrics.json`.
 

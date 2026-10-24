@@ -460,5 +460,29 @@
   "file": "14_multimodal_automl/server/inference.py",
   "symbol": "search",
   "why": "Ranks product photos by similarity to a typed description, served live."
+ },
+ {
+  "skill": "Paired comparison over seeds",
+  "file": "05_skills_lab/ml/skills.py",
+  "symbol": "Skill.measure",
+  "why": "Runs both versions on the same seed so split-to-split variation cancels, then bootstraps the differences."
+ },
+ {
+  "skill": "Out-of-fold target encoding",
+  "file": "05_skills_lab/ml/skills.py",
+  "symbol": "OutOfFoldTargetEncoder",
+  "why": "Encodes each training row from the other folds, so a row's own label never enters its own feature."
+ },
+ {
+  "skill": "Reading ARFF files from OpenML",
+  "file": "platform/dsfs/datasets.py",
+  "symbol": "read_arff",
+  "why": "Handles both quoting conventions OpenML serves, so a comma inside a quoted value cannot split a row."
+ },
+ {
+  "skill": "A claim that must match its interval",
+  "file": "05_skills_lab/ml/train.py",
+  "symbol": "main",
+  "why": "An executed assertion refuses to publish an effect whose bootstrap interval covers zero."
  }
 ]

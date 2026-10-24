@@ -43,7 +43,7 @@ Ports are assigned so every project can run simultaneously.
 | 02 | [**Nano LLM Transformer**](./02_nano_llm) | 8.7M-parameter transformer from scratch; ablations against seed noise | TinyStories V2 (2.72M stories) | 8002 | 5102 | ✅ |
 | 03 | [**Customer Segmentation**](./03_customer_segmentation) | Clustering judged on next-year behaviour | Online Retail II (1,067,371 lines) | 8003 | 5103 | ✅ |
 | 04 | [**Market Basket Mining**](./04_market_basket) | FP-Growth rules judged on a later season | Online Retail II (shared with 03) | 8004 | 5104 | ✅ |
-| 05 | DS Skills Lab | Analytical skills catalogue | multiple | 8005 | 5105 | ⬜ |
+| 05 | [**Data Science Skills Lab**](./05_skills_lab) | Techniques measured careless vs careful, with intervals | Four OpenML sets (Titanic, Credit, Diabetes, Blood) | 8005 | 5105 | ✅ |
 | 06 | [**Anomaly Detection**](./06_anomaly_detection) | Fraud ranking under 1:578 imbalance | ULB Credit Card Fraud (284,807) | 8006 | 5106 | ✅ |
 | 07 | [**AutoML Stacking**](./07_automl_stacking) | AutoGluon vs hand-built stack vs tuned model, on a later year | UCI Bank Marketing (41,188 calls) | 8007 | 5107 | ✅ |
 | 08 | [**DS Visual Foundations**](./08_visual_foundations) | Four lessons, each algorithm checked against a reference | UCI SMS Spam + Power Plant | 8008 | 5108 | ✅ |
