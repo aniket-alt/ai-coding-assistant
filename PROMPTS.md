@@ -441,6 +441,50 @@ the README notes that this may not extend to the retailer's photographs.
 
 ---
 
+## Session 8 — the missing project
+
+### 27. Status
+
+```text
+Where are we?
+```
+
+Checking the repository rather than answering from memory found two errors in
+the previous summary: project 02 was built but its row in the index still read
+"not started", and project 05 had never been built at all, although the last
+message had claimed all sixteen were complete.
+
+### 28. Project 05
+
+```text
+Yes, start project 5.
+```
+
+**Produced:** the sixteenth project, and two platform corrections it exposed.
+
+- **05 Data Science Skills Lab.** Twelve techniques, each executed the careless
+  way and the careful way on a real OpenML dataset over 25 seeds, with a
+  bootstrap interval on the paired difference. Six flatter the careless
+  version; five show no difference the experiment can resolve, which is
+  reported as a result rather than left out.
+  [`47658ca`](https://github.com/aniket-alt/ai-coding-assistant/commit/47658ca)
+- **The platform.** ARFF reading moved into `dsfs.datasets` once a second
+  project needed it, and learned to handle both quoting conventions OpenML
+  serves. The generated leaderboard caption stopped claiming "0 evaluation
+  rows" for designs that have no single held-out set.
+  [`96230dc`](https://github.com/aniket-alt/ai-coding-assistant/commit/96230dc)
+
+Four claims were corrected before publishing, each caught by checking the
+artifacts rather than the draft: a refactor that appeared to leave project 10
+identical had in fact never run, because the file it edited no longer parsed;
+two "careless" implementations were not making the mistake practitioners
+actually make, and their measured effects were nearly zero until they were;
+a paragraph about the repository's auditor flagging this project's leaks was
+written before the audit reported none; and a claim about logistic regression
+was replaced by a twelfth entry that measures it.
+
+---
+
 ## What made prompting work
 
 **Review before build.** Prompts 12 and 13 asked for the design before the code
