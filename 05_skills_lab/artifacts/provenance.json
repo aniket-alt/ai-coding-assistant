@@ -1,0 +1,15 @@
+{
+  "slug": "openml-titanic",
+  "name": "Titanic (OpenML 40945)",
+  "source_url": "https://openml.org/data/v1/download/16826755/Titanic.arff",
+  "license": "Public (OpenML)",
+  "citation": "Titanic [Dataset]. OpenML, dataset 40945. https://www.openml.org/d/40945",
+  "retrieved_at": "2026-10-24T19:54:43Z",
+  "sha256": "c56e3785c96cd8aceac85f11bff21c2bf72841426f50903a6f27be8f334a7d03",
+  "n_rows": 1309,
+  "n_cols": 9,
+  "bytes_on_disk": 118039,
+  "synthetic": false,
+  "notes": "1,309 passengers; survival, class, sex, age, fare, cabin and port of embarkation.",
+  "extra": {}
+}

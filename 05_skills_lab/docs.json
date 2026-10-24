@@ -1,0 +1,36 @@
+{
+  "entity": "Skill",
+  "temporal_modules": [],
+  "temporal_modules_reason": "Four cross-sectional tables with no time order; every split here is random or grouped by family, never chronological.",
+  "metric_columns": [
+    {"key": "flattery", "label": "How much it flatters", "fmt": "f4"},
+    {"key": "careless", "label": "Careless", "fmt": "f4"},
+    {"key": "careful", "label": "Careful", "fmt": "f4"},
+    {"key": "ci_low", "label": "95% from", "fmt": "f4"},
+    {"key": "ci_high", "label": "to", "fmt": "f4"}
+  ],
+  "reproduce": [
+    "python ml/train.py",
+    "python -m uvicorn main:app --app-dir server --port 8005",
+    "npm run dev -w 05_skills_lab/client"
+  ],
+  "non_goals": [
+    "A ranking of techniques in general. Each number is what happened on one small dataset with one model family.",
+    "A complete catalogue. Eleven entries cover the mistakes that were cheap to measure honestly, not every mistake worth knowing."
+  ],
+  "risks": [
+    "Every result is specific to its dataset, its model and its metric; the same mistake can cost far more or far less elsewhere.",
+    "Twenty-five seeds resolve differences of roughly a hundredth in AUC, and no more; smaller effects are reported as unresolved rather than absent.",
+    "The datasets are small, so a few hundred rows decide each estimate.",
+    "Titanic, German Credit and Pima Diabetes carry the biases of their collection, and German Credit in particular encodes judgements about applicants that should not be read as ground truth about people."
+  ],
+  "lessons": [],
+  "references": [
+    "Kaufman, S., Rosset, S., Perlich, C., & Stitelman, O. (2012). Leakage in data mining: Formulation, detection, and avoidance. ACM Transactions on Knowledge Discovery from Data, 6(4).",
+    "Varma, S., & Simon, R. (2006). Bias in error estimation when using cross-validation for model selection. BMC Bioinformatics, 7, 91.",
+    "Ambroise, C., & McLachlan, G. J. (2002). Selection bias in gene extraction on the basis of microarray gene-expression data. PNAS, 99(10), 6562-6566.",
+    "Micci-Barreca, D. (2001). A preprocessing scheme for high-cardinality categorical attributes in classification and prediction problems. ACM SIGKDD Explorations, 3(1), 27-32.",
+    "Niculescu-Mizil, A., & Caruana, R. (2005). Predicting good probabilities with supervised learning. Proceedings of ICML 2005.",
+    "Vanschoren, J., van Rijn, J. N., Bischl, B., & Torgo, L. (2013). OpenML: Networked science in machine learning. ACM SIGKDD Explorations, 15(2), 49-60."
+  ]
+}

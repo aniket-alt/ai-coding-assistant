@@ -1,0 +1,138 @@
+{
+  "project_slug": "05_skills_lab",
+  "project_title": "Data Science Skills Lab",
+  "business_question": "For each technique in a working data scientist's catalogue, does doing it the careless way change the result -- and by how much, on real data?",
+  "phases": [
+    {
+      "name": "business_understanding",
+      "title": "1. Business Understanding",
+      "objective": "Turn a catalogue of techniques into a catalogue of measured differences.",
+      "narrative": "A skills catalogue usually lists techniques with advice about pitfalls. Advice is cheap: it cannot say whether a pitfall costs anything on the data in front of you. Each entry here runs the careless version and the careful version of the same analysis, over many seeds, and reports the paired difference with an interval. Entries whose interval covers zero say that plainly, which is how the catalogue stays worth reading.",
+      "findings": [
+        {
+          "label": "Skills",
+          "value": "12",
+          "detail": ""
+        },
+        {
+          "label": "Seeds per skill",
+          "value": "25",
+          "detail": ""
+        }
+      ],
+      "figures": [],
+      "code_refs": [
+        "ml/skills.py:Skill.measure"
+      ],
+      "gate_passed": true,
+      "gate_notes": "Every entry must execute on a real dataset and report a paired interval."
+    },
+    {
+      "name": "data_understanding",
+      "title": "2. Data Understanding",
+      "objective": "Choose datasets small enough to re-run live and real enough to be worth measuring.",
+      "narrative": "Four datasets from OpenML: **Titanic** (1,309 rows, 38% positive, 20% of rows with a missing value); **German Credit** (1,000 rows, 30% positive); **Pima Indians Diabetes** (768 rows, 35% positive); **Blood Transfusion Service Center** (748 rows, 24% positive). Each was chosen for a property a skill needs: missing values, categorical columns with rare levels, an imbalanced target, and passengers who travelled in families.",
+      "findings": [
+        {
+          "label": "Datasets",
+          "value": "4",
+          "detail": ""
+        },
+        {
+          "label": "Smallest",
+          "value": "748 rows",
+          "detail": ""
+        }
+      ],
+      "figures": [],
+      "code_refs": [
+        "ml/data.py:load"
+      ],
+      "gate_passed": true,
+      "gate_notes": "Provenance recorded for each; an assertion rejects synthetic data."
+    },
+    {
+      "name": "data_preparation",
+      "title": "3. Data Preparation",
+      "objective": "Give every skill the same shape so they can be compared and browsed.",
+      "narrative": "Each entry declares its dataset, its metric, what the careless and careful versions are, and a function returning both numbers for one seed. The catalogue runs that function over the seeds, pairs the results so that split-to-split variation cancels, and bootstraps the paired differences. Nothing in an entry's text is written by hand except its explanation and its pitfalls.",
+      "findings": [
+        {
+          "label": "Record fields",
+          "value": "careless, careful, gap, interval, verdict",
+          "detail": ""
+        }
+      ],
+      "figures": [],
+      "code_refs": [
+        "ml/skills.py:Skill",
+        "ml/skills.py:CATALOGUE"
+      ],
+      "gate_passed": true,
+      "gate_notes": "One record shape for every skill."
+    },
+    {
+      "name": "modeling",
+      "title": "4. Modeling",
+      "objective": "Implement both versions of each technique faithfully.",
+      "narrative": "The careless versions are written the way the mistake is usually made: a frame imputed or scaled or encoded before any split, a feature selector fitted once, classes balanced as a preparation step, a threshold swept against the held-out labels. The careful versions put the same work inside the fold. Two entries measure something else: whether accuracy or balanced accuracy is the honest reading of the same predictions, and whether calibration improves the probabilities.",
+      "findings": [
+        {
+          "label": "Categories",
+          "value": "Evaluation design, Measurement, Preparation",
+          "detail": ""
+        }
+      ],
+      "figures": [],
+      "code_refs": [
+        "ml/skills.py:_target_encode",
+        "ml/skills.py:_oversample_before_split"
+      ],
+      "gate_passed": true,
+      "gate_notes": "12 skills implemented in both versions."
+    },
+    {
+      "name": "evaluation",
+      "title": "5. Evaluation",
+      "objective": "Report which differences the experiment can resolve, and which it cannot.",
+      "narrative": "6 of 12 skills show a careless version that flatters the result by more than the seed-to-seed noise. The largest is **reading accuracy on an imbalanced target**, worth +0.221 accuracy against balanced accuracy.\n\n5 entries report no difference this experiment can resolve: imputation fitted before the split, scaling fitted before the split, the same oversampling, with a linear model, splitting rows that belong to the same group, trusting one train/test split. That is a result, not a gap in the catalogue: on these datasets, with these models, the careless version costs nothing measurable.\n\nEvery careless version here is a real leak, yet the repository's own static auditor reports 0 warnings and 0 critical findings against this project's source. Reading source cannot see these: each is an ordinary call in an ordinary order, and nothing in the text says which rows will later become a validation fold. Only running both versions tells them apart.",
+      "findings": [
+        {
+          "label": "Skills with a measurable effect",
+          "value": "6 of 12",
+          "detail": ""
+        },
+        {
+          "label": "Largest flattery",
+          "value": "+0.221",
+          "detail": ""
+        }
+      ],
+      "figures": [],
+      "code_refs": [
+        "ml/train.py:main"
+      ],
+      "gate_passed": true,
+      "gate_notes": "Verdicts checked against the intervals by an executed assertion."
+    },
+    {
+      "name": "deployment",
+      "title": "6. Deployment",
+      "objective": "Serve the catalogue, and let any entry be re-run live.",
+      "narrative": "The API serves every record and will re-run a chosen skill on a chosen number of seeds, so a reader can watch the interval narrow as seeds are added, and can confirm that the same seeds give the same numbers.",
+      "findings": [
+        {
+          "label": "Serving port",
+          "value": "8,005",
+          "detail": ""
+        }
+      ],
+      "figures": [],
+      "code_refs": [
+        "server/main.py"
+      ],
+      "gate_passed": true,
+      "gate_notes": "Live re-runs use the same code path as this script."
+    }
+  ]
+}
